@@ -1,0 +1,9 @@
+# Modelos Hierárquicos
+
+## Séries Temporais Agrupadas
+
+
+
+## Hierarquia Temporal
+
+https://cran.r-project.org/web/packages/thief/thief.pdf

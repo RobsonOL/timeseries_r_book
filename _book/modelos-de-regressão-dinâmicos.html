@@ -4,27 +4,21 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Capítulo 6 Modelos de Regressão Dinâmicos | Séries Temporais com R</title>
-  <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
+  <title>Capítulo 8 Modelos de Regressão Dinâmicos | Séries Temporais com R</title>
+  <meta name="description" content="Um livro sobre séries temporais para usuários de R." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Capítulo 6 Modelos de Regressão Dinâmicos | Séries Temporais com R" />
+  <meta property="og:title" content="Capítulo 8 Modelos de Regressão Dinâmicos | Séries Temporais com R" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
+  <meta property="og:description" content="Um livro sobre séries temporais para usuários de R." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Capítulo 6 Modelos de Regressão Dinâmicos | Séries Temporais com R" />
+  <meta name="twitter:title" content="Capítulo 8 Modelos de Regressão Dinâmicos | Séries Temporais com R" />
   
-  <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
+  <meta name="twitter:description" content="Um livro sobre séries temporais para usuários de R." />
   
 
 <meta name="author" content="Robson Oliveira Lima" />
@@ -37,8 +31,8 @@ set in the _output.yml file.</p>" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="conceitos-básicos.html"/>
-<link rel="next" href="sharing-your-book.html"/>
+<link rel="prev" href="references.html"/>
+
 <script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -167,16 +161,15 @@ div.csl-indent {
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> url: your book url like <span>https://bookdown.org/yihui/bookdown</span></a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#usage"><i class="fa fa-check"></i><b>1.1</b> Usage</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#render-book"><i class="fa fa-check"></i><b>1.2</b> Render book</a></li>
-<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#preview-book"><i class="fa fa-check"></i><b>1.3</b> Preview book</a></li>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#roteiro"><i class="fa fa-check"></i><b>1.1</b> Roteiro</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#pré-requisitos"><i class="fa fa-check"></i><b>1.2</b> Pré-requisitos</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="hello-bookdown.html"><a href="hello-bookdown.html"><i class="fa fa-check"></i><b>2</b> Hello bookdown</a>
+<li class="chapter" data-level="2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html"><i class="fa fa-check"></i><b>2</b> Os fundamentos de séries temporais</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="hello-bookdown.html"><a href="hello-bookdown.html#a-section"><i class="fa fa-check"></i><b>2.1</b> A section</a>
-<ul>
-<li class="chapter" data-level="" data-path="hello-bookdown.html"><a href="hello-bookdown.html#an-unnumbered-section"><i class="fa fa-check"></i>An unnumbered section</a></li>
-</ul></li>
+<li class="chapter" data-level="2.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-que-pode-ser-previsto"><i class="fa fa-check"></i><b>2.1</b> O que pode ser previsto?</a></li>
+<li class="chapter" data-level="2.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#principais-modelos-de-previsão"><i class="fa fa-check"></i><b>2.2</b> Principais modelos de previsão</a></li>
+<li class="chapter" data-level="2.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
+<li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="ts.html"><a href="ts.html"><i class="fa fa-check"></i><b>3</b> Séries Temporais</a>
 <ul>
@@ -196,6 +189,7 @@ div.csl-indent {
 <li class="chapter" data-level="3.4.3" data-path="ts.html"><a href="ts.html#tendência"><i class="fa fa-check"></i><b>3.4.3</b> Tendência</a></li>
 <li class="chapter" data-level="3.4.4" data-path="ts.html"><a href="ts.html#padrão-cíclico"><i class="fa fa-check"></i><b>3.4.4</b> Padrão Cíclico</a></li>
 </ul></li>
+<li class="chapter" data-level="3.5" data-path="ts.html"><a href="ts.html#decomposição"><i class="fa fa-check"></i><b>3.5</b> Decomposição</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html"><i class="fa fa-check"></i><b>4</b> Modelos Estatísticos</a>
 <ul>
@@ -216,23 +210,19 @@ div.csl-indent {
 <li class="chapter" data-level="5.4.2" data-path="conceitos-básicos.html"><a href="conceitos-básicos.html#a-função-de-covariância-cruzada-e-de-correlação-cruzada"><i class="fa fa-check"></i><b>5.4.2</b> A Função de Covariância-Cruzada e de Correlação-Cruzada</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html"><i class="fa fa-check"></i><b>6</b> Modelos de Regressão Dinâmicos</a>
-<ul>
-<li class="chapter" data-level="6.0.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#valor-de-utilizar-variáveis-explicativas"><i class="fa fa-check"></i><b>6.0.1</b> Valor de utilizar variáveis explicativas</a></li>
-<li class="chapter" data-level="6.0.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#modelos-dinâmicos-de-regressão"><i class="fa fa-check"></i><b>6.0.2</b> Modelos Dinâmicos de Regressão</a></li>
-<li class="chapter" data-level="6.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#estimação"><i class="fa fa-check"></i><b>6.1</b> Estimação</a></li>
-<li class="chapter" data-level="6.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#regressão-com-erros-arima"><i class="fa fa-check"></i><b>6.2</b> Regressão com Erros ARIMA</a>
-<ul>
-<li class="chapter" data-level="6.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>6.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
-</ul></li>
-</ul></li>
-<li class="chapter" data-level="7" data-path="sharing-your-book.html"><a href="sharing-your-book.html"><i class="fa fa-check"></i><b>7</b> Sharing your book</a>
-<ul>
-<li class="chapter" data-level="7.1" data-path="sharing-your-book.html"><a href="sharing-your-book.html#publishing"><i class="fa fa-check"></i><b>7.1</b> Publishing</a></li>
-<li class="chapter" data-level="7.2" data-path="sharing-your-book.html"><a href="sharing-your-book.html#pages"><i class="fa fa-check"></i><b>7.2</b> 404 pages</a></li>
-<li class="chapter" data-level="7.3" data-path="sharing-your-book.html"><a href="sharing-your-book.html#metadata-for-sharing"><i class="fa fa-check"></i><b>7.3</b> Metadata for sharing</a></li>
-</ul></li>
+<li class="chapter" data-level="6" data-path="modelo-de-regressão-para-séries-temporais.html"><a href="modelo-de-regressão-para-séries-temporais.html"><i class="fa fa-check"></i><b>6</b> Modelo de Regressão para Séries Temporais</a></li>
+<li class="chapter" data-level="7" data-path="modelos-arima.html"><a href="modelos-arima.html"><i class="fa fa-check"></i><b>7</b> Modelos ARIMA</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="chapter" data-level="8" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html"><i class="fa fa-check"></i><b>8</b> Modelos de Regressão Dinâmicos</a>
+<ul>
+<li class="chapter" data-level="8.0.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#valor-de-utilizar-variáveis-explicativas"><i class="fa fa-check"></i><b>8.0.1</b> Valor de utilizar variáveis explicativas</a></li>
+<li class="chapter" data-level="8.0.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#modelos-dinâmicos-de-regressão"><i class="fa fa-check"></i><b>8.0.2</b> Modelos Dinâmicos de Regressão</a></li>
+<li class="chapter" data-level="8.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#estimação"><i class="fa fa-check"></i><b>8.1</b> Estimação</a></li>
+<li class="chapter" data-level="8.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#regressão-com-erros-arima"><i class="fa fa-check"></i><b>8.2</b> Regressão com Erros ARIMA</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>8.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
+</ul></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -253,20 +243,20 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="modelos-de-regressão-dinâmicos" class="section level1" number="6">
-<h1><span class="header-section-number">Capítulo 6</span> Modelos de Regressão Dinâmicos</h1>
+<div id="modelos-de-regressão-dinâmicos" class="section level1" number="8">
+<h1><span class="header-section-number">Capítulo 8</span> Modelos de Regressão Dinâmicos</h1>
 <p>O uso de variáveis explicativas exógenas é uma maneira óbvia de melhorar a precisão das precisões. Em vez de depender apenas de informações históricas sobre a série em si, podemos utilizar outras informações relevantes.</p>
 <p>Modelos de séries temporais como ARIMA permitem que valores da série sejam previstos a partir da inclusão de informações do passado, mas não permitem a inclusão destas variáveis exógenas relevantes como <em>dummies</em> de feriado, atividade dos concorrentes, mudanças nas leis, variáveis macroeconômicas e outras covariadas externas que podem ajudar a explicar a variação histórica de uma série temporal.</p>
 <p>Já modelos de regressão permitem a inclusão de variáveis externas, mas não são capazes de modelar as dinâmicas presentes em séries temporais, como os modelos ARIMA são capazes.</p>
-<div id="valor-de-utilizar-variáveis-explicativas" class="section level3" number="6.0.1">
-<h3><span class="header-section-number">6.0.1</span> Valor de utilizar variáveis explicativas</h3>
+<div id="valor-de-utilizar-variáveis-explicativas" class="section level3" number="8.0.1">
+<h3><span class="header-section-number">8.0.1</span> Valor de utilizar variáveis explicativas</h3>
 <p>Variáveis externas podem ser especialmente úteis para previsão de demanda por eletricidade, que é altamente dependente da temperatura ambiente, uma vez que dias quentes levam a maior uso de ar condicionados <span class="citation">(<a href="#ref-taieb2014gradient" role="doc-biblioref">Taieb and Hyndman 2014</a>)</span>.</p>
 <p>Contudo, nem sempre variáveis externas podem ser tão úteis. No caso de temperatura como uma variável explicativa para demanda por eletricidade, as previsões metereológicas podem fornecer medidas bem precisas do comportamento futuro, mas em casos onde as previsões das variáveis explicativas são imprecisas, adiciona-las ao modelo pode produzir resultados inconsistentes.</p>
 <p>Outro problema pode ocorrer caso a relação entre <span class="math inline">\(y\)</span> e <span class="math inline">\(x\)</span> é um fato histórico, mas pode não se repetir no futuro. Ou quando duas variáveis possuem uma relação positiva em um período, e negativa em outro. Esse tipo de problema pode produzir modelos com má especificações e previsões imprecisas.</p>
 <p>Assim, antes de recorrer a variáveis externas em modelos de séries temporais, é sempre interessante iniciar a análise com uma abordagem puramente de séries temporais (um modelo ARIMA, por exemplo). Outra estratégia e a de realizar comparações entre (1) uma previsão para dentro da amostra que inclua variáveis explicativas previstas e (2) uma previsão para dentro da amostra que inclua as mesmas variáveis explicativas com dados observados.</p>
 </div>
-<div id="modelos-dinâmicos-de-regressão" class="section level3" number="6.0.2">
-<h3><span class="header-section-number">6.0.2</span> Modelos Dinâmicos de Regressão</h3>
+<div id="modelos-dinâmicos-de-regressão" class="section level3" number="8.0.2">
+<h3><span class="header-section-number">8.0.2</span> Modelos Dinâmicos de Regressão</h3>
 <p>Se existem previsões precisas para as variáveis explicativas e a relação entre estas variáveis e a previsão é estável no futuro, podemos utilizar uma abordagem mista que envolve extender os modelos ARIMA com o objetivo de permitir que outras variáveis externas sejam incluídas nos modelos. Assim, teriamos o melhor dos dois mundos.</p>
 <p>Estes modelos de regressão simples tomam a forma</p>
 <p><span class="math display">\[y_t = \beta_0 + \beta_1 x_{1,t} + ... + \beta_k x_{k,t} + \epsilon_t\]</span></p>
@@ -277,8 +267,8 @@ div.csl-indent {
 <p>onde <span class="math inline">\(\epsilon_t\)</span> é a série de ruído branco.</p>
 <p>Note que o modelo tem dois termos de erro - o erro do modelo de regressão, que denotamos como <span class="math inline">\(\eta_\)</span>. e o termo de erro do modelo ARIMA, que denotamos como <span class="math inline">\(\epsilon_t\)</span>. Apenas os erros do modelo ARIMA são assumidos como ruído branco.</p>
 </div>
-<div id="estimação" class="section level2" number="6.1">
-<h2><span class="header-section-number">6.1</span> Estimação</h2>
+<div id="estimação" class="section level2" number="8.1">
+<h2><span class="header-section-number">8.1</span> Estimação</h2>
 <p>Quando estimamos parâmetros do modelo, minimizamos a soma de <span class="math inline">\(\epsilon_t\)</span> ao quadrado. Se minimizarmos a soma de <span class="math inline">\(\eta_t\)</span> ao quadrado (que é o que ocorre quando estimamos um modelo de regressão que ignora a autocorrelação dos erros), então uma série de problemas surgem.</p>
 <ol style="list-style-type: decimal">
 <li><p>Os coeficientes estimados <span class="math inline">\(\hat{\beta}_0,...,\hat{\beta}_k\)</span> não são mais os melhores estimadores, já que algumas informações importantes estão sendo ignoradas no cálculo dos coeficientes.</p></li>
@@ -291,16 +281,16 @@ div.csl-indent {
 <p>Para tornar as variáveis estacionárias, podemos realizar a transformação de diferenciação, o que produz o chamado “modelo em diferença,” em contraste com o “modelo em nível,” em os dados originais são utilizados.</p>
 <p>Se todas as variáveis são estacionárias, então podemos utilizar erros ARMA para os resíduos. É fácil notar que uma regressão com erros ARIMA é equivalente a uma regressão em diferença com erros ARMA.</p>
 </div>
-<div id="regressão-com-erros-arima" class="section level2" number="6.2">
-<h2><span class="header-section-number">6.2</span> Regressão com Erros ARIMA</h2>
+<div id="regressão-com-erros-arima" class="section level2" number="8.2">
+<h2><span class="header-section-number">8.2</span> Regressão com Erros ARIMA</h2>
 <p>A função <code>Arima()</code> é capaz de ajustar um modelo de regressão com erros ARIMA se o argumento <code>xreg</code> for utilizado. Como diferenciação está especificada, a diferenciação é aplicada para todas as variáveis antes de estimar o modelo. O comando R utilizado é</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="modelos-de-regressão-dinâmicos.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
 <span id="cb1-2"><a href="modelos-de-regressão-dinâmicos.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Arima</span>(y, <span class="at">xreg =</span> x, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
 <p>que irá ajustar um modelo do tipo <span class="math inline">\(y&#39;_t = \beta_1 x&#39;_t + \eta&#39;_t\)</span>.</p>
 <p>A função <code>auto.arima()</code> também é capaz de utilizar covariadas com uso do termo <code>xreg</code>. O usuário deve especificar os preditores e <code>auto.arima()</code> seleciona o melhor modelo ARIMA para os erros.</p>
-<div id="exemplo-consumo-e-renda-nos-eua" class="section level3" number="6.2.1">
-<h3><span class="header-section-number">6.2.1</span> Exemplo: Consumo e Renda nos EUA</h3>
-<p>A figura <a href="modelos-de-regressão-dinâmicos.html#fig:consumo-renda">6.1</a> mostra a mudança trimestral nos gastos com consumo pessoal e a renda disponível entre 1970 e 2016. Estamos interessados em prever o consumo com base na renda. Uma mudança na renda não necessariamente reflete uma mudança instântanea no consumo (exempl, depois de uma demissão, pode levar alguns meses para os gastos se ajustarem). Contudo, vamos ignorar esta complexidade e tentar medir o efeito instantâneo de uma mudança média na renda sore uma mudança média nos gastos.</p>
+<div id="exemplo-consumo-e-renda-nos-eua" class="section level3" number="8.2.1">
+<h3><span class="header-section-number">8.2.1</span> Exemplo: Consumo e Renda nos EUA</h3>
+<p>A figura <a href="modelos-de-regressão-dinâmicos.html#fig:consumo-renda">8.1</a> mostra a mudança trimestral nos gastos com consumo pessoal e a renda disponível entre 1970 e 2016. Estamos interessados em prever o consumo com base na renda. Uma mudança na renda não necessariamente reflete uma mudança instântanea no consumo (exempl, depois de uma demissão, pode levar alguns meses para os gastos se ajustarem). Contudo, vamos ignorar esta complexidade e tentar medir o efeito instantâneo de uma mudança média na renda sore uma mudança média nos gastos.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="modelos-de-regressão-dinâmicos.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp)</span>
 <span id="cb2-2"><a href="modelos-de-regressão-dinâmicos.html#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="modelos-de-regressão-dinâmicos.html#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(usconsumption, <span class="at">facets =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
@@ -309,7 +299,7 @@ div.csl-indent {
 <div class="figure"><span style="display:block;" id="fig:consumo-renda"></span>
 <img src="_main_files/figure-html/consumo-renda-1.png" alt="Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2010" width="672" />
 <p class="caption">
-Figure 6.1: Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2010
+Figure 8.1: Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2010
 </p>
 </div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="modelos-de-regressão-dinâmicos.html#cb3-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(usconsumption[,<span class="st">&quot;consumption&quot;</span>],</span>
@@ -337,7 +327,7 @@ Figure 6.1: Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a
 <div class="figure"><span style="display:block;" id="fig:erros-arima"></span>
 <img src="_main_files/figure-html/erros-arima-1.png" alt="Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado" width="672" />
 <p class="caption">
-Figure 6.2: Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado
+Figure 8.2: Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado
 </p>
 </div>
 <p>O teste de Ljung-Box, ACF e histograma parecem indicar que os resíduos não são significativamente diferentes de um ruído branco.</p>
@@ -351,6 +341,11 @@ Figure 6.2: Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado
 ## 
 ## Model df: 5.   Total lags used: 8</code></pre>
 
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div class="csl-entry">
+Taieb, Souhaib Ben, and Rob J Hyndman. 2014. <span>“A Gradient Boosting Approach to the Kaggle Load Forecasting Competition.”</span> <em>International Journal of Forecasting</em> 30 (2): 382–94.
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -365,8 +360,8 @@ Taieb, Souhaib Ben, and Rob J Hyndman. 2014. <span>“A Gradient Boosting Approa
           </div>
         </div>
       </div>
-<a href="conceitos-básicos.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="sharing-your-book.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="references.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -397,7 +392,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/05-regression_arima.Rmd",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/08-regression_arima.Rmd",
 "text": "Edit"
 },
 "history": {

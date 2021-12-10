@@ -1,4 +1,4 @@
-# Conceitos Básicos
+# Conceitos Teóricos
 
 Aqui vamos descrever alguns conceitos fundamentais sobre a teoria de séries temporais. Em particular, entender o que é um processo estocástico, a média, a função de covariância, processos estocásticos e a função de autocorrelação.
 
@@ -282,4 +282,5 @@ walmart_sales_weekly %>%
 A função exibe o ACF e PACF de cada um dos departamentos de cada loja Walmart, além de calcular a correlação cruzada com temperatura e preço de combustíveis. Almas relações curiosas emergem, como a relação entre os valores de vendas semanais e valores passados de temperatura. É possível que essa relação esteja sendo intermediada pelo padrão sazonal de vendas mais fortes no fim do ano.
 
 É importante destacar que o padrão da correlação cruzada é afetado pela estrutura das duas séries e a tendência que cada uma tem. É preferível sempre remover a tendência das séries ou levar em consideração a estrutura do ARIMA univariado da variável $x$ antes de aplicar um gráfico de CCF. Esses tópicos serão melhor discutidos na seção xxx e yyy.
+
 

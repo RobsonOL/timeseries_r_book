@@ -1,0 +1,23 @@
+# Considerações Práticas
+
+## Rodando um mod
+
+## Valores ajustados e resíduos
+
+## Diagnósticos dos Resíduos
+
+## Transformação de variáveis
+
+## Medindo a performance da previsão
+
+### Conjuntos de teste e treinamento
+
+
+
+O pacote [yardstick](https://yardstick.tidymodels.org/) facilita a criação de medidas de performance dos modelos que serão estimados, produzindo as principais medidas de desempenho para problemas de regressão (RMSE, R-Quadrado e outros) e de classificação (matriz de confusão, precisão, acurácia e outros).
+
+
+
+
+## Validação Cruzada
+

@@ -1,0 +1,3 @@
+# Modelo de Regressão para Séries Temporais
+
+_working in progress_

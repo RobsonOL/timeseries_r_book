@@ -1,0 +1,10 @@
+# Modelos Avançados
+
+## Múltiplas Sazonalidades
+
+## Modelo Prophet
+
+## Modelo de Redes Neurais
+
+## Bootstrapping e Bagging
+

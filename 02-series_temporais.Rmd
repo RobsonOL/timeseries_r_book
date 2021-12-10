@@ -311,3 +311,8 @@ autoplot(fpp::elecequip) +
 ```
 
 Muitas pessoas confundem o comportamento sazonal, mas eles são bem diferentes. Se a flutuação não tem frequência fixa então elas são ciclos; se a frequência não se altera e está associada com algum aspecto do calendario, então o padrão é sazonal. Em geral, o tamanho médio dos ciclos é maior que o comprimento de um padrão sazonal, e a magnitude dos ciclos tende a variar mais do que a magnitude do padrão sazonal.
+
+
+## Decomposição
+
+_working in progress_

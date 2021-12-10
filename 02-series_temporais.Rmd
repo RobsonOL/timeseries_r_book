@@ -1,0 +1,313 @@
+# Séries Temporais {#ts}
+
+Aqui vamos explorar o que é uma série temporal, suas principais características.
+
+## Características de Séries Temporais
+
+Séries temporais se referem a dados observados em diferentes pontos no tempo. O uso de métodos estatísticos convencionais como o de regressão linear dependem e suposições de que as observações são independentes entre si, uma hipótese que não faz sentido quando se trabalha com observações no tempo: cada observação está correlacionada com as observações mais próximas no tempo. Assim, um choque no valor da ação que ocorre ontem tem efeitos no preço da ação hoje. 
+
+Na economia observamos a taxa semanal de juros, o preço de fechamento das ações, o índice de preço mensal, as vendas anuais, e por ai vai. Em meteorologia, observamos as temperaturas médias diárias, a precipitação anual, índices de seca e outros. Na agricultura temos o registro anual da colheita e da produção de leite, erosão do solo e valor das exportações. A lista de áreas em que séries temporais podem ser estudadas não tem fim. 
+
+O objetivo da análise de séries temporais são de: (1) entender ou modelar os mecanismos que produzem a série observada e (2) prever valores futuros de uma série com base na história da série, e quando possível, com relação a outras séries ou fatores.
+
+## Objeto `ts`
+
+Uma série temporal pode ser representada como uma lista de números em sequência, onde cada número é uma informação sobre um período específico de tempo. No R, essas informações podem ser registradas como objetos `ts`.
+
+A tabela \@ref(tab:tabela-generica) mostra um exemplo de dados anuais para o período entre 2012 e 2016.
+
+```{r tabela-generica, echo=FALSE, tidy=FALSE}
+knitr::kable(
+  data.frame(Ano = seq(2012,2016), `Observações` = c(123, 39, 78, 52, 110)),
+  caption = 'Informações no Tempo',
+  booktabs = TRUE
+)
+```
+
+Podemos transformar as informações acima em um objeto `ts` utilizando a função `ts()`:
+
+```{r}
+y <- ts(c(123,39,78,52,110), start = 2012)
+y
+```
+
+Se seus dados são anuais, com uma observação por ano, você precisa apenas fornecer o ano inicio (ou o ano final).
+
+Para observações que são mais frequentes que uma vez ao ano, é preciso fornecer um argumento de frequência (`frequency`). Por exemplo, se seus dados são mensais, então ele pode ser convertido para um objeto `ts` da seguinte maneira:
+
+```{r}
+dados_mensais <- c(10, 30, 50, 70, 90)
+y <- ts(dados_mensais, start = 2015, frequency = 12)
+y
+```
+
+### Frequências de uma série temporal
+
+A frequência é o número de observações antes que o padrão sazonal se repita. Quando usamos a função `ts` no R, podemos utilizar as seguintes frequências:
+
+
+```{r tabela-frequencia, echo=FALSE, tidy=FALSE}
+knitr::kable(
+  data.frame(Dados = c("Anual", "Trimestral", "Mensal", "Semanal"), `Frequência` = c(1,4,12,52)),
+  caption = 'Frequências de uma Série Temporal',
+  booktabs = TRUE
+)
+```
+
+Em relação ao padrão semanal, na verdade temos $365.25/7 = 52.18$ semanas em média em um ano, e não 52 semanas. Contudo, a maioria das funções que utilizam a função `ts` exigem que a `frequency` seja fornecida como um número inteiro.
+
+Se a frequência de observações é maior do que uma vez por semana, existem algumas formas de lidar com a situação. Por exemplo, dados diários podem ter um padrão de sazonalidade semanal (`frequency = 7`) ou uma sazonalidade anual (`frequency = 365.25`). De modo similar, dados que são observados por minuto, podem ter um padrão sazonal a cada hora (`frequency = 60`), uma sazonalidade diária (`frequency = 1440`, ou $24 \times 60$), uma sazonalidade semanal (`frequency = 10080`, ou $24 \times 60 \times 7$) e anual (`frequency = 525960`, ou $24 \times 60 \times 365.25$).
+
+Para utilizar um objeto `ts` nestes casos, é preciso decidir que desses padrões sazonais é mais importante. Contudo, o R permite lidar com dados com múltiplas sazonalidades utilizando técnicas mais avançadas.
+
+
+## Gráficos de Séries Temporais
+
+Para séries temporais, o gráfico apropriado mostra as observações no tempo, com observações consecutivas sendo unidas por uma linha reta. A figura \@ref(fig:fig-passageiros) mostra um exemplo de um gráfico de séries temporais.
+
+```{r fig-passageiros, fig.cap="Total de passageiros semanais na Compainha Áerea Ansett"}
+library(fpp)
+library(tidyverse)
+
+autoplot(melsyd[,"Economy.Class"]) + 
+  ggtitle("Passageiros da Classe Econômica: Melborne-Sydney") +
+  xlab("Ano") +
+  ylab("Milhares")
+```
+
+Os dados fazem parte do pacote `fpp`, que acompanha o livro **Forecasting: Principles and Practice**. Com a função `autoplot()`, produzimos gráficos no tempo a partir de objetos `ts`. 
+
+Alternativamente podemos transformar o objeto `ts` em um `data.frame`:
+
+```{r}
+dados_passageiros <- data.frame(passageiros_economicos = as.matrix(melsyd[,"Economy.Class"]),
+           date = time(melsyd))
+
+dados_passageiros %>% 
+  head() %>% 
+  knitr::kable()
+```
+
+A partir do objeto `dados_passageiros` é possível produzir o mesmo gráfico utilizando o pacote `ggplot2` (figura \@ref(fig:passageiros-ggplot)).
+
+```{r passageiros-ggplot, fig.cap="Total de passageiros semanais na Compainha Áerea Ansett", message=FALSE, warning=FALSE}
+dados_passageiros %>% 
+  ggplot(aes(y = passageiros_economicos, x = date)) +
+  geom_line() + 
+  labs(y = "Milhares", x = "Ano", title = "Passageiros da Classe Econômica: Melborne-Sydney")
+```
+
+Independemente da forma como o gráfico é produzido, ele revela algumas características interessantes:
+
+* Em 1989 nenhum passageiro foi transportado.
+
+* Durante 1992 houve um período de redução de passageiros. 
+
+* Um grande aumento no número de passageiros transportados em 1991.
+
+* Inícios de ano sempre produzem aumentos no numero de passageiros em razão do efeito das festas de fim de ano.
+
+* Existe uma flutuação de longo prazo, em que o nível de passageiros é elevado no início da série, diminui em 1989, e volta a aumentar novamente entre 1990 e 1991.
+
+* Existem alguns períodos sem informação.
+
+Para realizar previsão dessa série, todas essas características precisam ser levadas em conta. 
+
+### Convertendo tk para data.frame
+
+O pacote `timetk` possui uma série de funções convenientes para converter objetos `ts` para outros formatos. A função `tk_tbl` converte o objeto `ts` para um objeto `tibble` (objeto equivalente a um dataframe). Já a função `tk_ts` faz o caminho inverso.
+
+```{r}
+library(timetk)
+melsyd %>% 
+  # converte ts em tibble
+  tk_tbl() %>% 
+  mutate(index = as.Date(index)) %>% 
+  tail() %>% 
+  knitr::kable()
+```
+
+
+## Padrões das Séries Temporais
+
+Ao descrever séries temporais, usamos palavras como **tendência**, **sazonalidade** e **padrão cíclico**. Antes disso, podemos observar uma série sem padrão definido.
+
+
+### Série sem padrão
+
+Na figura \@ref(fig:chuva-la) vemos a média de precipitação na cidade americana de Los Angelos durante o período de 1878 a 1992. Estes dados estão no pacote `TSA`, que acompanha o livro `Time Series Analysis`. 
+
+
+
+```{r chuva-la, fig.cap='Padrão de Chuvas em Los Angeles', message=FALSE, warning=FALSE}
+library(TSA)
+
+data(larain)
+larain <- data.frame(chuva_anual = as.matrix(larain), date = time(larain))
+larain %>% 
+  ggplot(aes(x = date, y = chuva_anual)) + geom_line() + geom_point() + 
+  labs(x = "", y = "Precipitação em polegadas",
+       title = "Chuva Anual em Los Angeles, 1878 - 1992",
+       subtitle = "Em polegadas de Chuva por Ano")
+
+```
+
+É possível perceber uma variação no volume chuvas ao longo dos anos -- alguns anos com um volume de chuva mais alto, outros mais baixo. 
+
+Estamos interessados se os valores da chuva estão relacionados entre si. Será que ao conhecer o comportamento da chuva em um conjunto de anos podemos prever o que ocorrerá em anos consecutivos? 
+
+Podemos criar uma variável relativa a chuva do ano anterior e compara-la com a chuva no ano corrente. A tabela \@ref(tab:tab-chuva) mostra essa comparação.
+
+```{r tab-chuva, tidy=FALSE}
+larain <- larain %>% 
+  mutate(chuva_ano_anterior = lag(chuva_anual)) 
+
+larain %>% 
+  head() %>% 
+  knitr::kable(caption = "Volume Anual de Chuvas em Los Angeles")
+```
+
+Assim, em 1877 observamos 17,41 polegadas de chuva, e a chuva do ano anterior somou 20,86 polegadsa de chuva. 
+
+Na figura \@ref(fig:dispersao) exibimos as duas informações lado a lado com um gráfico de dispersão. 
+
+```{r dispersao, fig.cap='Relação entre chuva atual e o volume de chuva do ano anterior',message=FALSE, warning=FALSE}
+larain %>% 
+  ggplot(aes(x = chuva_anual, y = chuva_ano_anterior)) + 
+  geom_point() + 
+  geom_smooth() +
+  labs(x = "Chuva anual",
+       y = "Volume de chuva do ano anterior",
+       title = "Volume de Chuva em Los Angeles, 1876 - 1992",
+       subtitle = "Relação entre a Chuva Anual e o Volume de Chuva no Ano Anterior")
+```
+
+É possível observar que é perfeitamente possível que um ano com um elevado volume de chuvas seja seguido por um ano com baixo volume, e vice-versa. Assim, o volume de chuva que ocorre em um ano não parece explicar muito bem o comportamento da chuva nos anos seguintes. 
+
+Essa série não parece ter nenhum tipo de tendência, que indicaria que o volume de chuva está aumentando ou diminuindo ao longo do tempo. Não parece existir correlação entre a chuva de um ano e do ano anterior, de modo que podemos ter um ano com um volume muito alto de chuva e no ano seguinte, um volume baixo. De um ponto de vista de modelagem e de previsão, está não é uma série muito interessante.
+
+A figura \@ref(fig:grafico-coelhos) mostra uma história diferente.
+
+```{r grafico-coelhos, fig.cap = 'Ambundância de Coelhos Canadenses', warning=F, message=F}
+data(hare)
+hare_df <- data.frame(numero_coelhos = as.matrix(hare), data = time(hare))
+hare_df %>% ggplot(aes(x = data, y = numero_coelhos)) + 
+  geom_line() + 
+  geom_point() + 
+  labs(x = "Ano", y = "Ambundância",
+       title = "Ambundância de Coelhos Canadenses, 1905-1934")
+
+```
+
+ Diferentemente da série anterior, as observações de um ano estão correlacionadas de maneira muito próxima com aquelas observadas nos anos anteriores. Um número grande em um ano é seguido de um número semelhante no ano seguinte. 
+
+
+Vendas de drogas anti-diabetes (figura \@ref(fig:figura-diabetes)) mostram sazonalidade que é induzida por mudanças nos preços dos medicamentos no final do ano calendário.
+
+
+### Sazonalidade
+
+A figura \@ref(fig:tempdub) mostra uma série temporal de temperatura média registrada para uma cidade no estado americano do Iowa. 
+
+```{r tempdub, fig.cap="Temperatura média anual em Iowa", message=F, warning=F}
+data(tempdub)
+
+tempdub <- data.frame(temperatura = as.matrix(tempdub), data = time(tempdub))
+
+tempdub %>%
+  ggplot(aes(x = data, y = temperatura)) + 
+  geom_line() + 
+  geom_point() + 
+  labs(x = "Ano", y = "Temperatura",
+       title = "Temperatura Média Mensal no Estado do Iowa, 1964-1976")
+
+```
+
+Nela observamos uma movimento sazonal muito regular. Um padrão sazonal ocorre quando uma série é afetada por fatores sazonais como o tempo do ano ou o dia da semana. Sazonalidade é sempre uma de uma frequência conhecida e fixa. 
+
+Sazonalidade para valores mensais ocorre quando observações que são separadas por 12 meses estão relacionados de alguma maneira. Assim, as temperaturas em janeiro de 1910 estão relacionadas com as temperaturas de janeiro de 1911, 1912 e assim por diante. 
+
+Todos os meses de janeiro e fevereiro são muito frios e são similares em valores de temperatura. Isto não quer dizer que todos os meses de janeiro terão a mesma temperatura, ou os meses de Junho terão sempre a mesma temperatura média. Assim, se quisermos encontrar um modelo para este tipo de série temos que acomodar estas variações mas preservar estas similaridades entre temperaturas dos mesmos meses. 
+
+
+
+```{r figura-diabetes, fig.cap="Vendas de Medicamento contra diabetes", message=F, warning=F}
+a10_df <- data.frame(vendas_drogas = matrix(a10),
+                     date = time(a10))
+
+a10_df %>% 
+  ggplot(aes(x = date, y = vendas_drogas)) + 
+  geom_line() +
+  labs(x = "Ano", y = "Milhões de US$", title = "Vendas de Drogas Anti-diabéticos")
+```
+
+A figura \@ref(fig:seasonal-diabetes) mostra cada série anual de modo independente. 
+
+```{r seasonal-diabetes, fig.cap="Gráfico Sazonal de vendas de drogas anti-diabetes"}
+ggseasonplot(a10, year.labels = T, year.labels.left = T) +
+  ylab("Milhões de US$") +
+  ggtitle("Gráfico Sazonal: Vendas de Drogas Anti-diabetes")
+```
+
+A figura permite observar o padrão sazonal com mais clareza, e é especialmente útil para entender o padrão interno dentro de um ano, assim como encontrar anos com mudanças de padrão. Especificamente observamos um aumento significativo da venda de drogas no início do ano. 
+
+Podemos observar o mesmo gráfico com coordenadas polares. 
+
+```{r diabetes-polar, fig.cap="Gráfico sazonal polar das vendas mensais de medicamentos contra diabetes"}
+ggseasonplot(a10, polar = T) +
+  ylab("Milhões de US$") +
+  ggtitle("Gráfico Polar Sazonal: \nVendas de Drogas Anti-diabetes")
+
+```
+
+Outra figura que pode nos ajudar a identificar padrões sazonais é a produzida pela função `ggsubseriesplot()`. A figura \@ref(fig:subserie) mostra um desses exemplos.
+
+```{r subserie, fig.cap="Sub-séries sazonais para vendas de medicamentos para diabetes"}
+ggsubseriesplot(a10) + 
+  ylab("Milhões de US$") +
+  ggtitle("Sub-séries sazonais para vendas de medicamentos para diabetes")
+```
+
+A linha horizontal mostra a média para cada mês e nos permite enxergar o padrão sazonal com mais clareza. Novamente, ele consegue nos fazer enxergar que o mês de janeiro apresentar uma média muito elevada em comparação aos demais meses do ano.
+
+O pacote `timetk` também oferece uma série de funções para diagnóstico de padrões nas séries temporais. Contudo, o pacote exige que os dados fornecidos estejam no formato de `data.frame`.
+
+```{r seasonal_timetk, fig.cap="Gráfico sazonal das vendas mensais de medicamentos contra diabetes"}
+library(timetk)
+
+a10_df %>% 
+  mutate(date = as.Date(date)) %>% 
+  plot_seasonal_diagnostics(date, vendas_drogas, .interactive = F)
+```
+
+
+
+### Tendência
+
+A série de vendas de drogas também exibe um padrão de tendência. Uma tendência ocorre quando existe um aumento (ou redução) de longo prazo nos dados. Ela não precisa ser linear, e muitas vezes pode apresentar mudanças de direção, que ocorrem quando uma tendência de aumento se converte em uma tendência de queda. 
+
+A figura \@ref(fig:cafe) mostra outra série com padrão forte de tendência.
+
+```{r cafe, fig.cap="Gastos com consumo fora do domicílio na Australia"}
+autoplot(fpp::cafe) +
+  ggtitle("Gastos Trimestrais com consumo fora do domicílio, Australia") +
+  xlab("Ano") + 
+  ylab("Milhões")
+```
+
+Os gastos dos australianos com consumo fora do domicílio (cafés e restaurantes) tem uma tendência crescente durante todo  o período. Ela também exibe um comportamento sazonal dentro de um mesmo ano.
+
+### Padrão Cíclico
+
+Um comportamento cíclico surge quando os dados exibem um padrão de altas e quedas não possuem frequência fixa. Estas flutuações são os resultados, quase sempre, de condições econômicas, e estão relacionadas ao ciclo de negócios. A duração dessas flutuações tendem a ser de no mínimo 2 anos.
+
+A fabricação de equipamentos elétricos na zona do Euro (figura \@ref(fig:electrical) exibe um padrão sazonal dentro de cada ano, mas também um forte comportamento cíclico com um período de cerca 5 anos ou mais.
+
+```{r electrical, fig.cap="Equipamentos elétricos produzidos na zona do Euro"}
+autoplot(fpp::elecequip) +
+  ggtitle("Equipamentos Elétricos Produzidos na Área do Euro") +
+  xlab("Ano") + 
+  ylab("Índice 2005 = 100")
+```
+
+Muitas pessoas confundem o comportamento sazonal, mas eles são bem diferentes. Se a flutuação não tem frequência fixa então elas são ciclos; se a frequência não se altera e está associada com algum aspecto do calendario, então o padrão é sazonal. Em geral, o tamanho médio dos ciclos é maior que o comprimento de um padrão sazonal, e a magnitude dos ciclos tende a variar mais do que a magnitude do padrão sazonal.

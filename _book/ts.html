@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 3 Séries Temporais | Séries Temporais com R</title>
+  <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 3 Séries Temporais | Séries Temporais com R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 3 Séries Temporais | Séries Temporais com R" />
+  
+  <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
+The HTML output format for this example is bookdown::gitbook,
+set in the _output.yml file.</p>" />
+  
+
+<meta name="author" content="Robson Oliveira Lima" />
+
+
+<meta name="date" content="2021-12-10" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="hello-bookdown.html"/>
+<link rel="next" href="modelos-estatísticos.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> About</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#usage"><i class="fa fa-check"></i><b>1.1</b> Usage</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#render-book"><i class="fa fa-check"></i><b>1.2</b> Render book</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#preview-book"><i class="fa fa-check"></i><b>1.3</b> Preview book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="hello-bookdown.html"><a href="hello-bookdown.html"><i class="fa fa-check"></i><b>2</b> Hello bookdown</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="hello-bookdown.html"><a href="hello-bookdown.html#a-section"><i class="fa fa-check"></i><b>2.1</b> A section</a>
+<ul>
+<li class="chapter" data-level="" data-path="hello-bookdown.html"><a href="hello-bookdown.html#an-unnumbered-section"><i class="fa fa-check"></i>An unnumbered section</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="ts.html"><a href="ts.html"><i class="fa fa-check"></i><b>3</b> Séries Temporais</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="ts.html"><a href="ts.html#características-de-séries-temporais"><i class="fa fa-check"></i><b>3.1</b> Características de Séries Temporais</a></li>
+<li class="chapter" data-level="3.2" data-path="ts.html"><a href="ts.html#objeto-ts"><i class="fa fa-check"></i><b>3.2</b> Objeto <code>ts</code></a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="ts.html"><a href="ts.html#frequências-de-uma-série-temporal"><i class="fa fa-check"></i><b>3.2.1</b> Frequências de uma série temporal</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="ts.html"><a href="ts.html#gráficos-de-séries-temporais"><i class="fa fa-check"></i><b>3.3</b> Gráficos de Séries Temporais</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="ts.html"><a href="ts.html#convertendo-tk-para-data.frame"><i class="fa fa-check"></i><b>3.3.1</b> Convertendo tk para data.frame</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="ts.html"><a href="ts.html#padrões-das-séries-temporais"><i class="fa fa-check"></i><b>3.4</b> Padrões das Séries Temporais</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="ts.html"><a href="ts.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.4.1</b> Série sem padrão</a></li>
+<li class="chapter" data-level="3.4.2" data-path="ts.html"><a href="ts.html#sazonalidade"><i class="fa fa-check"></i><b>3.4.2</b> Sazonalidade</a></li>
+<li class="chapter" data-level="3.4.3" data-path="ts.html"><a href="ts.html#tendência"><i class="fa fa-check"></i><b>3.4.3</b> Tendência</a></li>
+<li class="chapter" data-level="3.4.4" data-path="ts.html"><a href="ts.html#padrão-cíclico"><i class="fa fa-check"></i><b>3.4.4</b> Padrão Cíclico</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html"><i class="fa fa-check"></i><b>4</b> Modelos Estatísticos</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html#ruído-branco"><i class="fa fa-check"></i><b>4.1</b> Ruído Branco</a></li>
+<li class="chapter" data-level="4.2" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html#média-móvel-e-filtro"><i class="fa fa-check"></i><b>4.2</b> Média Móvel e Filtro</a></li>
+<li class="chapter" data-level="4.3" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html#autoregressões"><i class="fa fa-check"></i><b>4.3</b> Autoregressões</a></li>
+<li class="chapter" data-level="4.4" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html#random-walk-com-drift"><i class="fa fa-check"></i><b>4.4</b> Random Walk com Drift</a></li>
+<li class="chapter" data-level="4.5" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html#sinal-no-ruído"><i class="fa fa-check"></i><b>4.5</b> Sinal no Ruído</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="conceitos-básicos.html"><a href="conceitos-básicos.html"><i class="fa fa-check"></i><b>5</b> Conceitos Básicos</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="conceitos-básicos.html"><a href="conceitos-básicos.html#média-variâncias-e-covariâncias"><i class="fa fa-check"></i><b>5.1</b> Média, Variâncias e Covariâncias</a></li>
+<li class="chapter" data-level="5.2" data-path="conceitos-básicos.html"><a href="conceitos-básicos.html#função-média"><i class="fa fa-check"></i><b>5.2</b> Função Média</a></li>
+<li class="chapter" data-level="5.3" data-path="conceitos-básicos.html"><a href="conceitos-básicos.html#função-de-autocovariância"><i class="fa fa-check"></i><b>5.3</b> Função de Autocovariância</a></li>
+<li class="chapter" data-level="5.4" data-path="conceitos-básicos.html"><a href="conceitos-básicos.html#a-função-de-autocorrelação-fac"><i class="fa fa-check"></i><b>5.4</b> A Função de Autocorrelação (FAC)</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="conceitos-básicos.html"><a href="conceitos-básicos.html#tendência-e-sazonalidade-em-correlogramas"><i class="fa fa-check"></i><b>5.4.1</b> Tendência e sazonalidade em Correlogramas</a></li>
+<li class="chapter" data-level="5.4.2" data-path="conceitos-básicos.html"><a href="conceitos-básicos.html#a-função-de-covariância-cruzada-e-de-correlação-cruzada"><i class="fa fa-check"></i><b>5.4.2</b> A Função de Covariância-Cruzada e de Correlação-Cruzada</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html"><i class="fa fa-check"></i><b>6</b> Modelos de Regressão Dinâmicos</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#estimação"><i class="fa fa-check"></i><b>6.1</b> Estimação</a></li>
+<li class="chapter" data-level="6.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#regressão-com-erros-arima"><i class="fa fa-check"></i><b>6.2</b> Regressão com Erros ARIMA</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>6.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="sharing-your-book.html"><a href="sharing-your-book.html"><i class="fa fa-check"></i><b>7</b> Sharing your book</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="sharing-your-book.html"><a href="sharing-your-book.html#publishing"><i class="fa fa-check"></i><b>7.1</b> Publishing</a></li>
+<li class="chapter" data-level="7.2" data-path="sharing-your-book.html"><a href="sharing-your-book.html#pages"><i class="fa fa-check"></i><b>7.2</b> 404 pages</a></li>
+<li class="chapter" data-level="7.3" data-path="sharing-your-book.html"><a href="sharing-your-book.html#metadata-for-sharing"><i class="fa fa-check"></i><b>7.3</b> Metadata for sharing</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Séries Temporais com R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="ts" class="section level1" number="3">
+<h1><span class="header-section-number">Capítulo 3</span> Séries Temporais</h1>
+<p>Aqui vamos explorar o que é uma série temporal, suas principais características.</p>
+<div id="características-de-séries-temporais" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Características de Séries Temporais</h2>
+<p>Séries temporais se referem a dados observados em diferentes pontos no tempo. O uso de métodos estatísticos convencionais como o de regressão linear dependem e suposições de que as observações são independentes entre si, uma hipótese que não faz sentido quando se trabalha com observações no tempo: cada observação está correlacionada com as observações mais próximas no tempo. Assim, um choque no valor da ação que ocorre ontem tem efeitos no preço da ação hoje.</p>
+<p>Na economia observamos a taxa semanal de juros, o preço de fechamento das ações, o índice de preço mensal, as vendas anuais, e por ai vai. Em meteorologia, observamos as temperaturas médias diárias, a precipitação anual, índices de seca e outros. Na agricultura temos o registro anual da colheita e da produção de leite, erosão do solo e valor das exportações. A lista de áreas em que séries temporais podem ser estudadas não tem fim.</p>
+<p>O objetivo da análise de séries temporais são de: (1) entender ou modelar os mecanismos que produzem a série observada e (2) prever valores futuros de uma série com base na história da série, e quando possível, com relação a outras séries ou fatores.</p>
+</div>
+<div id="objeto-ts" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Objeto <code>ts</code></h2>
+<p>Uma série temporal pode ser representada como uma lista de números em sequência, onde cada número é uma informação sobre um período específico de tempo. No R, essas informações podem ser registradas como objetos <code>ts</code>.</p>
+<p>A tabela <a href="ts.html#tab:tabela-generica">3.1</a> mostra um exemplo de dados anuais para o período entre 2012 e 2016.</p>
+<table>
+<caption><span id="tab:tabela-generica">Table 3.1: </span>Informações no Tempo</caption>
+<thead>
+<tr class="header">
+<th align="right">Ano</th>
+<th align="right">Observações</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2012</td>
+<td align="right">123</td>
+</tr>
+<tr class="even">
+<td align="right">2013</td>
+<td align="right">39</td>
+</tr>
+<tr class="odd">
+<td align="right">2014</td>
+<td align="right">78</td>
+</tr>
+<tr class="even">
+<td align="right">2015</td>
+<td align="right">52</td>
+</tr>
+<tr class="odd">
+<td align="right">2016</td>
+<td align="right">110</td>
+</tr>
+</tbody>
+</table>
+<p>Podemos transformar as informações acima em um objeto <code>ts</code> utilizando a função <code>ts()</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="ts.html#cb3-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">c</span>(<span class="dv">123</span>,<span class="dv">39</span>,<span class="dv">78</span>,<span class="dv">52</span>,<span class="dv">110</span>), <span class="at">start =</span> <span class="dv">2012</span>)</span>
+<span id="cb3-2"><a href="ts.html#cb3-2" aria-hidden="true" tabindex="-1"></a>y</span></code></pre></div>
+<pre><code>## Time Series:
+## Start = 2012 
+## End = 2016 
+## Frequency = 1 
+## [1] 123  39  78  52 110</code></pre>
+<p>Se seus dados são anuais, com uma observação por ano, você precisa apenas fornecer o ano inicio (ou o ano final).</p>
+<p>Para observações que são mais frequentes que uma vez ao ano, é preciso fornecer um argumento de frequência (<code>frequency</code>). Por exemplo, se seus dados são mensais, então ele pode ser convertido para um objeto <code>ts</code> da seguinte maneira:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="ts.html#cb5-1" aria-hidden="true" tabindex="-1"></a>dados_mensais <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">70</span>, <span class="dv">90</span>)</span>
+<span id="cb5-2"><a href="ts.html#cb5-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(dados_mensais, <span class="at">start =</span> <span class="dv">2015</span>, <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb5-3"><a href="ts.html#cb5-3" aria-hidden="true" tabindex="-1"></a>y</span></code></pre></div>
+<pre><code>##      Jan Feb Mar Apr May
+## 2015  10  30  50  70  90</code></pre>
+<div id="frequências-de-uma-série-temporal" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Frequências de uma série temporal</h3>
+<p>A frequência é o número de observações antes que o padrão sazonal se repita. Quando usamos a função <code>ts</code> no R, podemos utilizar as seguintes frequências:</p>
+<table>
+<caption><span id="tab:tabela-frequencia">Table 3.2: </span>Frequências de uma Série Temporal</caption>
+<thead>
+<tr class="header">
+<th align="left">Dados</th>
+<th align="right">Frequência</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Anual</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Trimestral</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">Mensal</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">Semanal</td>
+<td align="right">52</td>
+</tr>
+</tbody>
+</table>
+<p>Em relação ao padrão semanal, na verdade temos <span class="math inline">\(365.25/7 = 52.18\)</span> semanas em média em um ano, e não 52 semanas. Contudo, a maioria das funções que utilizam a função <code>ts</code> exigem que a <code>frequency</code> seja fornecida como um número inteiro.</p>
+<p>Se a frequência de observações é maior do que uma vez por semana, existem algumas formas de lidar com a situação. Por exemplo, dados diários podem ter um padrão de sazonalidade semanal (<code>frequency = 7</code>) ou uma sazonalidade anual (<code>frequency = 365.25</code>). De modo similar, dados que são observados por minuto, podem ter um padrão sazonal a cada hora (<code>frequency = 60</code>), uma sazonalidade diária (<code>frequency = 1440</code>, ou <span class="math inline">\(24 \times 60\)</span>), uma sazonalidade semanal (<code>frequency = 10080</code>, ou <span class="math inline">\(24 \times 60 \times 7\)</span>) e anual (<code>frequency = 525960</code>, ou <span class="math inline">\(24 \times 60 \times 365.25\)</span>).</p>
+<p>Para utilizar um objeto <code>ts</code> nestes casos, é preciso decidir que desses padrões sazonais é mais importante. Contudo, o R permite lidar com dados com múltiplas sazonalidades utilizando técnicas mais avançadas.</p>
+</div>
+</div>
+<div id="gráficos-de-séries-temporais" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Gráficos de Séries Temporais</h2>
+<p>Para séries temporais, o gráfico apropriado mostra as observações no tempo, com observações consecutivas sendo unidas por uma linha reta. A figura <a href="ts.html#fig:fig-passageiros">3.1</a> mostra um exemplo de um gráfico de séries temporais.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="ts.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp)</span></code></pre></div>
+<pre><code>## Warning: package &#39;fpp&#39; was built under R version 4.1.2</code></pre>
+<pre><code>## Carregando pacotes exigidos: forecast</code></pre>
+<pre><code>## Warning: package &#39;forecast&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;quantmod&#39;:
+##   method            from
+##   as.zoo.data.frame zoo</code></pre>
+<pre><code>## Carregando pacotes exigidos: fma</code></pre>
+<pre><code>## Warning: package &#39;fma&#39; was built under R version 4.1.2</code></pre>
+<pre><code>## Carregando pacotes exigidos: expsmooth</code></pre>
+<pre><code>## Warning: package &#39;expsmooth&#39; was built under R version 4.1.2</code></pre>
+<pre><code>## Carregando pacotes exigidos: lmtest</code></pre>
+<pre><code>## Warning: package &#39;lmtest&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## Carregando pacotes exigidos: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre><code>## Carregando pacotes exigidos: tseries</code></pre>
+<pre><code>## Warning: package &#39;tseries&#39; was built under R version 4.1.1</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="ts.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.5     v dplyr   1.0.7
+## v tidyr   1.1.4     v stringr 1.4.0
+## v readr   1.4.0     v forcats 0.5.1</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="ts.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(melsyd[,<span class="st">&quot;Economy.Class&quot;</span>]) <span class="sc">+</span> </span>
+<span id="cb30-2"><a href="ts.html#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Passageiros da Classe Econômica: Melborne-Sydney&quot;</span>) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="ts.html#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>) <span class="sc">+</span></span>
+<span id="cb30-4"><a href="ts.html#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Milhares&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:fig-passageiros"></span>
+<img src="_main_files/figure-html/fig-passageiros-1.png" alt="Total de passageiros semanais na Compainha Áerea Ansett" width="672" />
+<p class="caption">
+Figure 3.1: Total de passageiros semanais na Compainha Áerea Ansett
+</p>
+</div>
+<p>Os dados fazem parte do pacote <code>fpp</code>, que acompanha o livro <strong>Forecasting: Principles and Practice</strong>. Com a função <code>autoplot()</code>, produzimos gráficos no tempo a partir de objetos <code>ts</code>.</p>
+<p>Alternativamente podemos transformar o objeto <code>ts</code> em um <code>data.frame</code>:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="ts.html#cb31-1" aria-hidden="true" tabindex="-1"></a>dados_passageiros <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">passageiros_economicos =</span> <span class="fu">as.matrix</span>(melsyd[,<span class="st">&quot;Economy.Class&quot;</span>]),</span>
+<span id="cb31-2"><a href="ts.html#cb31-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">date =</span> <span class="fu">time</span>(melsyd))</span>
+<span id="cb31-3"><a href="ts.html#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="ts.html#cb31-4" aria-hidden="true" tabindex="-1"></a>dados_passageiros <span class="sc">%&gt;%</span> </span>
+<span id="cb31-5"><a href="ts.html#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb31-6"><a href="ts.html#cb31-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">passageiros_economicos</th>
+<th align="right">date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">20.167</td>
+<td align="right">1987.481</td>
+</tr>
+<tr class="even">
+<td align="right">20.161</td>
+<td align="right">1987.500</td>
+</tr>
+<tr class="odd">
+<td align="right">19.993</td>
+<td align="right">1987.519</td>
+</tr>
+<tr class="even">
+<td align="right">20.986</td>
+<td align="right">1987.538</td>
+</tr>
+<tr class="odd">
+<td align="right">20.497</td>
+<td align="right">1987.558</td>
+</tr>
+<tr class="even">
+<td align="right">20.770</td>
+<td align="right">1987.577</td>
+</tr>
+</tbody>
+</table>
+<p>A partir do objeto <code>dados_passageiros</code> é possível produzir o mesmo gráfico utilizando o pacote <code>ggplot2</code> (figura <a href="ts.html#fig:passageiros-ggplot">3.2</a>).</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="ts.html#cb32-1" aria-hidden="true" tabindex="-1"></a>dados_passageiros <span class="sc">%&gt;%</span> </span>
+<span id="cb32-2"><a href="ts.html#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> passageiros_economicos, <span class="at">x =</span> date)) <span class="sc">+</span></span>
+<span id="cb32-3"><a href="ts.html#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb32-4"><a href="ts.html#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Milhares&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Ano&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Passageiros da Classe Econômica: Melborne-Sydney&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:passageiros-ggplot"></span>
+<img src="_main_files/figure-html/passageiros-ggplot-1.png" alt="Total de passageiros semanais na Compainha Áerea Ansett" width="672" />
+<p class="caption">
+Figure 3.2: Total de passageiros semanais na Compainha Áerea Ansett
+</p>
+</div>
+<p>Independemente da forma como o gráfico é produzido, ele revela algumas características interessantes:</p>
+<ul>
+<li><p>Em 1989 nenhum passageiro foi transportado.</p></li>
+<li><p>Durante 1992 houve um período de redução de passageiros.</p></li>
+<li><p>Um grande aumento no número de passageiros transportados em 1991.</p></li>
+<li><p>Inícios de ano sempre produzem aumentos no numero de passageiros em razão do efeito das festas de fim de ano.</p></li>
+<li><p>Existe uma flutuação de longo prazo, em que o nível de passageiros é elevado no início da série, diminui em 1989, e volta a aumentar novamente entre 1990 e 1991.</p></li>
+<li><p>Existem alguns períodos sem informação.</p></li>
+</ul>
+<p>Para realizar previsão dessa série, todas essas características precisam ser levadas em conta.</p>
+<div id="convertendo-tk-para-data.frame" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Convertendo tk para data.frame</h3>
+<p>O pacote <code>timetk</code> possui uma série de funções convenientes para converter objetos <code>ts</code> para outros formatos. A função <code>tk_tbl</code> converte o objeto <code>ts</code> para um objeto <code>tibble</code> (objeto equivalente a um dataframe). Já a função <code>tk_ts</code> faz o caminho inverso.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="ts.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(timetk)</span></code></pre></div>
+<pre><code>## Warning: package &#39;timetk&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;tune&#39;:
+##   method                   from   
+##   required_pkgs.model_spec parsnip</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="ts.html#cb36-1" aria-hidden="true" tabindex="-1"></a>melsyd <span class="sc">%&gt;%</span> </span>
+<span id="cb36-2"><a href="ts.html#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># converte ts em tibble</span></span>
+<span id="cb36-3"><a href="ts.html#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tk_tbl</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb36-4"><a href="ts.html#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">index =</span> <span class="fu">as.Date</span>(index)) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-5"><a href="ts.html#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tail</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb36-6"><a href="ts.html#cb36-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">index</th>
+<th align="right">First.Class</th>
+<th align="right">Business.Class</th>
+<th align="right">Economy.Class</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1975-06-16</td>
+<td align="right">1.417</td>
+<td align="right">3.152</td>
+<td align="right">27.322</td>
+</tr>
+<tr class="even">
+<td align="left">1975-06-16</td>
+<td align="right">1.458</td>
+<td align="right">3.053</td>
+<td align="right">28.837</td>
+</tr>
+<tr class="odd">
+<td align="left">1975-06-16</td>
+<td align="right">1.398</td>
+<td align="right">2.745</td>
+<td align="right">26.548</td>
+</tr>
+<tr class="even">
+<td align="left">1975-06-16</td>
+<td align="right">1.423</td>
+<td align="right">3.156</td>
+<td align="right">27.279</td>
+</tr>
+<tr class="odd">
+<td align="left">1975-06-16</td>
+<td align="right">1.358</td>
+<td align="right">3.069</td>
+<td align="right">27.306</td>
+</tr>
+<tr class="even">
+<td align="left">1975-06-16</td>
+<td align="right">1.488</td>
+<td align="right">3.379</td>
+<td align="right">28.299</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="padrões-das-séries-temporais" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Padrões das Séries Temporais</h2>
+<p>Ao descrever séries temporais, usamos palavras como <strong>tendência</strong>, <strong>sazonalidade</strong> e <strong>padrão cíclico</strong>. Antes disso, podemos observar uma série sem padrão definido.</p>
+<div id="série-sem-padrão" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Série sem padrão</h3>
+<p>Na figura <a href="ts.html#fig:chuva-la">3.3</a> vemos a média de precipitação na cidade americana de Los Angelos durante o período de 1878 a 1992. Estes dados estão no pacote <code>TSA</code>, que acompanha o livro <code>Time Series Analysis</code>.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="ts.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TSA)</span>
+<span id="cb37-2"><a href="ts.html#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="ts.html#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(larain)</span>
+<span id="cb37-4"><a href="ts.html#cb37-4" aria-hidden="true" tabindex="-1"></a>larain <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">chuva_anual =</span> <span class="fu">as.matrix</span>(larain), <span class="at">date =</span> <span class="fu">time</span>(larain))</span>
+<span id="cb37-5"><a href="ts.html#cb37-5" aria-hidden="true" tabindex="-1"></a>larain <span class="sc">%&gt;%</span> </span>
+<span id="cb37-6"><a href="ts.html#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> chuva_anual)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb37-7"><a href="ts.html#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Precipitação em polegadas&quot;</span>,</span>
+<span id="cb37-8"><a href="ts.html#cb37-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Chuva Anual em Los Angeles, 1878 - 1992&quot;</span>,</span>
+<span id="cb37-9"><a href="ts.html#cb37-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Em polegadas de Chuva por Ano&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:chuva-la"></span>
+<img src="_main_files/figure-html/chuva-la-1.png" alt="Padrão de Chuvas em Los Angeles" width="672" />
+<p class="caption">
+Figure 3.3: Padrão de Chuvas em Los Angeles
+</p>
+</div>
+<p>É possível perceber uma variação no volume chuvas ao longo dos anos – alguns anos com um volume de chuva mais alto, outros mais baixo.</p>
+<p>Estamos interessados se os valores da chuva estão relacionados entre si. Será que ao conhecer o comportamento da chuva em um conjunto de anos podemos prever o que ocorrerá em anos consecutivos?</p>
+<p>Podemos criar uma variável relativa a chuva do ano anterior e compara-la com a chuva no ano corrente. A tabela <a href="ts.html#tab:tab-chuva">3.3</a> mostra essa comparação.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="ts.html#cb38-1" aria-hidden="true" tabindex="-1"></a>larain <span class="ot">&lt;-</span> larain <span class="sc">%&gt;%</span> </span>
+<span id="cb38-2"><a href="ts.html#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">chuva_ano_anterior =</span> <span class="fu">lag</span>(chuva_anual)) </span>
+<span id="cb38-3"><a href="ts.html#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="ts.html#cb38-4" aria-hidden="true" tabindex="-1"></a>larain <span class="sc">%&gt;%</span> </span>
+<span id="cb38-5"><a href="ts.html#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb38-6"><a href="ts.html#cb38-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Volume Anual de Chuvas em Los Angeles&quot;</span>)</span></code></pre></div>
+<table>
+<caption><span id="tab:tab-chuva">Table 3.3: </span>Volume Anual de Chuvas em Los Angeles</caption>
+<thead>
+<tr class="header">
+<th align="right">chuva_anual</th>
+<th align="right">date</th>
+<th align="right">chuva_ano_anterior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">20.86</td>
+<td align="right">1878</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">17.41</td>
+<td align="right">1879</td>
+<td align="right">20.86</td>
+</tr>
+<tr class="odd">
+<td align="right">18.65</td>
+<td align="right">1880</td>
+<td align="right">17.41</td>
+</tr>
+<tr class="even">
+<td align="right">5.53</td>
+<td align="right">1881</td>
+<td align="right">18.65</td>
+</tr>
+<tr class="odd">
+<td align="right">10.74</td>
+<td align="right">1882</td>
+<td align="right">5.53</td>
+</tr>
+<tr class="even">
+<td align="right">14.14</td>
+<td align="right">1883</td>
+<td align="right">10.74</td>
+</tr>
+</tbody>
+</table>
+<p>Assim, em 1877 observamos 17,41 polegadas de chuva, e a chuva do ano anterior somou 20,86 polegadsa de chuva.</p>
+<p>Na figura <a href="ts.html#fig:dispersao">3.4</a> exibimos as duas informações lado a lado com um gráfico de dispersão.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="ts.html#cb39-1" aria-hidden="true" tabindex="-1"></a>larain <span class="sc">%&gt;%</span> </span>
+<span id="cb39-2"><a href="ts.html#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> chuva_anual, <span class="at">y =</span> chuva_ano_anterior)) <span class="sc">+</span> </span>
+<span id="cb39-3"><a href="ts.html#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb39-4"><a href="ts.html#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb39-5"><a href="ts.html#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Chuva anual&quot;</span>,</span>
+<span id="cb39-6"><a href="ts.html#cb39-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Volume de chuva do ano anterior&quot;</span>,</span>
+<span id="cb39-7"><a href="ts.html#cb39-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Volume de Chuva em Los Angeles, 1876 - 1992&quot;</span>,</span>
+<span id="cb39-8"><a href="ts.html#cb39-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Relação entre a Chuva Anual e o Volume de Chuva no Ano Anterior&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:dispersao"></span>
+<img src="_main_files/figure-html/dispersao-1.png" alt="Relação entre chuva atual e o volume de chuva do ano anterior" width="672" />
+<p class="caption">
+Figure 3.4: Relação entre chuva atual e o volume de chuva do ano anterior
+</p>
+</div>
+<p>É possível observar que é perfeitamente possível que um ano com um elevado volume de chuvas seja seguido por um ano com baixo volume, e vice-versa. Assim, o volume de chuva que ocorre em um ano não parece explicar muito bem o comportamento da chuva nos anos seguintes.</p>
+<p>Essa série não parece ter nenhum tipo de tendência, que indicaria que o volume de chuva está aumentando ou diminuindo ao longo do tempo. Não parece existir correlação entre a chuva de um ano e do ano anterior, de modo que podemos ter um ano com um volume muito alto de chuva e no ano seguinte, um volume baixo. De um ponto de vista de modelagem e de previsão, está não é uma série muito interessante.</p>
+<p>A figura <a href="ts.html#fig:grafico-coelhos">3.5</a> mostra uma história diferente.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="ts.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(hare)</span>
+<span id="cb40-2"><a href="ts.html#cb40-2" aria-hidden="true" tabindex="-1"></a>hare_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">numero_coelhos =</span> <span class="fu">as.matrix</span>(hare), <span class="at">data =</span> <span class="fu">time</span>(hare))</span>
+<span id="cb40-3"><a href="ts.html#cb40-3" aria-hidden="true" tabindex="-1"></a>hare_df <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> data, <span class="at">y =</span> numero_coelhos)) <span class="sc">+</span> </span>
+<span id="cb40-4"><a href="ts.html#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb40-5"><a href="ts.html#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb40-6"><a href="ts.html#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Ano&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Ambundância&quot;</span>,</span>
+<span id="cb40-7"><a href="ts.html#cb40-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Ambundância de Coelhos Canadenses, 1905-1934&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:grafico-coelhos"></span>
+<img src="_main_files/figure-html/grafico-coelhos-1.png" alt="Ambundância de Coelhos Canadenses" width="672" />
+<p class="caption">
+Figure 3.5: Ambundância de Coelhos Canadenses
+</p>
+</div>
+<p>Diferentemente da série anterior, as observações de um ano estão correlacionadas de maneira muito próxima com aquelas observadas nos anos anteriores. Um número grande em um ano é seguido de um número semelhante no ano seguinte.</p>
+<p>Vendas de drogas anti-diabetes (figura <a href="ts.html#fig:figura-diabetes">3.7</a>) mostram sazonalidade que é induzida por mudanças nos preços dos medicamentos no final do ano calendário.</p>
+</div>
+<div id="sazonalidade" class="section level3" number="3.4.2">
+<h3><span class="header-section-number">3.4.2</span> Sazonalidade</h3>
+<p>A figura <a href="ts.html#fig:tempdub">3.6</a> mostra uma série temporal de temperatura média registrada para uma cidade no estado americano do Iowa.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="ts.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(tempdub)</span>
+<span id="cb41-2"><a href="ts.html#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="ts.html#cb41-3" aria-hidden="true" tabindex="-1"></a>tempdub <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">temperatura =</span> <span class="fu">as.matrix</span>(tempdub), <span class="at">data =</span> <span class="fu">time</span>(tempdub))</span>
+<span id="cb41-4"><a href="ts.html#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="ts.html#cb41-5" aria-hidden="true" tabindex="-1"></a>tempdub <span class="sc">%&gt;%</span></span>
+<span id="cb41-6"><a href="ts.html#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> data, <span class="at">y =</span> temperatura)) <span class="sc">+</span> </span>
+<span id="cb41-7"><a href="ts.html#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb41-8"><a href="ts.html#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb41-9"><a href="ts.html#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Ano&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Temperatura&quot;</span>,</span>
+<span id="cb41-10"><a href="ts.html#cb41-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Temperatura Média Mensal no Estado do Iowa, 1964-1976&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:tempdub"></span>
+<img src="_main_files/figure-html/tempdub-1.png" alt="Temperatura média anual em Iowa" width="672" />
+<p class="caption">
+Figure 3.6: Temperatura média anual em Iowa
+</p>
+</div>
+<p>Nela observamos uma movimento sazonal muito regular. Um padrão sazonal ocorre quando uma série é afetada por fatores sazonais como o tempo do ano ou o dia da semana. Sazonalidade é sempre uma de uma frequência conhecida e fixa.</p>
+<p>Sazonalidade para valores mensais ocorre quando observações que são separadas por 12 meses estão relacionados de alguma maneira. Assim, as temperaturas em janeiro de 1910 estão relacionadas com as temperaturas de janeiro de 1911, 1912 e assim por diante.</p>
+<p>Todos os meses de janeiro e fevereiro são muito frios e são similares em valores de temperatura. Isto não quer dizer que todos os meses de janeiro terão a mesma temperatura, ou os meses de Junho terão sempre a mesma temperatura média. Assim, se quisermos encontrar um modelo para este tipo de série temos que acomodar estas variações mas preservar estas similaridades entre temperaturas dos mesmos meses.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="ts.html#cb42-1" aria-hidden="true" tabindex="-1"></a>a10_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">vendas_drogas =</span> <span class="fu">matrix</span>(a10),</span>
+<span id="cb42-2"><a href="ts.html#cb42-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">date =</span> <span class="fu">time</span>(a10))</span>
+<span id="cb42-3"><a href="ts.html#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="ts.html#cb42-4" aria-hidden="true" tabindex="-1"></a>a10_df <span class="sc">%&gt;%</span> </span>
+<span id="cb42-5"><a href="ts.html#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> vendas_drogas)) <span class="sc">+</span> </span>
+<span id="cb42-6"><a href="ts.html#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb42-7"><a href="ts.html#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Ano&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Milhões de US$&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Vendas de Drogas Anti-diabéticos&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:figura-diabetes"></span>
+<img src="_main_files/figure-html/figura-diabetes-1.png" alt="Vendas de Medicamento contra diabetes" width="672" />
+<p class="caption">
+Figure 3.7: Vendas de Medicamento contra diabetes
+</p>
+</div>
+<p>A figura <a href="ts.html#fig:seasonal-diabetes">3.8</a> mostra cada série anual de modo independente.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="ts.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggseasonplot</span>(a10, <span class="at">year.labels =</span> T, <span class="at">year.labels.left =</span> T) <span class="sc">+</span></span>
+<span id="cb43-2"><a href="ts.html#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Milhões de US$&quot;</span>) <span class="sc">+</span></span>
+<span id="cb43-3"><a href="ts.html#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Gráfico Sazonal: Vendas de Drogas Anti-diabetes&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:seasonal-diabetes"></span>
+<img src="_main_files/figure-html/seasonal-diabetes-1.png" alt="Gráfico Sazonal de vendas de drogas anti-diabetes" width="672" />
+<p class="caption">
+Figure 3.8: Gráfico Sazonal de vendas de drogas anti-diabetes
+</p>
+</div>
+<p>A figura permite observar o padrão sazonal com mais clareza, e é especialmente útil para entender o padrão interno dentro de um ano, assim como encontrar anos com mudanças de padrão. Especificamente observamos um aumento significativo da venda de drogas no início do ano.</p>
+<p>Podemos observar o mesmo gráfico com coordenadas polares.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="ts.html#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggseasonplot</span>(a10, <span class="at">polar =</span> T) <span class="sc">+</span></span>
+<span id="cb44-2"><a href="ts.html#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Milhões de US$&quot;</span>) <span class="sc">+</span></span>
+<span id="cb44-3"><a href="ts.html#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Gráfico Polar Sazonal: </span><span class="sc">\n</span><span class="st">Vendas de Drogas Anti-diabetes&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:diabetes-polar"></span>
+<img src="_main_files/figure-html/diabetes-polar-1.png" alt="Gráfico sazonal polar das vendas mensais de medicamentos contra diabetes" width="672" />
+<p class="caption">
+Figure 3.9: Gráfico sazonal polar das vendas mensais de medicamentos contra diabetes
+</p>
+</div>
+<p>Outra figura que pode nos ajudar a identificar padrões sazonais é a produzida pela função <code>ggsubseriesplot()</code>. A figura <a href="ts.html#fig:subserie">3.10</a> mostra um desses exemplos.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="ts.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsubseriesplot</span>(a10) <span class="sc">+</span> </span>
+<span id="cb45-2"><a href="ts.html#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Milhões de US$&quot;</span>) <span class="sc">+</span></span>
+<span id="cb45-3"><a href="ts.html#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Sub-séries sazonais para vendas de medicamentos para diabetes&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:subserie"></span>
+<img src="_main_files/figure-html/subserie-1.png" alt="Sub-séries sazonais para vendas de medicamentos para diabetes" width="672" />
+<p class="caption">
+Figure 3.10: Sub-séries sazonais para vendas de medicamentos para diabetes
+</p>
+</div>
+<p>A linha horizontal mostra a média para cada mês e nos permite enxergar o padrão sazonal com mais clareza. Novamente, ele consegue nos fazer enxergar que o mês de janeiro apresentar uma média muito elevada em comparação aos demais meses do ano.</p>
+<p>O pacote <code>timetk</code> também oferece uma série de funções para diagnóstico de padrões nas séries temporais. Contudo, o pacote exige que os dados fornecidos estejam no formato de <code>data.frame</code>.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="ts.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(timetk)</span>
+<span id="cb46-2"><a href="ts.html#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="ts.html#cb46-3" aria-hidden="true" tabindex="-1"></a>a10_df <span class="sc">%&gt;%</span> </span>
+<span id="cb46-4"><a href="ts.html#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as.Date</span>(date)) <span class="sc">%&gt;%</span> </span>
+<span id="cb46-5"><a href="ts.html#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_seasonal_diagnostics</span>(date, vendas_drogas, <span class="at">.interactive =</span> F)</span></code></pre></div>
+<div class="figure">
+<img src="_main_files/figure-html/seasonal_timetk-1.png" alt="Gráfico sazonal das vendas mensais de medicamentos contra diabetes" width="672" />
+<p class="caption">
+(#fig:seasonal_timetk)Gráfico sazonal das vendas mensais de medicamentos contra diabetes
+</p>
+</div>
+</div>
+<div id="tendência" class="section level3" number="3.4.3">
+<h3><span class="header-section-number">3.4.3</span> Tendência</h3>
+<p>A série de vendas de drogas também exibe um padrão de tendência. Uma tendência ocorre quando existe um aumento (ou redução) de longo prazo nos dados. Ela não precisa ser linear, e muitas vezes pode apresentar mudanças de direção, que ocorrem quando uma tendência de aumento se converte em uma tendência de queda.</p>
+<p>A figura <a href="ts.html#fig:cafe">3.11</a> mostra outra série com padrão forte de tendência.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="ts.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fpp<span class="sc">::</span>cafe) <span class="sc">+</span></span>
+<span id="cb47-2"><a href="ts.html#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Gastos Trimestrais com consumo fora do domicílio, Australia&quot;</span>) <span class="sc">+</span></span>
+<span id="cb47-3"><a href="ts.html#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb47-4"><a href="ts.html#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Milhões&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:cafe"></span>
+<img src="_main_files/figure-html/cafe-1.png" alt="Gastos com consumo fora do domicílio na Australia" width="672" />
+<p class="caption">
+Figure 3.11: Gastos com consumo fora do domicílio na Australia
+</p>
+</div>
+<p>Os gastos dos australianos com consumo fora do domicílio (cafés e restaurantes) tem uma tendência crescente durante todo o período. Ela também exibe um comportamento sazonal dentro de um mesmo ano.</p>
+</div>
+<div id="padrão-cíclico" class="section level3" number="3.4.4">
+<h3><span class="header-section-number">3.4.4</span> Padrão Cíclico</h3>
+<p>Um comportamento cíclico surge quando os dados exibem um padrão de altas e quedas não possuem frequência fixa. Estas flutuações são os resultados, quase sempre, de condições econômicas, e estão relacionadas ao ciclo de negócios. A duração dessas flutuações tendem a ser de no mínimo 2 anos.</p>
+<p>A fabricação de equipamentos elétricos na zona do Euro (figura <a href="ts.html#fig:electrical">3.12</a> exibe um padrão sazonal dentro de cada ano, mas também um forte comportamento cíclico com um período de cerca 5 anos ou mais.</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="ts.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(fpp<span class="sc">::</span>elecequip) <span class="sc">+</span></span>
+<span id="cb48-2"><a href="ts.html#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Equipamentos Elétricos Produzidos na Área do Euro&quot;</span>) <span class="sc">+</span></span>
+<span id="cb48-3"><a href="ts.html#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb48-4"><a href="ts.html#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Índice 2005 = 100&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:electrical"></span>
+<img src="_main_files/figure-html/electrical-1.png" alt="Equipamentos elétricos produzidos na zona do Euro" width="672" />
+<p class="caption">
+Figure 3.12: Equipamentos elétricos produzidos na zona do Euro
+</p>
+</div>
+<p>Muitas pessoas confundem o comportamento sazonal, mas eles são bem diferentes. Se a flutuação não tem frequência fixa então elas são ciclos; se a frequência não se altera e está associada com algum aspecto do calendario, então o padrão é sazonal. Em geral, o tamanho médio dos ciclos é maior que o comprimento de um padrão sazonal, e a magnitude dos ciclos tende a variar mais do que a magnitude do padrão sazonal.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="hello-bookdown.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="modelos-estatísticos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/02-series_temporais.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

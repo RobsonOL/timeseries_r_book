@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Séries Temporais com R</title>
+  <title>Capítulo 10 Modelos Avançados | Séries Temporais com R</title>
   <meta name="description" content="Um livro sobre séries temporais para usuários de R." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Séries Temporais com R" />
+  <meta property="og:title" content="Capítulo 10 Modelos Avançados | Séries Temporais com R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Séries Temporais com R" />
+  <meta name="twitter:title" content="Capítulo 10 Modelos Avançados | Séries Temporais com R" />
   
   <meta name="twitter:description" content="Um livro sobre séries temporais para usuários de R." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="os-fundamentos-de-séries-temporais.html"/>
+<link rel="prev" href="modelos-de-regressão-dinâmicos.html"/>
+<link rel="next" href="modelos-hierárquicos.html"/>
 <script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -274,30 +274,20 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Séries Temporais com R</h1>
-<p class="author"><em>Robson Oliveira Lima</em></p>
-<p class="date"><em>2021-12-10</em></p>
+<div id="modelos-avançados" class="section level1" number="10">
+<h1><span class="header-section-number">Capítulo 10</span> Modelos Avançados</h1>
+<div id="múltiplas-sazonalidades" class="section level2" number="10.1">
+<h2><span class="header-section-number">10.1</span> Múltiplas Sazonalidades</h2>
 </div>
-<div id="prefácio" class="section level1" number="1">
-<h1><span class="header-section-number">Capítulo 1</span> Prefácio</h1>
-<p>Este é um livro online que fornece uma breve introdução aos principais métodos de previsão em séries temporais.</p>
-<p>R é uma linguagem de programação gratuita e bastante popular para análise estatística.</p>
-<p>Este livro é uma tentativa de traduzir o livro online <a href="https://otexts.com/fpp3/index.html">Forecasting: Principles and Practice</a>, que é uma das principais referências para o ensino de previsão com R. Ao mesmo tempo, muito dos exemplos serão adaptados para utilizar os pacotes <a href="https://business-science.github.io/timetk/">timetk</a> <span class="citation">(<a href="#ref-R-timetk" role="doc-biblioref"><strong>R-timetk?</strong></a>)</span> e <a href="https://business-science.github.io/modeltime/index.html">modetime</a> <span class="citation">(<a href="#ref-R-modeltime" role="doc-biblioref">Dancho 2021</a>)</span>. Estes dois pacotes tornam a tarefa de realizar previsão muito conveniente.</p>
-<div id="roteiro" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Roteiro</h2>
-<p>bla bla</p>
+<div id="modelo-prophet" class="section level2" number="10.2">
+<h2><span class="header-section-number">10.2</span> Modelo Prophet</h2>
 </div>
-<div id="pré-requisitos" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Pré-requisitos</h2>
-<p>bla bla</p>
+<div id="modelo-de-redes-neurais" class="section level2" number="10.3">
+<h2><span class="header-section-number">10.3</span> Modelo de Redes Neurais</h2>
+</div>
+<div id="bootstrapping-e-bagging" class="section level2" number="10.4">
+<h2><span class="header-section-number">10.4</span> Bootstrapping e Bagging</h2>
 
-</div>
-</div>
-<h3>References</h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-R-modeltime" class="csl-entry">
-Dancho, Matt. 2021. <em>Modeltime: The Tidymodels Extension for Time Series Modeling</em>. <a href="https://github.com/business-science/modeltime">https://github.com/business-science/modeltime</a>.
 </div>
 </div>
             </section>
@@ -305,8 +295,8 @@ Dancho, Matt. 2021. <em>Modeltime: The Tidymodels Extension for Time Series Mode
           </div>
         </div>
       </div>
-
-<a href="os-fundamentos-de-séries-temporais.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="modelos-de-regressão-dinâmicos.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="modelos-hierárquicos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -337,7 +327,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/index.Rmd",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/09-modelos_avancados.Rmd",
 "text": "Edit"
 },
 "history": {

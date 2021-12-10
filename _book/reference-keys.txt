@@ -66,3 +66,14 @@ sharing-your-book
 publishing
 pages
 metadata-for-sharing
+url-your-book-url-like-httpsbookdown.orgyihuibookdown
+valor-de-utilizar-variáveis-explicativas
+modelos-dinâmicos-de-regressão
+prefácio
+roteiro
+pré-requisitos
+os-fundamentos-de-séries-temporais
+o-que-pode-ser-previsto
+principais-modelos-de-previsão
+o-passo-a-passo-de-realizar-uma-previsão
+um-projeto-de-previsão-de-ponta-a-ponta

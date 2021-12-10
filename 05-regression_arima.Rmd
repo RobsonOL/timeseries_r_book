@@ -1,12 +1,27 @@
 # Modelos de Regressão Dinâmicos
 
-Modelos de séries temporais como ARIMA permitem que valores da série sejam previstos a partir da inclusão de informações do passado. Por outro lado, não permitem a inclusão de variáveis relevantes como _dummies_ de feriado, atividade dos concorrentes, mudanças nas leis, variáveis macroeconômicas e outras covariadas externas que podem ajudar a explicar a variação histórica de uma série temporal.
+O uso de variáveis explicativas exógenas é uma maneira óbvia de melhorar a precisão das precisões. Em vez de depender apenas de informações históricas sobre a série em si, podemos utilizar outras informações relevantes. 
 
-Podemos de regressão, como o modelo de regressão linear, permitem a inclusão de variáveis externas, mas não são capazes de modelar as dinâmicas presentes em séries temporais, como os modelos ARIMA são capazes.
+Modelos de séries temporais como ARIMA permitem que valores da série sejam previstos a partir da inclusão de informações do passado, mas não permitem a inclusão destas variáveis exógenas relevantes como _dummies_ de feriado, atividade dos concorrentes, mudanças nas leis, variáveis macroeconômicas e outras covariadas externas que podem ajudar a explicar a variação histórica de uma série temporal.
 
-Neste capítulo vamos extender os modelos ARIMA com o objetivo de permitir que outras variáveis externas sejam incluídas nos modelos.
+Já modelos de regressão permitem a inclusão de variáveis externas, mas não são capazes de modelar as dinâmicas presentes em séries temporais, como os modelos ARIMA são capazes.
 
-Modelos de regressão simples tomam a forma 
+### Valor de utilizar variáveis explicativas 
+
+Variáveis externas podem ser especialmente úteis para previsão de demanda por eletricidade, que é altamente dependente da temperatura ambiente, uma vez que dias quentes levam a maior uso de ar condicionados [@taieb2014gradient]. 
+
+Contudo, nem sempre variáveis externas podem ser tão úteis. No caso de temperatura como uma variável explicativa para demanda por eletricidade, as previsões metereológicas podem fornecer medidas bem precisas do comportamento futuro, mas em casos onde as previsões das variáveis explicativas são imprecisas, adiciona-las ao modelo pode produzir resultados inconsistentes. 
+
+Outro problema pode ocorrer caso a relação entre $y$ e $x$ é um fato histórico, mas pode não se repetir no futuro. Ou quando duas variáveis possuem uma relação positiva em um período, e negativa em outro. Esse tipo de problema pode produzir modelos com má especificações e previsões imprecisas. 
+
+Assim, antes de recorrer a variáveis externas em modelos de séries temporais, é sempre interessante iniciar a análise com uma abordagem puramente de séries temporais (um modelo ARIMA, por exemplo). Outra estratégia e a de realizar comparações entre (1) uma previsão para dentro da amostra que inclua variáveis explicativas previstas e (2) uma previsão para dentro da amostra que inclua as mesmas variáveis explicativas com dados observados.
+
+
+### Modelos Dinâmicos de Regressão
+
+Se existem previsões precisas para as variáveis explicativas e a relação entre estas variáveis e a previsão é estável no futuro, podemos utilizar uma abordagem mista que envolve extender os modelos ARIMA com o objetivo de permitir que outras variáveis externas sejam incluídas nos modelos. Assim, teriamos o melhor dos dois mundos.
+
+Estes modelos de regressão simples tomam a forma 
 
 $$y_t = \beta_0 + \beta_1 x_{1,t} + ... + \beta_k x_{k,t} + \epsilon_t$$
 

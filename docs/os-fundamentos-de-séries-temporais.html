@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Séries Temporais com R</title>
+  <title>Capítulo 2 Os fundamentos de séries temporais | Séries Temporais com R</title>
   <meta name="description" content="Um livro sobre séries temporais para usuários de R." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Séries Temporais com R" />
+  <meta property="og:title" content="Capítulo 2 Os fundamentos de séries temporais | Séries Temporais com R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Séries Temporais com R" />
+  <meta name="twitter:title" content="Capítulo 2 Os fundamentos de séries temporais | Séries Temporais com R" />
   
   <meta name="twitter:description" content="Um livro sobre séries temporais para usuários de R." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="hello-bookdown.html"/>
+<link rel="prev" href="index.html"/>
+<link rel="next" href="ts.html"/>
 <script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -53,8 +53,79 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
 
 
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 <style type="text/css">
 /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
@@ -100,12 +171,12 @@ div.csl-indent {
 <li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#roteiro"><i class="fa fa-check"></i><b>1.1</b> Roteiro</a></li>
 <li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#pré-requisitos"><i class="fa fa-check"></i><b>1.2</b> Pré-requisitos</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="hello-bookdown.html"><a href="hello-bookdown.html"><i class="fa fa-check"></i><b>2</b> Hello bookdown</a>
+<li class="chapter" data-level="2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html"><i class="fa fa-check"></i><b>2</b> Os fundamentos de séries temporais</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="hello-bookdown.html"><a href="hello-bookdown.html#a-section"><i class="fa fa-check"></i><b>2.1</b> A section</a>
-<ul>
-<li class="chapter" data-level="" data-path="hello-bookdown.html"><a href="hello-bookdown.html#an-unnumbered-section"><i class="fa fa-check"></i>An unnumbered section</a></li>
-</ul></li>
+<li class="chapter" data-level="2.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-que-pode-ser-previsto"><i class="fa fa-check"></i><b>2.1</b> O que pode ser previsto?</a></li>
+<li class="chapter" data-level="2.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#principais-modelos-de-previsão"><i class="fa fa-check"></i><b>2.2</b> Principais modelos de previsão</a></li>
+<li class="chapter" data-level="2.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
+<li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="ts.html"><a href="ts.html"><i class="fa fa-check"></i><b>3</b> Séries Temporais</a>
 <ul>
@@ -155,12 +226,6 @@ div.csl-indent {
 <li class="chapter" data-level="6.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>6.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="sharing-your-book.html"><a href="sharing-your-book.html"><i class="fa fa-check"></i><b>7</b> Sharing your book</a>
-<ul>
-<li class="chapter" data-level="7.1" data-path="sharing-your-book.html"><a href="sharing-your-book.html#publishing"><i class="fa fa-check"></i><b>7.1</b> Publishing</a></li>
-<li class="chapter" data-level="7.2" data-path="sharing-your-book.html"><a href="sharing-your-book.html#pages"><i class="fa fa-check"></i><b>7.2</b> 404 pages</a></li>
-<li class="chapter" data-level="7.3" data-path="sharing-your-book.html"><a href="sharing-your-book.html#metadata-for-sharing"><i class="fa fa-check"></i><b>7.3</b> Metadata for sharing</a></li>
-</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -182,33 +247,20 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Séries Temporais com R</h1>
-<p class="author"><em>Robson Oliveira Lima</em></p>
-<p class="date"><em>2021-12-10</em></p>
+<div id="os-fundamentos-de-séries-temporais" class="section level1" number="2">
+<h1><span class="header-section-number">Capítulo 2</span> Os fundamentos de séries temporais</h1>
+<div id="o-que-pode-ser-previsto" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> O que pode ser previsto?</h2>
 </div>
-<div id="prefácio" class="section level1" number="1">
-<h1><span class="header-section-number">Capítulo 1</span> Prefácio</h1>
-<p>Este é um livro online que fornece uma breve introdução aos principais métodos de previsão em séries temporais.</p>
-<p>R é uma linguagem de programação gratuita e bastante popular para análise estatística.</p>
-<p>Este livro é uma tentativa de traduzir o livro online <a href="https://otexts.com/fpp3/index.html">Forecasting: Principles and Practice</a>, que é uma das principais referências para o ensino de previsão com R. Ao mesmo tempo, muito dos exemplos serão adaptados para utilizar os pacotes <a href="https://business-science.github.io/timetk/">timetk</a> <span class="citation">(<a href="#ref-R-timetk" role="doc-biblioref">Dancho and Vaughan 2021</a>)</span> e <a href="https://business-science.github.io/modeltime/index.html">modetime</a> <span class="citation">(<a href="#ref-R-modeltime" role="doc-biblioref">Dancho 2021</a>)</span>. Estes dois pacotes tornam a tarefa de realizar previsão muito conveniente.</p>
-<div id="roteiro" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Roteiro</h2>
-<p>bla bla</p>
+<div id="principais-modelos-de-previsão" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Principais modelos de previsão</h2>
 </div>
-<div id="pré-requisitos" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Pré-requisitos</h2>
-<p>bla bla</p>
+<div id="o-passo-a-passo-de-realizar-uma-previsão" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> O passo-a-passo de realizar uma previsão</h2>
+</div>
+<div id="um-projeto-de-previsão-de-ponta-a-ponta" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Um Projeto de Previsão de Ponta a Ponta</h2>
 
-</div>
-</div>
-<h3>References</h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-R-modeltime" class="csl-entry">
-Dancho, Matt. 2021. <em>Modeltime: The Tidymodels Extension for Time Series Modeling</em>. <a href="https://github.com/business-science/modeltime">https://github.com/business-science/modeltime</a>.
-</div>
-<div id="ref-R-timetk" class="csl-entry">
-Dancho, Matt, and Davis Vaughan. 2021. <em>Timetk: A Tool Kit for Working with Time Series in r</em>. <a href="https://github.com/business-science/timetk">https://github.com/business-science/timetk</a>.
 </div>
 </div>
             </section>
@@ -216,8 +268,8 @@ Dancho, Matt, and Davis Vaughan. 2021. <em>Timetk: A Tool Kit for Working with T
           </div>
         </div>
       </div>
-
-<a href="hello-bookdown.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="ts.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -248,7 +300,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/index.Rmd",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/01-intro.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -271,6 +323,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

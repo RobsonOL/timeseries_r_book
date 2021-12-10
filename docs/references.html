@@ -5,26 +5,20 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>References | Séries Temporais com R</title>
-  <meta name="description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
+  <meta name="description" content="Um livro sobre séries temporais para usuários de R." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
   <meta property="og:title" content="References | Séries Temporais com R" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
+  <meta property="og:description" content="Um livro sobre séries temporais para usuários de R." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="References | Séries Temporais com R" />
   
-  <meta name="twitter:description" content="<p>This is a minimal example of using the bookdown package to write a book.
-The HTML output format for this example is bookdown::gitbook,
-set in the _output.yml file.</p>" />
+  <meta name="twitter:description" content="Um livro sobre séries temporais para usuários de R." />
   
 
 <meta name="author" content="Robson Oliveira Lima" />
@@ -37,7 +31,7 @@ set in the _output.yml file.</p>" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="sharing-your-book.html"/>
+<link rel="prev" href="modelos-de-regressão-dinâmicos.html"/>
 
 <script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -133,6 +127,28 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -150,18 +166,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Séries Temporais com R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> About</a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prefácio</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#usage"><i class="fa fa-check"></i><b>1.1</b> Usage</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#render-book"><i class="fa fa-check"></i><b>1.2</b> Render book</a></li>
-<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#preview-book"><i class="fa fa-check"></i><b>1.3</b> Preview book</a></li>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#roteiro"><i class="fa fa-check"></i><b>1.1</b> Roteiro</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#pré-requisitos"><i class="fa fa-check"></i><b>1.2</b> Pré-requisitos</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="hello-bookdown.html"><a href="hello-bookdown.html"><i class="fa fa-check"></i><b>2</b> Hello bookdown</a>
+<li class="chapter" data-level="2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html"><i class="fa fa-check"></i><b>2</b> Os fundamentos de séries temporais</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="hello-bookdown.html"><a href="hello-bookdown.html#a-section"><i class="fa fa-check"></i><b>2.1</b> A section</a>
-<ul>
-<li class="chapter" data-level="" data-path="hello-bookdown.html"><a href="hello-bookdown.html#an-unnumbered-section"><i class="fa fa-check"></i>An unnumbered section</a></li>
-</ul></li>
+<li class="chapter" data-level="2.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-que-pode-ser-previsto"><i class="fa fa-check"></i><b>2.1</b> O que pode ser previsto?</a></li>
+<li class="chapter" data-level="2.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#principais-modelos-de-previsão"><i class="fa fa-check"></i><b>2.2</b> Principais modelos de previsão</a></li>
+<li class="chapter" data-level="2.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
+<li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="ts.html"><a href="ts.html"><i class="fa fa-check"></i><b>3</b> Séries Temporais</a>
 <ul>
@@ -203,17 +218,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html"><i class="fa fa-check"></i><b>6</b> Modelos de Regressão Dinâmicos</a>
 <ul>
+<li class="chapter" data-level="6.0.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#valor-de-utilizar-variáveis-explicativas"><i class="fa fa-check"></i><b>6.0.1</b> Valor de utilizar variáveis explicativas</a></li>
+<li class="chapter" data-level="6.0.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#modelos-dinâmicos-de-regressão"><i class="fa fa-check"></i><b>6.0.2</b> Modelos Dinâmicos de Regressão</a></li>
 <li class="chapter" data-level="6.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#estimação"><i class="fa fa-check"></i><b>6.1</b> Estimação</a></li>
 <li class="chapter" data-level="6.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#regressão-com-erros-arima"><i class="fa fa-check"></i><b>6.2</b> Regressão com Erros ARIMA</a>
 <ul>
 <li class="chapter" data-level="6.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>6.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
 </ul></li>
-</ul></li>
-<li class="chapter" data-level="7" data-path="sharing-your-book.html"><a href="sharing-your-book.html"><i class="fa fa-check"></i><b>7</b> Sharing your book</a>
-<ul>
-<li class="chapter" data-level="7.1" data-path="sharing-your-book.html"><a href="sharing-your-book.html#publishing"><i class="fa fa-check"></i><b>7.1</b> Publishing</a></li>
-<li class="chapter" data-level="7.2" data-path="sharing-your-book.html"><a href="sharing-your-book.html#pages"><i class="fa fa-check"></i><b>7.2</b> 404 pages</a></li>
-<li class="chapter" data-level="7.3" data-path="sharing-your-book.html"><a href="sharing-your-book.html#metadata-for-sharing"><i class="fa fa-check"></i><b>7.3</b> Metadata for sharing</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -239,13 +250,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
 
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div class="csl-entry">
+Dancho, Matt. 2021. <em>Modeltime: The Tidymodels Extension for Time Series Modeling</em>. <a href="https://github.com/business-science/modeltime">https://github.com/business-science/modeltime</a>.
+</div>
+<div class="csl-entry">
+Dancho, Matt, and Davis Vaughan. 2021. <em>Timetk: A Tool Kit for Working with Time Series in r</em>. <a href="https://github.com/business-science/timetk">https://github.com/business-science/timetk</a>.
+</div>
+<div class="csl-entry">
+Taieb, Souhaib Ben, and Rob J Hyndman. 2014. <span>“A Gradient Boosting Approach to the Kaggle Load Forecasting Competition.”</span> <em>International Journal of Forecasting</em> 30 (2): 382–94.
+</div>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="sharing-your-book.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="modelos-de-regressão-dinâmicos.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>

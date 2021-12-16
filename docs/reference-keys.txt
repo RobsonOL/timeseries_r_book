@@ -91,6 +91,7 @@ função-para-medidas-de-performance
 métodos-de-reamostragem
 validação-cruzada-para-séries-temporais
 implementando-validação-cruzada
+ajustando-modelos-com-reamostragem
 modelo-de-regressão-para-séries-temporais
 modelos-arima
 modelos-de-regressão-dinâmicos

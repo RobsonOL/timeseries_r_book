@@ -255,6 +255,7 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="6.6.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#validação-cruzada-para-séries-temporais"><i class="fa fa-check"></i><b>6.6.1</b> Validação Cruzada para Séries Temporais</a></li>
 <li class="chapter" data-level="6.6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#implementando-validação-cruzada"><i class="fa fa-check"></i><b>6.6.2</b> Implementando Validação Cruzada</a></li>
+<li class="chapter" data-level="6.6.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#ajustando-modelos-com-reamostragem"><i class="fa fa-check"></i><b>6.6.3</b> Ajustando Modelos com Reamostragem</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="modelo-de-regressão-para-séries-temporais.html"><a href="modelo-de-regressão-para-séries-temporais.html"><i class="fa fa-check"></i><b>7</b> Modelo de Regressão para Séries Temporais</a></li>
@@ -343,28 +344,28 @@ div.csl-indent {
 <div id="regressão-com-erros-arima" class="section level2" number="9.2">
 <h2><span class="header-section-number">9.2</span> Regressão com Erros ARIMA</h2>
 <p>A função <code>Arima()</code> é capaz de ajustar um modelo de regressão com erros ARIMA se o argumento <code>xreg</code> for utilizado. Como diferenciação está especificada, a diferenciação é aplicada para todas as variáveis antes de estimar o modelo. O comando R utilizado é</p>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="modelos-de-regressão-dinâmicos.html#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
-<span id="cb96-2"><a href="modelos-de-regressão-dinâmicos.html#cb96-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Arima</span>(y, <span class="at">xreg =</span> x, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="modelos-de-regressão-dinâmicos.html#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb93-2"><a href="modelos-de-regressão-dinâmicos.html#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Arima</span>(y, <span class="at">xreg =</span> x, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
 <p>que irá ajustar um modelo do tipo <span class="math inline">\(y&#39;_t = \beta_1 x&#39;_t + \eta&#39;_t\)</span>.</p>
 <p>A função <code>auto.arima()</code> também é capaz de utilizar covariadas com uso do termo <code>xreg</code>. O usuário deve especificar os preditores e <code>auto.arima()</code> seleciona o melhor modelo ARIMA para os erros.</p>
 <div id="exemplo-consumo-e-renda-nos-eua" class="section level3" number="9.2.1">
 <h3><span class="header-section-number">9.2.1</span> Exemplo: Consumo e Renda nos EUA</h3>
 <p>A figura <a href="modelos-de-regressão-dinâmicos.html#fig:consumo-renda">9.1</a> mostra a mudança trimestral nos gastos com consumo pessoal e a renda disponível entre 1970 e 2016. Estamos interessados em prever o consumo com base na renda. Uma mudança na renda não necessariamente reflete uma mudança instântanea no consumo (exempl, depois de uma demissão, pode levar alguns meses para os gastos se ajustarem). Contudo, vamos ignorar esta complexidade e tentar medir o efeito instantâneo de uma mudança média na renda sore uma mudança média nos gastos.</p>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="modelos-de-regressão-dinâmicos.html#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp)</span>
-<span id="cb97-2"><a href="modelos-de-regressão-dinâmicos.html#cb97-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb97-3"><a href="modelos-de-regressão-dinâmicos.html#cb97-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(usconsumption, <span class="at">facets =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb97-4"><a href="modelos-de-regressão-dinâmicos.html#cb97-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb97-5"><a href="modelos-de-regressão-dinâmicos.html#cb97-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Mudança Trimestral no Consumo e Renda, EUA&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="modelos-de-regressão-dinâmicos.html#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp)</span>
+<span id="cb94-2"><a href="modelos-de-regressão-dinâmicos.html#cb94-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-3"><a href="modelos-de-regressão-dinâmicos.html#cb94-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(usconsumption, <span class="at">facets =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb94-4"><a href="modelos-de-regressão-dinâmicos.html#cb94-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb94-5"><a href="modelos-de-regressão-dinâmicos.html#cb94-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Mudança Trimestral no Consumo e Renda, EUA&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:consumo-renda"></span>
 <img src="_main_files/figure-html/consumo-renda-1.png" alt="Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2010" width="672" />
 <p class="caption">
 Figure 9.1: Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2010
 </p>
 </div>
-<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="modelos-de-regressão-dinâmicos.html#cb98-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(usconsumption[,<span class="st">&quot;consumption&quot;</span>],</span>
-<span id="cb98-2"><a href="modelos-de-regressão-dinâmicos.html#cb98-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">xreg=</span>usconsumption[,<span class="st">&quot;income&quot;</span>])</span>
-<span id="cb98-3"><a href="modelos-de-regressão-dinâmicos.html#cb98-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb98-4"><a href="modelos-de-regressão-dinâmicos.html#cb98-4" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="modelos-de-regressão-dinâmicos.html#cb95-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(usconsumption[,<span class="st">&quot;consumption&quot;</span>],</span>
+<span id="cb95-2"><a href="modelos-de-regressão-dinâmicos.html#cb95-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">xreg=</span>usconsumption[,<span class="st">&quot;income&quot;</span>])</span>
+<span id="cb95-3"><a href="modelos-de-regressão-dinâmicos.html#cb95-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-4"><a href="modelos-de-regressão-dinâmicos.html#cb95-4" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
 <pre><code>## Series: usconsumption[, &quot;consumption&quot;] 
 ## Regression with ARIMA(1,0,2) errors 
 ## 
@@ -380,9 +381,9 @@ Figure 9.1: Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a
 <span class="math display">\[\eta_t = 0.6516 \eta_{t-1} + \epsilon_t - 0.5440 + 0.218 \epsilon_t\]</span></p>
 <p><span class="math display">\[\epsilon ~ IID(0, 0.3502\]</span></p>
 <p>Podemos recuperar as estimativas de <span class="math inline">\(\eta_t\)</span> e <span class="math inline">\(\epsilon_t\)</span> usando a função <code>residuals()</code>.</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="modelos-de-regressão-dinâmicos.html#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="st">&quot;Erros de Regressão&quot;</span> <span class="ot">=</span> <span class="fu">residuals</span>(fit, <span class="at">type=</span><span class="st">&quot;regression&quot;</span>),</span>
-<span id="cb100-2"><a href="modelos-de-regressão-dinâmicos.html#cb100-2" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Erros ARIMA&quot;</span> <span class="ot">=</span> <span class="fu">residuals</span>(fit, <span class="at">type=</span><span class="st">&quot;innovation&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb100-3"><a href="modelos-de-regressão-dinâmicos.html#cb100-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">facets=</span>T)</span></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="modelos-de-regressão-dinâmicos.html#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="st">&quot;Erros de Regressão&quot;</span> <span class="ot">=</span> <span class="fu">residuals</span>(fit, <span class="at">type=</span><span class="st">&quot;regression&quot;</span>),</span>
+<span id="cb97-2"><a href="modelos-de-regressão-dinâmicos.html#cb97-2" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Erros ARIMA&quot;</span> <span class="ot">=</span> <span class="fu">residuals</span>(fit, <span class="at">type=</span><span class="st">&quot;innovation&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb97-3"><a href="modelos-de-regressão-dinâmicos.html#cb97-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">facets=</span>T)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:erros-arima"></span>
 <img src="_main_files/figure-html/erros-arima-1.png" alt="Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado" width="672" />
 <p class="caption">
@@ -390,8 +391,8 @@ Figure 9.2: Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado
 </p>
 </div>
 <p>O teste de Ljung-Box, ACF e histograma parecem indicar que os resíduos não são significativamente diferentes de um ruído branco.</p>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="modelos-de-regressão-dinâmicos.html#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(fit)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="modelos-de-regressão-dinâmicos.html#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(fit)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <pre><code>## 
 ##  Ljung-Box test
 ## 

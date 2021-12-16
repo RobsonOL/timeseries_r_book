@@ -466,10 +466,9 @@ O pacote `timetk` oferece a função `time_series_cv` para construção de valid
 
 * `slice_limit`: o número máximo de reamostragens a serem retornadas pela função.
 
-Abaixo mostramos um exemplo de `timee_series_cv` com os dados de gasolina. Como temos 26 anos de dados semanais, vamos fixar o período de análise em 18 anos (`initial = "18 years"`), e o período de avaliação em 4 anos (`assess = "4 years"`). Este plano de validação cruzada produziu 104 conjuntos de treinamento de tamanho crescente. A figura \@ref(fig:cross-validation-ts) mostra o gráfico da validação cruzada para quatro destes grupos (slice 1, 20, 30 e 40). Usamos a função `tk_time_series_cv_plan()` para tornar o objeto `cross_validation` um data.frame, e `plot_time_series_cv_plan()` para gerar a visualização. 
+Abaixo mostramos um exemplo de `timee_series_cv` com os dados de gasolina. Como temos 26 anos de dados semanais, vamos fixar o período de análise em 18 anos (`initial = "18 years"`), e o período de avaliação em 4 anos (`assess = "4 years"`). 
 
-
-```{r cross-validation-ts, fig.cap="Validação Cruzada para Séries Temporais"}
+```{r}
 cross_validation <- time_series_cv(
   data = us_gasoline,
   date_var = Week,
@@ -478,19 +477,30 @@ cross_validation <- time_series_cv(
   cumulative = TRUE
 )
 
+```
+
+
+
+Este plano de validação cruzada produziu 104 conjuntos de treinamento de tamanho crescente. A figura \@ref(fig:cross-validation-ts) mostra o gráfico da validação cruzada para quatro destes grupos (slice 1, 20, 30 e 40). Usamos a função `tk_time_series_cv_plan()` para tornar o objeto `cross_validation` um data.frame, e `plot_time_series_cv_plan()` para gerar a visualização. 
+
+
+```{r cross-validation-ts, fig.cap="Validação Cruzada para Séries Temporais"}
+
 cross_validation %>%
   tk_time_series_cv_plan() %>%
   filter(.id %in% c("Slice001", "Slice040", "Slice070", "Slice104")) %>% 
   plot_time_series_cv_plan(Week, Barrels, .facet_ncol = 2, .interactive = FALSE)
 
 ```
+
+### Ajustando Modelos com Reamostragem
+
+
+
 O pacote `modeltime.resample` fornece a função `modeltime_fit_resamples` para ajustar modelos contidos em uma tabela de modelos (`tbl_modelos`) para todas as reamostragens contidas no objetivo criado com `time_series_cv()`. Vamos ajustar o modelo naïve e naïve sazonal para cada um dos 104 *folds*. 
 
-:::dica
-Rodar tantos modelos pode levar um longo tempo. Rodar os modelos em paralelo reduz substancialmente o tempo de execução e pode ser possível com o uso de funções como `parallel_start()`. Para ler mais, visite a [documentação da função](https://business-science.github.io/modeltime/reference/parallel_start.html).
-:::
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(modeltime.resample)
 
 parallel_start(8)
@@ -499,11 +509,14 @@ ajustes_reamostragens <- tbl_modelos %>%
   modeltime_fit_resamples(
     resamples = cross_validation
   )
-ajustes_reamostragens
 ```
 
-Podemos visualizar a performance de cada reamostragem com o uso da figura \@ref(fig:plot-medidas-reamostragem). 
+:::dica
+Rodar tantos modelos pode levar um longo tempo. Rodar os modelos em paralelo reduz substancialmente o tempo de execução e pode ser possível com o uso de funções como `parallel_start()`. Para ler mais, visite a [documentação da função](https://business-science.github.io/modeltime/reference/parallel_start.html).
+:::
 
+
+Após um tempo, o objeto `ajustes_reamostragens` terá informações de performance para os 208 modelos que foram ajustados. Na figura \@ref(fig:plot-medidas-reamostragem) temos uma visualizar da performance de cada reamostragem produzida pela função `plot_modeltime_resamples()`. Como temos 208 modelos ajustados, o gráfico se torna um pouco poluido.
 
 ```{r plot-medidas-reamostragem, fig.cap="Gráfico de Medidas de Reamostragem", message=FALSE, warning=FALSE}
 ajustes_reamostragens %>%
@@ -516,12 +529,14 @@ ajustes_reamostragens %>%
 
 
 ```
-Uma visualização melhor das informações pode ser obtida ao se calcular a média (ou mediana) das medidas de performance dos 104 *folds*. Considerando que nossos dados não possuem zero ou valores próximos de zero na variável dependente, podemos utilizar o MAPE como critério de escolha. Neste caso, o método Naïve com Sazonalidade parece produzir previsões mais precisas.
+Uma visualização melhor das informações pode ser obtida ao se calcular a média (ou mediana) das medidas de performance dos 104 *folds*. Com a função `modeltime_resample_accuracy()` podemos calcular a média ou mediana das medidas de performance dos 208 modelos. Com `table_modeltime_accuracy()` podemos exibir estas informações de modo bastante conveniente.
 
-```{r medidas-reamostragens}
+
+```{r medidas-reamostragens, message=FALSE, warning=FALSE}
 ajustes_reamostragens %>%
   modeltime_resample_accuracy(summary_fns = mean) %>%
   table_modeltime_accuracy()
 
 ```
 
+Analisando os resultados, e considerando que a quantidade de barris de gasolina podem ser iguais a zero, podemos utilizar o MAPE como critério de escolha. Neste caso, o método Naïve com Sazonalidade parece produzir previsões mais precisas.

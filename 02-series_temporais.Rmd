@@ -1,8 +1,4 @@
-# Séries Temporais {#ts}
-
-Aqui vamos explorar o que é uma série temporal, suas principais características.
-
-## Características de Séries Temporais
+# Características de Séries Temporais
 
 Séries temporais se referem a dados observados em diferentes pontos no tempo. O uso de métodos estatísticos convencionais como o de regressão linear dependem e suposições de que as observações são independentes entre si, uma hipótese que não faz sentido quando se trabalha com observações no tempo: cada observação está correlacionada com as observações mais próximas no tempo. Assim, um choque no valor da ação que ocorre ontem tem efeitos no preço da ação hoje. 
 

@@ -24,7 +24,7 @@
 <meta name="author" content="Robson Oliveira Lima" />
 
 
-<meta name="date" content="2021-12-10" />
+<meta name="date" content="2021-12-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -60,6 +60,11 @@
 <script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
 <link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<script src="libs/core-js-2.5.3/shim.min.js"></script>
+<script src="libs/react-17.0.0/react.min.js"></script>
+<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/reactwidget-1.0.0/react-tools.js"></script>
+<script src="libs/reactable-binding-0.2.3/reactable.js"></script>
 
 
 <style type="text/css">
@@ -178,25 +183,24 @@ div.csl-indent {
 <li class="chapter" data-level="2.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
 <li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="ts.html"><a href="ts.html"><i class="fa fa-check"></i><b>3</b> Séries Temporais</a>
+<li class="chapter" data-level="3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html"><i class="fa fa-check"></i><b>3</b> Características de Séries Temporais</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="ts.html"><a href="ts.html#características-de-séries-temporais"><i class="fa fa-check"></i><b>3.1</b> Características de Séries Temporais</a></li>
-<li class="chapter" data-level="3.2" data-path="ts.html"><a href="ts.html#objeto-ts"><i class="fa fa-check"></i><b>3.2</b> Objeto <code>ts</code></a>
+<li class="chapter" data-level="3.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#objeto-ts"><i class="fa fa-check"></i><b>3.1</b> Objeto <code>ts</code></a>
 <ul>
-<li class="chapter" data-level="3.2.1" data-path="ts.html"><a href="ts.html#frequências-de-uma-série-temporal"><i class="fa fa-check"></i><b>3.2.1</b> Frequências de uma série temporal</a></li>
+<li class="chapter" data-level="3.1.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#frequências-de-uma-série-temporal"><i class="fa fa-check"></i><b>3.1.1</b> Frequências de uma série temporal</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="ts.html"><a href="ts.html#gráficos-de-séries-temporais"><i class="fa fa-check"></i><b>3.3</b> Gráficos de Séries Temporais</a>
+<li class="chapter" data-level="3.2" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#gráficos-de-séries-temporais"><i class="fa fa-check"></i><b>3.2</b> Gráficos de Séries Temporais</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="ts.html"><a href="ts.html#convertendo-tk-para-data.frame"><i class="fa fa-check"></i><b>3.3.1</b> Convertendo tk para data.frame</a></li>
+<li class="chapter" data-level="3.2.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#convertendo-tk-para-data.frame"><i class="fa fa-check"></i><b>3.2.1</b> Convertendo tk para data.frame</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="ts.html"><a href="ts.html#padrões-das-séries-temporais"><i class="fa fa-check"></i><b>3.4</b> Padrões das Séries Temporais</a>
+<li class="chapter" data-level="3.3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#padrões-das-séries-temporais"><i class="fa fa-check"></i><b>3.3</b> Padrões das Séries Temporais</a>
 <ul>
-<li class="chapter" data-level="3.4.1" data-path="ts.html"><a href="ts.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.4.1</b> Série sem padrão</a></li>
-<li class="chapter" data-level="3.4.2" data-path="ts.html"><a href="ts.html#sazonalidade"><i class="fa fa-check"></i><b>3.4.2</b> Sazonalidade</a></li>
-<li class="chapter" data-level="3.4.3" data-path="ts.html"><a href="ts.html#tendência"><i class="fa fa-check"></i><b>3.4.3</b> Tendência</a></li>
-<li class="chapter" data-level="3.4.4" data-path="ts.html"><a href="ts.html#padrão-cíclico"><i class="fa fa-check"></i><b>3.4.4</b> Padrão Cíclico</a></li>
+<li class="chapter" data-level="3.3.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.3.1</b> Série sem padrão</a></li>
+<li class="chapter" data-level="3.3.2" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#sazonalidade"><i class="fa fa-check"></i><b>3.3.2</b> Sazonalidade</a></li>
+<li class="chapter" data-level="3.3.3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#tendência"><i class="fa fa-check"></i><b>3.3.3</b> Tendência</a></li>
+<li class="chapter" data-level="3.3.4" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#padrão-cíclico"><i class="fa fa-check"></i><b>3.3.4</b> Padrão Cíclico</a></li>
 </ul></li>
-<li class="chapter" data-level="3.5" data-path="ts.html"><a href="ts.html#decomposição"><i class="fa fa-check"></i><b>3.5</b> Decomposição</a></li>
+<li class="chapter" data-level="3.4" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#decomposição"><i class="fa fa-check"></i><b>3.4</b> Decomposição</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html"><i class="fa fa-check"></i><b>4</b> Modelos Estatísticos</a>
 <ul>
@@ -219,13 +223,33 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="6" data-path="considerações-práticas.html"><a href="considerações-práticas.html"><i class="fa fa-check"></i><b>6</b> Considerações Práticas</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#rodando-um-mod"><i class="fa fa-check"></i><b>6.1</b> Rodando um mod</a></li>
-<li class="chapter" data-level="6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#valores-ajustados-e-resíduos"><i class="fa fa-check"></i><b>6.2</b> Valores ajustados e resíduos</a></li>
-<li class="chapter" data-level="6.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#diagnósticos-dos-resíduos"><i class="fa fa-check"></i><b>6.3</b> Diagnósticos dos Resíduos</a></li>
-<li class="chapter" data-level="6.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#transformação-de-variáveis"><i class="fa fa-check"></i><b>6.4</b> Transformação de variáveis</a></li>
+<li class="chapter" data-level="6.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#conjuntos-de-teste-e-treinamento"><i class="fa fa-check"></i><b>6.1</b> Conjuntos de teste e treinamento</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#funções-para-dividir-uma-série-temporal"><i class="fa fa-check"></i><b>6.1.1</b> Funções para dividir uma série temporal</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#transformação-de-variáveis"><i class="fa fa-check"></i><b>6.2</b> Transformação de variáveis</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#funções-para-transformar-dados"><i class="fa fa-check"></i><b>6.2.1</b> Funções para transformar dados</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#rodando-um-modelo-simples"><i class="fa fa-check"></i><b>6.3</b> Rodando um modelo simples</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#método-da-média"><i class="fa fa-check"></i><b>6.3.1</b> Método da Média</a></li>
+<li class="chapter" data-level="6.3.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#método-naïve"><i class="fa fa-check"></i><b>6.3.2</b> Método Naïve</a></li>
+<li class="chapter" data-level="6.3.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#método-naïve-sazonal"><i class="fa fa-check"></i><b>6.3.3</b> Método Naïve Sazonal</a></li>
+<li class="chapter" data-level="6.3.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-ajustar-modelos-parsnip"><i class="fa fa-check"></i><b>6.3.4</b> Função para ajustar modelos: <code>parsnip</code></a></li>
+<li class="chapter" data-level="6.3.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#ajustando-os-modelos"><i class="fa fa-check"></i><b>6.3.5</b> Ajustando os modelos</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#valores-ajustados-e-resíduos"><i class="fa fa-check"></i><b>6.4</b> Valores ajustados e resíduos</a>
+<ul>
+<li class="chapter" data-level="6.4.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#teste-de-ljung-box"><i class="fa fa-check"></i><b>6.4.1</b> Teste de Ljung-Box</a></li>
+<li class="chapter" data-level="6.4.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para"><i class="fa fa-check"></i><b>6.4.2</b> Função para</a></li>
+</ul></li>
 <li class="chapter" data-level="6.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#medindo-a-performance-da-previsão"><i class="fa fa-check"></i><b>6.5</b> Medindo a performance da previsão</a>
 <ul>
-<li class="chapter" data-level="6.5.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#conjuntos-de-teste-e-treinamento"><i class="fa fa-check"></i><b>6.5.1</b> Conjuntos de teste e treinamento</a></li>
+<li class="chapter" data-level="6.5.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-dependentes-da-escala"><i class="fa fa-check"></i><b>6.5.1</b> Erros dependentes da escala</a></li>
+<li class="chapter" data-level="6.5.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-de-porcentagem"><i class="fa fa-check"></i><b>6.5.2</b> Erros de porcentagem</a></li>
+<li class="chapter" data-level="6.5.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-escalados"><i class="fa fa-check"></i><b>6.5.3</b> Erros Escalados</a></li>
+<li class="chapter" data-level="6.5.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-medidas-de-performance"><i class="fa fa-check"></i><b>6.5.4</b> Função para Medidas de Performance</a></li>
 </ul></li>
 <li class="chapter" data-level="6.6" data-path="considerações-práticas.html"><a href="considerações-práticas.html#validação-cruzada"><i class="fa fa-check"></i><b>6.6</b> Validação Cruzada</a></li>
 </ul></li>
@@ -277,7 +301,7 @@ div.csl-indent {
 <div id="header">
 <h1 class="title">Séries Temporais com R</h1>
 <p class="author"><em>Robson Oliveira Lima</em></p>
-<p class="date"><em>2021-12-10</em></p>
+<p class="date"><em>2021-12-15</em></p>
 </div>
 <div id="prefácio" class="section level1" number="1">
 <h1><span class="header-section-number">Capítulo 1</span> Prefácio</h1>

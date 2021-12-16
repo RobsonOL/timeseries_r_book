@@ -33,6 +33,7 @@ fig:hist-naive
 fig:acf-naive
 tab:tabela-teste-residuos
 tab:medidas-desempenho
+fig:cross-validation-ts
 fig:plot-medidas-reamostragem
 fig:consumo-renda
 fig:erros-arima
@@ -81,13 +82,15 @@ função-para-ajustar-modelos-parsnip
 ajustando-os-modelos
 valores-ajustados-e-resíduos
 teste-de-ljung-box
-função-para
+função-para-teste-dos-resíduos
 medindo-a-performance-da-previsão
 erros-dependentes-da-escala
 erros-de-porcentagem
 erros-escalados
 função-para-medidas-de-performance
-validação-cruzada
+métodos-de-reamostragem
+validação-cruzada-para-séries-temporais
+implementando-validação-cruzada
 modelo-de-regressão-para-séries-temporais
 modelos-arima
 modelos-de-regressão-dinâmicos

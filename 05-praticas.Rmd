@@ -113,6 +113,13 @@ receita_gasolina
 ```
 Agora podemos realizar as transformações desejadas. Primeiro vamos utilizar a função `step_log` para criar uma versão log da variável dependente, que é selecionada a partir da função selecionadora `all_outcomes` (alternativamente podemos utilizar o nome da variável).
 
+
+:::dica
+Outros seletores específicos do pacote `recipe` são: `all_numeric_predictors()`, `all_numeric()`,
+`all_predictors()` e `all_outcomes`. 
+:::
+
+
 ```{r}
 receita_gasolina <- receita_gasolina %>% 
   step_log(all_outcomes()) 
@@ -129,9 +136,15 @@ receita_gasolina %>%
 
 ```
 
-`recipe` ainda permite uma lista de outras transformações. Com `step_meanimpute` realizamos a imputação de valores faltantes utilizando a média da série. Transformação quadrática é possível com a função `step_sqrt()` e transformações box-cox é possível com `step_BoxCox()`. 
 
-Podemos usar uma especificação genérica da função `dplyr::mutate()` com `step_mutate()`. Podemos ainda  discretizar variáveis numéricas com `step_cut()`, gerar variáveis derivadas da data com `step_date` (dummies de dia, mês, ano, e dia da semana) e muitas outras. Uma lista de todas as transformações possíveis pode ser obtida na [documentação](https://recipes.tidymodels.org/reference/) do `recipe`.
+
+:::dica
+
+O pacote `recipe` permite outras transformações a partir de funções como  `step_meanimpute`, `step_sqrt()`, `step_BoxCox()`, `step_mutate()`, `step_cut() `e  `step_date()`. Uma lista de todas as transformações possíveis pode ser obtida na [documentação](https://recipes.tidymodels.org/reference/) do `recipe`.
+
+:::
+
+
 
 
 ## Rodando um modelo simples
@@ -317,7 +330,7 @@ $$Q_* = n(n+2)\left( \frac{\hat{r}^2_1}{n-1} + \frac{\hat{r}^2_2}{n-2} + ... + \
 
 Novamente, valores elevados de $Q_*$ sugerem que a autocorrelação não é um produto de ruído branco.
 
-### Função para 
+### Função para Teste dos Resíduos
 
 A função `modeltime_residuals_test()` toma os resíduos de cada modelo guardado na tabela de calibração `tbl_calibracao` e retorna uma série de testes estatísticos para os resíduos. A tabela \@ref(tab:tabela-teste-residuos) mostra os resultados dos testes de resíduos produzidos por esta função.
 
@@ -409,47 +422,106 @@ tbl_calibracao %>%
 ```
 Considerando que estamos comparando modelos diferentes aplicados aos mesmos dados, a questão de escala não é relevante. Da mesma forma, independentemente da medida utilizada, os dois modelos parecem produzir resultados semelhantes.
 
-## Validação Cruzada
+## Métodos de Reamostragem
 
-```{r}
+Métodos de reamostragem são sistemas de simulação empírica que emulam o processo de usar parte dos dados para modelagem e uma parte diferente dos dados para avaliação da performance. O diagrama abaixo ilustra como métodos de reamostragem geralmente operam:
+
+
+![Métodos de Reamostragem](resources/resamples.png)
+
+A reamostragem é conduzida apenas na base de treinamento. Para cada reamostragem, os dados são particionados em duas subamostras: uma **base de análise**, onde o modelo é ajustado e uma **base de avaliação**, onde o modelo é avaliado. Estas duas bases são análogas ao conjunto de treinamento e de teste. Utilizamos os termos análise e avaliação para evitar confusões com a divisão inicial entre base de treinamento e de teste.
+
+Um dos métodos mais conhecidos de reamostragem é a validação cruzada. Neste tipo de reamostragem, os dados são aleatoriamente particionados em $V$ conjuntos de tamanho igual (chamados de "folds"). Para $V = 3$ e 1200 observações, podemos atribuir 300 observações para a base de teste e 900 para a base de treinamento. Podemos então selecionar aleatoriamente 300 observações para o conjunto de reamostragem 1, 300 para o conjunto de reamostragem 2 e 300 observações para o conjunto de reamostragem 3.
+
+Para um processo de validação cruzada de 3-folds, para cada interação, um *fold* é guardado para gerar a avaliação do modelo e os outros dois *folds* são utilizados para ajustar o modelo. Este modelo continua para cada *fold*, para que sejam produzidos três conjuntos de medidas de performance. A medida final de performance é a média (ou mediana) das medidas das $V$ replicações.
+
+
+
+### Validação Cruzada para Séries Temporais
+
+Para dados de séries temporais, onde existem componentes como tendência e sazonalidade que dependem da ordem das observações, métodos de reamostragem como *cross-validation* e *bootstrap* podem impedir os modelos de estimar estas características.
+
+
+Uma forma de corrigir este problema é utilizar validação cruzada para séries temporais. O diagrama abaixo mostra a base de treinamento de uma série temporal com 15 observações ordenadas no tempo. A primeira reamostragem possui 11 destas observações, sendo as 8 primeiras amostras reservadas para o **périodo de análise** e as 3 observações seguintes para o **período de avaliação**. Na segunda interação (reamostragem 2), a primeira amostra da base de treinamento é descartada e as bases de análise e avaliação "caminham" um período para frente.
+
+
+
+![Validação Cruzada Para Séries Temporais](resources/cross_validation_tseries.png)
+
+Algumas variações deste método existem: (1) podemos permitir que o conjunto de análise cresça cumulativamente (sem descartar as observações iniciais) e (2) podemos separar as diferentes reamostragens por blocos de semanas ou meses.
+
+### Implementando Validação Cruzada
+
+O pacote `timetk` oferece a função `time_series_cv` para construção de validação cruzada para séries temporais. Além dos dados, a função toma uma série de diferentes parâmetros:
+
+* `initial`: número de observações utilizados no período de análise. 
+
+* `assess`: número de observações utilizadas no período de avaliação.
+
+* `skip`: permite que nem todos as observações sejam utilizadas na base de análise. Para dados diários, um `skip=7` faz com que tenhamos apenas 1 informação por semana.
+
+* `lag`: Incluir uma defasagem entre o período de análise e de avaliação.
+
+* `cumulative`: Se o período de análise deve crescer cumulativamente.
+
+* `slice_limit`: o número máximo de reamostragens a serem retornadas pela função.
+
+Abaixo mostramos um exemplo de `timee_series_cv` com os dados de gasolina. Como temos 26 anos de dados semanais, vamos fixar o período de análise em 18 anos (`initial = "18 years"`), e o período de avaliação em 4 anos (`assess = "4 years"`). Este plano de validação cruzada produziu 104 conjuntos de treinamento de tamanho crescente. A figura \@ref(fig:cross-validation-ts) mostra o gráfico da validação cruzada para quatro destes grupos (slice 1, 20, 30 e 40). Usamos a função `tk_time_series_cv_plan()` para tornar o objeto `cross_validation` um data.frame, e `plot_time_series_cv_plan()` para gerar a visualização. 
+
+
+```{r cross-validation-ts, fig.cap="Validação Cruzada para Séries Temporais"}
 cross_validation <- time_series_cv(
   data = us_gasoline,
-  assess = "5 years",
-  initial = "10 years",
-  skip = "3 years",
-  slice_limit = 8
+  date_var = Week,
+  initial = "18 years",
+  assess = "4 years",
+  cumulative = TRUE
 )
 
 cross_validation %>%
   tk_time_series_cv_plan() %>%
+  filter(.id %in% c("Slice001", "Slice040", "Slice070", "Slice104")) %>% 
   plot_time_series_cv_plan(Week, Barrels, .facet_ncol = 2, .interactive = FALSE)
 
 ```
+O pacote `modeltime.resample` fornece a função `modeltime_fit_resamples` para ajustar modelos contidos em uma tabela de modelos (`tbl_modelos`) para todas as reamostragens contidas no objetivo criado com `time_series_cv()`. Vamos ajustar o modelo naïve e naïve sazonal para cada um dos 104 *folds*. 
+
+:::dica
+Rodar tantos modelos pode levar um longo tempo. Rodar os modelos em paralelo reduz substancialmente o tempo de execução e pode ser possível com o uso de funções como `parallel_start()`. Para ler mais, visite a [documentação da função](https://business-science.github.io/modeltime/reference/parallel_start.html).
+:::
 
 ```{r}
 library(modeltime.resample)
+
+parallel_start(8)
 
 ajustes_reamostragens <- tbl_modelos %>%
   modeltime_fit_resamples(
     resamples = cross_validation
   )
-
+ajustes_reamostragens
 ```
-```{r plot-medidas-reamostragem, fig.cap = "Medidas de Performance para cada reamostragens"}
+
+Podemos visualizar a performance de cada reamostragem com o uso da figura \@ref(fig:plot-medidas-reamostragem). 
+
+
+```{r plot-medidas-reamostragem, fig.cap="Gráfico de Medidas de Reamostragem", message=FALSE, warning=FALSE}
 ajustes_reamostragens %>%
   plot_modeltime_resamples(
-    .point_size  = 3,
+    .point_size  = 1,
     .point_alpha = 0.8,
-    .interactive = FALSE
+    .interactive = FALSE,
+    .legend_show = F
   )
 
 
 ```
+Uma visualização melhor das informações pode ser obtida ao se calcular a média (ou mediana) das medidas de performance dos 104 *folds*. Considerando que nossos dados não possuem zero ou valores próximos de zero na variável dependente, podemos utilizar o MAPE como critério de escolha. Neste caso, o método Naïve com Sazonalidade parece produzir previsões mais precisas.
 
 ```{r medidas-reamostragens}
 ajustes_reamostragens %>%
-  modeltime_resample_accuracy(summary_fns = median) %>%
-  table_modeltime_accuracy() 
+  modeltime_resample_accuracy(summary_fns = mean) %>%
+  table_modeltime_accuracy()
 
 ```
 

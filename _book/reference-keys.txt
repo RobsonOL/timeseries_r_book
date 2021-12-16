@@ -99,3 +99,4 @@ base-de-teste-e-treinamento
 validação-cruzada
 rodando-um-mod
 conjuntos-de-teste-e-treinamento
+rodando-um-modelo-simples

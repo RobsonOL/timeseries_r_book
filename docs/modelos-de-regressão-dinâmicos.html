@@ -24,7 +24,7 @@
 <meta name="author" content="Robson Oliveira Lima" />
 
 
-<meta name="date" content="2021-12-10" />
+<meta name="date" content="2021-12-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -60,6 +60,11 @@
 <script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
 <link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<script src="libs/core-js-2.5.3/shim.min.js"></script>
+<script src="libs/react-17.0.0/react.min.js"></script>
+<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/reactwidget-1.0.0/react-tools.js"></script>
+<script src="libs/reactable-binding-0.2.3/reactable.js"></script>
 
 
 <style type="text/css">
@@ -178,25 +183,24 @@ div.csl-indent {
 <li class="chapter" data-level="2.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
 <li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="ts.html"><a href="ts.html"><i class="fa fa-check"></i><b>3</b> Séries Temporais</a>
+<li class="chapter" data-level="3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html"><i class="fa fa-check"></i><b>3</b> Características de Séries Temporais</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="ts.html"><a href="ts.html#características-de-séries-temporais"><i class="fa fa-check"></i><b>3.1</b> Características de Séries Temporais</a></li>
-<li class="chapter" data-level="3.2" data-path="ts.html"><a href="ts.html#objeto-ts"><i class="fa fa-check"></i><b>3.2</b> Objeto <code>ts</code></a>
+<li class="chapter" data-level="3.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#objeto-ts"><i class="fa fa-check"></i><b>3.1</b> Objeto <code>ts</code></a>
 <ul>
-<li class="chapter" data-level="3.2.1" data-path="ts.html"><a href="ts.html#frequências-de-uma-série-temporal"><i class="fa fa-check"></i><b>3.2.1</b> Frequências de uma série temporal</a></li>
+<li class="chapter" data-level="3.1.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#frequências-de-uma-série-temporal"><i class="fa fa-check"></i><b>3.1.1</b> Frequências de uma série temporal</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="ts.html"><a href="ts.html#gráficos-de-séries-temporais"><i class="fa fa-check"></i><b>3.3</b> Gráficos de Séries Temporais</a>
+<li class="chapter" data-level="3.2" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#gráficos-de-séries-temporais"><i class="fa fa-check"></i><b>3.2</b> Gráficos de Séries Temporais</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="ts.html"><a href="ts.html#convertendo-tk-para-data.frame"><i class="fa fa-check"></i><b>3.3.1</b> Convertendo tk para data.frame</a></li>
+<li class="chapter" data-level="3.2.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#convertendo-tk-para-data.frame"><i class="fa fa-check"></i><b>3.2.1</b> Convertendo tk para data.frame</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="ts.html"><a href="ts.html#padrões-das-séries-temporais"><i class="fa fa-check"></i><b>3.4</b> Padrões das Séries Temporais</a>
+<li class="chapter" data-level="3.3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#padrões-das-séries-temporais"><i class="fa fa-check"></i><b>3.3</b> Padrões das Séries Temporais</a>
 <ul>
-<li class="chapter" data-level="3.4.1" data-path="ts.html"><a href="ts.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.4.1</b> Série sem padrão</a></li>
-<li class="chapter" data-level="3.4.2" data-path="ts.html"><a href="ts.html#sazonalidade"><i class="fa fa-check"></i><b>3.4.2</b> Sazonalidade</a></li>
-<li class="chapter" data-level="3.4.3" data-path="ts.html"><a href="ts.html#tendência"><i class="fa fa-check"></i><b>3.4.3</b> Tendência</a></li>
-<li class="chapter" data-level="3.4.4" data-path="ts.html"><a href="ts.html#padrão-cíclico"><i class="fa fa-check"></i><b>3.4.4</b> Padrão Cíclico</a></li>
+<li class="chapter" data-level="3.3.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.3.1</b> Série sem padrão</a></li>
+<li class="chapter" data-level="3.3.2" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#sazonalidade"><i class="fa fa-check"></i><b>3.3.2</b> Sazonalidade</a></li>
+<li class="chapter" data-level="3.3.3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#tendência"><i class="fa fa-check"></i><b>3.3.3</b> Tendência</a></li>
+<li class="chapter" data-level="3.3.4" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#padrão-cíclico"><i class="fa fa-check"></i><b>3.3.4</b> Padrão Cíclico</a></li>
 </ul></li>
-<li class="chapter" data-level="3.5" data-path="ts.html"><a href="ts.html#decomposição"><i class="fa fa-check"></i><b>3.5</b> Decomposição</a></li>
+<li class="chapter" data-level="3.4" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#decomposição"><i class="fa fa-check"></i><b>3.4</b> Decomposição</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="modelos-estatísticos.html"><a href="modelos-estatísticos.html"><i class="fa fa-check"></i><b>4</b> Modelos Estatísticos</a>
 <ul>
@@ -219,13 +223,33 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="6" data-path="considerações-práticas.html"><a href="considerações-práticas.html"><i class="fa fa-check"></i><b>6</b> Considerações Práticas</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#rodando-um-mod"><i class="fa fa-check"></i><b>6.1</b> Rodando um mod</a></li>
-<li class="chapter" data-level="6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#valores-ajustados-e-resíduos"><i class="fa fa-check"></i><b>6.2</b> Valores ajustados e resíduos</a></li>
-<li class="chapter" data-level="6.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#diagnósticos-dos-resíduos"><i class="fa fa-check"></i><b>6.3</b> Diagnósticos dos Resíduos</a></li>
-<li class="chapter" data-level="6.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#transformação-de-variáveis"><i class="fa fa-check"></i><b>6.4</b> Transformação de variáveis</a></li>
+<li class="chapter" data-level="6.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#conjuntos-de-teste-e-treinamento"><i class="fa fa-check"></i><b>6.1</b> Conjuntos de teste e treinamento</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#funções-para-dividir-uma-série-temporal"><i class="fa fa-check"></i><b>6.1.1</b> Funções para dividir uma série temporal</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#transformação-de-variáveis"><i class="fa fa-check"></i><b>6.2</b> Transformação de variáveis</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#funções-para-transformar-dados"><i class="fa fa-check"></i><b>6.2.1</b> Funções para transformar dados</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#rodando-um-modelo-simples"><i class="fa fa-check"></i><b>6.3</b> Rodando um modelo simples</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#método-da-média"><i class="fa fa-check"></i><b>6.3.1</b> Método da Média</a></li>
+<li class="chapter" data-level="6.3.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#método-naïve"><i class="fa fa-check"></i><b>6.3.2</b> Método Naïve</a></li>
+<li class="chapter" data-level="6.3.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#método-naïve-sazonal"><i class="fa fa-check"></i><b>6.3.3</b> Método Naïve Sazonal</a></li>
+<li class="chapter" data-level="6.3.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-ajustar-modelos-parsnip"><i class="fa fa-check"></i><b>6.3.4</b> Função para ajustar modelos: <code>parsnip</code></a></li>
+<li class="chapter" data-level="6.3.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#ajustando-os-modelos"><i class="fa fa-check"></i><b>6.3.5</b> Ajustando os modelos</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#valores-ajustados-e-resíduos"><i class="fa fa-check"></i><b>6.4</b> Valores ajustados e resíduos</a>
+<ul>
+<li class="chapter" data-level="6.4.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#teste-de-ljung-box"><i class="fa fa-check"></i><b>6.4.1</b> Teste de Ljung-Box</a></li>
+<li class="chapter" data-level="6.4.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para"><i class="fa fa-check"></i><b>6.4.2</b> Função para</a></li>
+</ul></li>
 <li class="chapter" data-level="6.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#medindo-a-performance-da-previsão"><i class="fa fa-check"></i><b>6.5</b> Medindo a performance da previsão</a>
 <ul>
-<li class="chapter" data-level="6.5.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#conjuntos-de-teste-e-treinamento"><i class="fa fa-check"></i><b>6.5.1</b> Conjuntos de teste e treinamento</a></li>
+<li class="chapter" data-level="6.5.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-dependentes-da-escala"><i class="fa fa-check"></i><b>6.5.1</b> Erros dependentes da escala</a></li>
+<li class="chapter" data-level="6.5.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-de-porcentagem"><i class="fa fa-check"></i><b>6.5.2</b> Erros de porcentagem</a></li>
+<li class="chapter" data-level="6.5.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-escalados"><i class="fa fa-check"></i><b>6.5.3</b> Erros Escalados</a></li>
+<li class="chapter" data-level="6.5.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-medidas-de-performance"><i class="fa fa-check"></i><b>6.5.4</b> Função para Medidas de Performance</a></li>
 </ul></li>
 <li class="chapter" data-level="6.6" data-path="considerações-práticas.html"><a href="considerações-práticas.html#validação-cruzada"><i class="fa fa-check"></i><b>6.6</b> Validação Cruzada</a></li>
 </ul></li>
@@ -315,28 +339,28 @@ div.csl-indent {
 <div id="regressão-com-erros-arima" class="section level2" number="9.2">
 <h2><span class="header-section-number">9.2</span> Regressão com Erros ARIMA</h2>
 <p>A função <code>Arima()</code> é capaz de ajustar um modelo de regressão com erros ARIMA se o argumento <code>xreg</code> for utilizado. Como diferenciação está especificada, a diferenciação é aplicada para todas as variáveis antes de estimar o modelo. O comando R utilizado é</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="modelos-de-regressão-dinâmicos.html#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
-<span id="cb65-2"><a href="modelos-de-regressão-dinâmicos.html#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Arima</span>(y, <span class="at">xreg =</span> x, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="modelos-de-regressão-dinâmicos.html#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb100-2"><a href="modelos-de-regressão-dinâmicos.html#cb100-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Arima</span>(y, <span class="at">xreg =</span> x, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span></code></pre></div>
 <p>que irá ajustar um modelo do tipo <span class="math inline">\(y&#39;_t = \beta_1 x&#39;_t + \eta&#39;_t\)</span>.</p>
 <p>A função <code>auto.arima()</code> também é capaz de utilizar covariadas com uso do termo <code>xreg</code>. O usuário deve especificar os preditores e <code>auto.arima()</code> seleciona o melhor modelo ARIMA para os erros.</p>
 <div id="exemplo-consumo-e-renda-nos-eua" class="section level3" number="9.2.1">
 <h3><span class="header-section-number">9.2.1</span> Exemplo: Consumo e Renda nos EUA</h3>
 <p>A figura <a href="modelos-de-regressão-dinâmicos.html#fig:consumo-renda">9.1</a> mostra a mudança trimestral nos gastos com consumo pessoal e a renda disponível entre 1970 e 2016. Estamos interessados em prever o consumo com base na renda. Uma mudança na renda não necessariamente reflete uma mudança instântanea no consumo (exempl, depois de uma demissão, pode levar alguns meses para os gastos se ajustarem). Contudo, vamos ignorar esta complexidade e tentar medir o efeito instantâneo de uma mudança média na renda sore uma mudança média nos gastos.</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="modelos-de-regressão-dinâmicos.html#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp)</span>
-<span id="cb66-2"><a href="modelos-de-regressão-dinâmicos.html#cb66-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-3"><a href="modelos-de-regressão-dinâmicos.html#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(usconsumption, <span class="at">facets =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb66-4"><a href="modelos-de-regressão-dinâmicos.html#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb66-5"><a href="modelos-de-regressão-dinâmicos.html#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Mudança Trimestral no Consumo e Renda, EUA&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="modelos-de-regressão-dinâmicos.html#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp)</span>
+<span id="cb101-2"><a href="modelos-de-regressão-dinâmicos.html#cb101-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-3"><a href="modelos-de-regressão-dinâmicos.html#cb101-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(usconsumption, <span class="at">facets =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb101-4"><a href="modelos-de-regressão-dinâmicos.html#cb101-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb101-5"><a href="modelos-de-regressão-dinâmicos.html#cb101-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Mudança Trimestral no Consumo e Renda, EUA&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:consumo-renda"></span>
 <img src="_main_files/figure-html/consumo-renda-1.png" alt="Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2010" width="672" />
 <p class="caption">
 Figure 9.1: Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2010
 </p>
 </div>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="modelos-de-regressão-dinâmicos.html#cb67-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(usconsumption[,<span class="st">&quot;consumption&quot;</span>],</span>
-<span id="cb67-2"><a href="modelos-de-regressão-dinâmicos.html#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">xreg=</span>usconsumption[,<span class="st">&quot;income&quot;</span>])</span>
-<span id="cb67-3"><a href="modelos-de-regressão-dinâmicos.html#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-4"><a href="modelos-de-regressão-dinâmicos.html#cb67-4" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="modelos-de-regressão-dinâmicos.html#cb102-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(usconsumption[,<span class="st">&quot;consumption&quot;</span>],</span>
+<span id="cb102-2"><a href="modelos-de-regressão-dinâmicos.html#cb102-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">xreg=</span>usconsumption[,<span class="st">&quot;income&quot;</span>])</span>
+<span id="cb102-3"><a href="modelos-de-regressão-dinâmicos.html#cb102-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-4"><a href="modelos-de-regressão-dinâmicos.html#cb102-4" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
 <pre><code>## Series: usconsumption[, &quot;consumption&quot;] 
 ## Regression with ARIMA(1,0,2) errors 
 ## 
@@ -352,9 +376,9 @@ Figure 9.1: Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a
 <span class="math display">\[\eta_t = 0.6516 \eta_{t-1} + \epsilon_t - 0.5440 + 0.218 \epsilon_t\]</span></p>
 <p><span class="math display">\[\epsilon ~ IID(0, 0.3502\]</span></p>
 <p>Podemos recuperar as estimativas de <span class="math inline">\(\eta_t\)</span> e <span class="math inline">\(\epsilon_t\)</span> usando a função <code>residuals()</code>.</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="modelos-de-regressão-dinâmicos.html#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="st">&quot;Erros de Regressão&quot;</span> <span class="ot">=</span> <span class="fu">residuals</span>(fit, <span class="at">type=</span><span class="st">&quot;regression&quot;</span>),</span>
-<span id="cb69-2"><a href="modelos-de-regressão-dinâmicos.html#cb69-2" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Erros ARIMA&quot;</span> <span class="ot">=</span> <span class="fu">residuals</span>(fit, <span class="at">type=</span><span class="st">&quot;innovation&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb69-3"><a href="modelos-de-regressão-dinâmicos.html#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">facets=</span>T)</span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="modelos-de-regressão-dinâmicos.html#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="st">&quot;Erros de Regressão&quot;</span> <span class="ot">=</span> <span class="fu">residuals</span>(fit, <span class="at">type=</span><span class="st">&quot;regression&quot;</span>),</span>
+<span id="cb104-2"><a href="modelos-de-regressão-dinâmicos.html#cb104-2" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Erros ARIMA&quot;</span> <span class="ot">=</span> <span class="fu">residuals</span>(fit, <span class="at">type=</span><span class="st">&quot;innovation&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb104-3"><a href="modelos-de-regressão-dinâmicos.html#cb104-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">facets=</span>T)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:erros-arima"></span>
 <img src="_main_files/figure-html/erros-arima-1.png" alt="Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado" width="672" />
 <p class="caption">
@@ -362,8 +386,8 @@ Figure 9.2: Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado
 </p>
 </div>
 <p>O teste de Ljung-Box, ACF e histograma parecem indicar que os resíduos não são significativamente diferentes de um ruído branco.</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="modelos-de-regressão-dinâmicos.html#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(fit)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="modelos-de-regressão-dinâmicos.html#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(fit)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <pre><code>## 
 ##  Ljung-Box test
 ## 

@@ -1,5 +1,12 @@
 # Os fundamentos de séries temporais 
 
+Para que uma criança aprenda a identificar um gato, é preciso que os pais apontem para vários gatos e digam "gato". Essa tarefa pode ser repetida algumas poucas vezes por crianças, mas para um modelo de previsão, essa tarefa não é tão simples, e exige uma grande quantidade de dados para que o modelo seja capaz de generalizar bem para novos casos. Para séries temporais, novos casos são as observações futuras. 
+
+É importante também que os dados sejam representativos dos novos casos e que eles sejam de boa qualidade. Informações com erros de medidas, presença de valores discrepantes (chamados de _outliers_) ou cheio de ruídos, podem gerar previsões de baixa qualidade mesmo que o modelo utilizado seja "adequado".
+
+Modelos podem realizar previsões imprecisas quando quando ele funciona muito bem para os dados de treinamento, mas não é capaz de prever com precisão novas informações. 
+
+
 ## O que pode ser previsto?
 
 ## Principais modelos de previsão

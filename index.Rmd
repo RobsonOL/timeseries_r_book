@@ -27,7 +27,10 @@ bla bla
 
 ## Pré-requisitos
 
-bla bla
+Para acompanhar este livro, o usuário deve ter o R e RStudio instalados na sua máquina. Conhecimento básico dos pacotes `dplyr` e `ggplot2` é recomendado. Outros pacotes e funções do universo `tidyverse` podem ser utilizados ao longo do livro.
+
+Uma breve descrição da instalação do R/RStudio e das principais funções do `tidyverse` pode ser encontrada no Apêndice.
+
 
 
 

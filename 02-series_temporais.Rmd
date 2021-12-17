@@ -37,6 +37,9 @@ y <- ts(dados_mensais, start = 2015, frequency = 12)
 y
 ```
 
+Dados também podem ser observados como um objetivo do tipo `data.frame`. Neste caso, existe uma coluna de dados com as observações e outra coluna no formato de dados.
+
+
 ### Frequências de uma série temporal
 
 A frequência é o número de observações antes que o padrão sazonal se repita. Quando usamos a função `ts` no R, podemos utilizar as seguintes frequências:
@@ -61,104 +64,115 @@ Para utilizar um objeto `ts` nestes casos, é preciso decidir que desses padrõe
 
 Para séries temporais, o gráfico apropriado mostra as observações no tempo, com observações consecutivas sendo unidas por uma linha reta. A figura \@ref(fig:fig-passageiros) mostra um exemplo de um gráfico de séries temporais.
 
-```{r fig-passageiros, fig.cap="Total de passageiros semanais na Compainha Áerea Ansett"}
+```{r fig-passageiros, fig.cap="Total de passageiros semanais na Compainha Áerea Ansett", message=FALSE, warning=FALSE}
 library(fpp)
 library(tidyverse)
 
-autoplot(melsyd[,"Economy.Class"]) + 
-  ggtitle("Passageiros da Classe Econômica: Melborne-Sydney") +
+
+autoplot(ausair) + 
+  ggtitle("Total de Passageiros aéreos registrados na Australia, 1970-2009") +
   xlab("Ano") +
-  ylab("Milhares")
+  ylab("Milhões")
 ```
 
 Os dados fazem parte do pacote `fpp`, que acompanha o livro **Forecasting: Principles and Practice**. Com a função `autoplot()`, produzimos gráficos no tempo a partir de objetos `ts`. 
 
-Alternativamente podemos transformar o objeto `ts` em um `data.frame`:
-
-```{r}
-dados_passageiros <- data.frame(passageiros_economicos = as.matrix(melsyd[,"Economy.Class"]),
-           date = time(melsyd))
-
-dados_passageiros %>% 
-  head() %>% 
-  knitr::kable()
-```
-
-A partir do objeto `dados_passageiros` é possível produzir o mesmo gráfico utilizando o pacote `ggplot2` (figura \@ref(fig:passageiros-ggplot)).
-
-```{r passageiros-ggplot, fig.cap="Total de passageiros semanais na Compainha Áerea Ansett", message=FALSE, warning=FALSE}
-dados_passageiros %>% 
-  ggplot(aes(y = passageiros_economicos, x = date)) +
-  geom_line() + 
-  labs(y = "Milhares", x = "Ano", title = "Passageiros da Classe Econômica: Melborne-Sydney")
-```
-
-Independemente da forma como o gráfico é produzido, ele revela algumas características interessantes:
-
-* Em 1989 nenhum passageiro foi transportado.
-
-* Durante 1992 houve um período de redução de passageiros. 
-
-* Um grande aumento no número de passageiros transportados em 1991.
-
-* Inícios de ano sempre produzem aumentos no numero de passageiros em razão do efeito das festas de fim de ano.
-
-* Existe uma flutuação de longo prazo, em que o nível de passageiros é elevado no início da série, diminui em 1989, e volta a aumentar novamente entre 1990 e 1991.
-
-* Existem alguns períodos sem informação.
-
-Para realizar previsão dessa série, todas essas características precisam ser levadas em conta. 
-
 ### Convertendo tk para data.frame
 
-O pacote `timetk` possui uma série de funções convenientes para converter objetos `ts` para outros formatos. A função `tk_tbl` converte o objeto `ts` para um objeto `tibble` (objeto equivalente a um dataframe). Já a função `tk_ts` faz o caminho inverso.
+Contudo, objetos `ts` podem não ser tão conveniente de trabalhar quanto o uso de objetos `data.frame` ou `tibble`. Mais recentemente, O pacote `timetk` possui uma série de funções convenientes para converter objetos `ts` para outros formatos. A função `tk_tbl` converte o objeto `ts` para um objeto `tibble` (objeto equivalente a um dataframe). Já a função `tk_ts` faz o caminho inverso.  Neste caso, temos uma coluna para as informações de data e outra coluna com as observações de passageiros.
+
+
 
 ```{r}
 library(timetk)
-melsyd %>% 
+dados_passageiros <- ausair %>% 
   # converte ts em tibble
-  tk_tbl() %>% 
-  mutate(index = as.Date(index)) %>% 
-  tail() %>% 
+  tk_tbl()
+
+dados_passageiros  %>%  tail() %>% 
   knitr::kable()
+  
 ```
+
+
+:::dica
+O mesmo resultado de `tk_tbl()` pode ser obtido com o código: `dados_passageiros <- data.frame(data = time(ausair), passageiros = matrix(ausair))`
+:::
+
+
+A partir do objeto `dados_passageiros` é possível produzir o mesmo gráfico utilizando o pacote `timetk` e sua função `plot_time_series()`, bastando informar qual a coluna com dados de data e qual a coluna com a variável dependente (figura \@ref(fig:passageiros-ggplot)).
+
+```{r passageiros-ggplot, fig.cap="Total anual de passageiros na Australia", message=FALSE, warning=FALSE}
+
+library(timetk)
+dados_passageiros %>% 
+  plot_time_series(.date_var = index, 
+                   .value = value, 
+                   .title = "Total anual de passageiros aéreos na Australia, 1970-2009",
+                   .y_lab = "Em milhões",
+                   .x_lab = "Ano")
+```
+
+
+:::dica
+Uma alternativa à função `plot_time_series()` para produzir gráficos de séries temporais, 
+é o pacote `ggplot2`. Por exemplo, é possível gerar o mesmo gráfico acima com o código `ggplot(aes(x = index, y = value)) + geom_line()` após carregar o pacote com `library(ggplot2)`. 
+:::
+
+Independemente da forma como o gráfico é produzido, ele revela algumas características interessantes:
+
+* Em 1989 houve uma redução abrupta no número de passageiro transportados.
+
+* O mesmo ocorre me 2008/2009. 
+
+* Existe uma tendência geral de aumento no número de passageiros.
+
+* Como os dados são anuais, não podemos observar padrões sazonais dentro de um ano.
+
+* Para realizar previsão dessa série, todas essas características precisam ser levadas em conta. 
+
 
 
 ## Padrões das Séries Temporais
 
-Ao descrever séries temporais, usamos palavras como **tendência**, **sazonalidade** e **padrão cíclico**. Antes disso, podemos observar uma série sem padrão definido.
+Ao descrever séries temporais, usamos palavras como **tendência**, **sazonalidade** e **padrão cíclico**. Antes disso, podemos observar séries sem padrão definido.
 
 
 ### Série sem padrão
 
-Na figura \@ref(fig:chuva-la) vemos a média de precipitação na cidade americana de Los Angelos durante o período de 1878 a 1992. Estes dados estão no pacote `TSA`, que acompanha o livro `Time Series Analysis`. 
-
+Na figura \@ref(fig:chuva-la) vemos a média de precipitação na cidade americana de Los Angelos durante o período de 1878 a 1992. Estes dados estão no pacote `TSA`, que acompanha o livro @cryer2008time. 
 
 
 ```{r chuva-la, fig.cap='Padrão de Chuvas em Los Angeles', message=FALSE, warning=FALSE}
 library(TSA)
 
 data(larain)
-larain <- data.frame(chuva_anual = as.matrix(larain), date = time(larain))
-larain %>% 
-  ggplot(aes(x = date, y = chuva_anual)) + geom_line() + geom_point() + 
-  labs(x = "", y = "Precipitação em polegadas",
-       title = "Chuva Anual em Los Angeles, 1878 - 1992",
-       subtitle = "Em polegadas de Chuva por Ano")
+
+larain_tbl <- larain %>% 
+  tk_tbl() %>% 
+  rename(chuva_anual = value,
+         data = index)
+
+larain_tbl %>% 
+  plot_time_series(.date_var = data,
+                   .value = chuva_anual,
+                   .title = "Chuva Anual em Los Angeles, 1878 - 1992",
+                   .x_lab = "",
+                   .y_lab = "Precipitação em polegadas")
 
 ```
 
-É possível perceber uma variação no volume chuvas ao longo dos anos -- alguns anos com um volume de chuva mais alto, outros mais baixo. 
+É possível perceber uma variação no volume de chuvas ao longo dos anos -- alguns anos com um volume de chuva mais alto, outros mais baixo. 
 
 Estamos interessados se os valores da chuva estão relacionados entre si. Será que ao conhecer o comportamento da chuva em um conjunto de anos podemos prever o que ocorrerá em anos consecutivos? 
 
-Podemos criar uma variável relativa a chuva do ano anterior e compara-la com a chuva no ano corrente. A tabela \@ref(tab:tab-chuva) mostra essa comparação.
+Para responder esta questão, podemos criar uma variável relativa a chuva do ano anterior e compara-la com a chuva no ano corrente utilizando a função `lag()`. A tabela \@ref(tab:tab-chuva) mostra essa comparação.
 
 ```{r tab-chuva, tidy=FALSE}
-larain <- larain %>% 
+larain_tbl <- larain_tbl %>% 
   mutate(chuva_ano_anterior = lag(chuva_anual)) 
 
-larain %>% 
+larain_tbl %>% 
   head() %>% 
   knitr::kable(caption = "Volume Anual de Chuvas em Los Angeles")
 ```
@@ -168,7 +182,7 @@ Assim, em 1877 observamos 17,41 polegadas de chuva, e a chuva do ano anterior so
 Na figura \@ref(fig:dispersao) exibimos as duas informações lado a lado com um gráfico de dispersão. 
 
 ```{r dispersao, fig.cap='Relação entre chuva atual e o volume de chuva do ano anterior',message=FALSE, warning=FALSE}
-larain %>% 
+larain_tbl %>% 
   ggplot(aes(x = chuva_anual, y = chuva_ano_anterior)) + 
   geom_point() + 
   geom_smooth() +
@@ -178,27 +192,44 @@ larain %>%
        subtitle = "Relação entre a Chuva Anual e o Volume de Chuva no Ano Anterior")
 ```
 
-É possível observar que é perfeitamente possível que um ano com um elevado volume de chuvas seja seguido por um ano com baixo volume, e vice-versa. Assim, o volume de chuva que ocorre em um ano não parece explicar muito bem o comportamento da chuva nos anos seguintes. 
+É possível observar que é perfeitamente possível que um ano com um elevado volume de chuvas seja seguido por um ano com baixo volume, e vice-versa. Assim, o volume de chuva que ocorre em um ano não explica muito bem o comportamento da chuva nos anos seguintes. 
 
 Essa série não parece ter nenhum tipo de tendência, que indicaria que o volume de chuva está aumentando ou diminuindo ao longo do tempo. Não parece existir correlação entre a chuva de um ano e do ano anterior, de modo que podemos ter um ano com um volume muito alto de chuva e no ano seguinte, um volume baixo. De um ponto de vista de modelagem e de previsão, está não é uma série muito interessante.
+
+
+### Uma Série com Padrão
 
 A figura \@ref(fig:grafico-coelhos) mostra uma história diferente.
 
 ```{r grafico-coelhos, fig.cap = 'Ambundância de Coelhos Canadenses', warning=F, message=F}
 data(hare)
-hare_df <- data.frame(numero_coelhos = as.matrix(hare), data = time(hare))
-hare_df %>% ggplot(aes(x = data, y = numero_coelhos)) + 
-  geom_line() + 
-  geom_point() + 
-  labs(x = "Ano", y = "Ambundância",
-       title = "Ambundância de Coelhos Canadenses, 1905-1934")
+hare_df <- hare %>% 
+  tk_tbl() %>% 
+  rename(data = index,
+         ambudancia_coelhos = value)
+  
+hare_df %>% 
+  plot_time_series(.date_var = data,
+                   .value = ambudancia_coelhos,
+                   .smooth = FALSE,
+                   .x_lab = "Ano",
+                   .y_lab = "Ambundância de Coelhos",
+                   .title = "Ambundância de Coelhos Canadenses, 1905-1934")
 
 ```
 
- Diferentemente da série anterior, as observações de um ano estão correlacionadas de maneira muito próxima com aquelas observadas nos anos anteriores. Um número grande em um ano é seguido de um número semelhante no ano seguinte. 
+Diferentemente da série anterior, as observações de um ano estão correlacionadas de maneira muito próxima com aquelas observadas nos anos anteriores. Um número grande em um ano é seguido de um número semelhante no ano seguinte. 
 
+Na figura \@ref(dispersao-coelhos) é possível observar com mais clareza como existe uma relação entre a ambudância de coelhos de anos consecutivos. 
 
-Vendas de drogas anti-diabetes (figura \@ref(fig:figura-diabetes)) mostram sazonalidade que é induzida por mudanças nos preços dos medicamentos no final do ano calendário.
+```{r dispersao-coelhos, fig.cap = "Correlação entre ambundância de coelhos de anos consecutivos", message=FALSE, warning=FALSE}
+hare_df %>% 
+  mutate(ambudancia_ano_anterior = lag(ambudancia_coelhos)) %>% 
+  ggplot(aes(x = ambudancia_coelhos, y = ambudancia_ano_anterior)) + 
+  geom_point() + 
+  geom_smooth()
+```
+
 
 
 ### Sazonalidade
@@ -208,14 +239,15 @@ A figura \@ref(fig:tempdub) mostra uma série temporal de temperatura média reg
 ```{r tempdub, fig.cap="Temperatura média anual em Iowa", message=F, warning=F}
 data(tempdub)
 
-tempdub <- data.frame(temperatura = as.matrix(tempdub), data = time(tempdub))
-
 tempdub %>%
-  ggplot(aes(x = data, y = temperatura)) + 
-  geom_line() + 
-  geom_point() + 
-  labs(x = "Ano", y = "Temperatura",
-       title = "Temperatura Média Mensal no Estado do Iowa, 1964-1976")
+  tk_tbl() %>% 
+  rename(data = index, 
+         temperatura = value) %>% 
+  plot_time_series(.date_var = data,
+                   .value = temperatura,
+                   .x_lab = "Ano",
+                   .y_lab = "Temperatura",
+                   .title = "Temperatura Média Mensal no Estado do Iowa, 1964-1976")
 
 ```
 
@@ -226,55 +258,36 @@ Sazonalidade para valores mensais ocorre quando observações que são separadas
 Todos os meses de janeiro e fevereiro são muito frios e são similares em valores de temperatura. Isto não quer dizer que todos os meses de janeiro terão a mesma temperatura, ou os meses de Junho terão sempre a mesma temperatura média. Assim, se quisermos encontrar um modelo para este tipo de série temos que acomodar estas variações mas preservar estas similaridades entre temperaturas dos mesmos meses. 
 
 
+A figura \@ref(fig:figura-diabetes) mostra uma série de vendas de drogas contra diabetes nos EUA. A série possui um comportamento sazonal bastante marcante.
 
 ```{r figura-diabetes, fig.cap="Vendas de Medicamento contra diabetes", message=F, warning=F}
-a10_df <- data.frame(vendas_drogas = matrix(a10),
-                     date = time(a10))
+a10_df <- a10 %>% 
+  tk_tbl() %>% 
+  rename(data = index,
+         vendas_drogas = value)
+
 
 a10_df %>% 
-  ggplot(aes(x = date, y = vendas_drogas)) + 
-  geom_line() +
-  labs(x = "Ano", y = "Milhões de US$", title = "Vendas de Drogas Anti-diabéticos")
+  plot_time_series(data, vendas_drogas,
+                   .x_lab = "Ano",
+                   .y_lab = "Milhões de US$",
+                   .title = "Vendas de Drogas Anti-diabéticos")
 ```
 
-A figura \@ref(fig:seasonal-diabetes) mostra cada série anual de modo independente. 
+Como temos uma série mensal de vendas de drogas ao longo dos anos, podemos verificar o comportamento a sazonalidade dentro dos anos, trimestres e meses. O pacote `timetk` oferece uma série de funções para diagnóstico de padrões nas séries temporais. 
 
-```{r seasonal-diabetes, fig.cap="Gráfico Sazonal de vendas de drogas anti-diabetes"}
-ggseasonplot(a10, year.labels = T, year.labels.left = T) +
-  ylab("Milhões de US$") +
-  ggtitle("Gráfico Sazonal: Vendas de Drogas Anti-diabetes")
-```
+A figura \@ref(fig:seasonal_timetk) cada série anual (o período sazonal) de maneira independente. 
 
-A figura permite observar o padrão sazonal com mais clareza, e é especialmente útil para entender o padrão interno dentro de um ano, assim como encontrar anos com mudanças de padrão. Especificamente observamos um aumento significativo da venda de drogas no início do ano. 
 
-Podemos observar o mesmo gráfico com coordenadas polares. 
-
-```{r diabetes-polar, fig.cap="Gráfico sazonal polar das vendas mensais de medicamentos contra diabetes"}
-ggseasonplot(a10, polar = T) +
-  ylab("Milhões de US$") +
-  ggtitle("Gráfico Polar Sazonal: \nVendas de Drogas Anti-diabetes")
-
-```
-
-Outra figura que pode nos ajudar a identificar padrões sazonais é a produzida pela função `ggsubseriesplot()`. A figura \@ref(fig:subserie) mostra um desses exemplos.
-
-```{r subserie, fig.cap="Sub-séries sazonais para vendas de medicamentos para diabetes"}
-ggsubseriesplot(a10) + 
-  ylab("Milhões de US$") +
-  ggtitle("Sub-séries sazonais para vendas de medicamentos para diabetes")
-```
-
-A linha horizontal mostra a média para cada mês e nos permite enxergar o padrão sazonal com mais clareza. Novamente, ele consegue nos fazer enxergar que o mês de janeiro apresentar uma média muito elevada em comparação aos demais meses do ano.
-
-O pacote `timetk` também oferece uma série de funções para diagnóstico de padrões nas séries temporais. Contudo, o pacote exige que os dados fornecidos estejam no formato de `data.frame`.
 
 ```{r seasonal_timetk, fig.cap="Gráfico sazonal das vendas mensais de medicamentos contra diabetes"}
 library(timetk)
 
 a10_df %>% 
-  mutate(date = as.Date(date)) %>% 
-  plot_seasonal_diagnostics(date, vendas_drogas, .interactive = F)
+  plot_seasonal_diagnostics(data, vendas_drogas, .interactive = F)
 ```
+
+A figura permite observar o padrão sazonal com mais clareza, e é especialmente útil para entender o padrão interno dentro de um ano, assim como encontrar anos com mudanças de padrão. Especificamente observamos um aumento significativo da venda de drogas no início do ano.
 
 
 
@@ -282,33 +295,72 @@ a10_df %>%
 
 A série de vendas de drogas também exibe um padrão de tendência. Uma tendência ocorre quando existe um aumento (ou redução) de longo prazo nos dados. Ela não precisa ser linear, e muitas vezes pode apresentar mudanças de direção, que ocorrem quando uma tendência de aumento se converte em uma tendência de queda. 
 
-A figura \@ref(fig:cafe) mostra outra série com padrão forte de tendência.
+A figura \@ref(fig:cafe) mostra outra série com padrão forte de tendência crescente.
 
 ```{r cafe, fig.cap="Gastos com consumo fora do domicílio na Australia"}
-autoplot(fpp::cafe) +
-  ggtitle("Gastos Trimestrais com consumo fora do domicílio, Australia") +
-  xlab("Ano") + 
-  ylab("Milhões")
+cafe %>% 
+  tk_tbl() %>% 
+  plot_time_series(index, value,
+                   .title = "Gastos Trimestrais com consumo fora do domicílio, Australia",
+                   .x_lab = "Ano",
+                   .y_lab = "Milhões")
 ```
 
 Os gastos dos australianos com consumo fora do domicílio (cafés e restaurantes) tem uma tendência crescente durante todo  o período. Ela também exibe um comportamento sazonal dentro de um mesmo ano.
 
 ### Padrão Cíclico
 
-Um comportamento cíclico surge quando os dados exibem um padrão de altas e quedas não possuem frequência fixa. Estas flutuações são os resultados, quase sempre, de condições econômicas, e estão relacionadas ao ciclo de negócios. A duração dessas flutuações tendem a ser de no mínimo 2 anos.
+Um comportamento cíclico surge quando os dados exibem um padrão de altas e quedas que lembra a sazonalidade, mas ao contrário desta, o ciclo não possui frequência fixa. Muitos confundem o comportamento sazonal, mas eles são bem diferentes. Se a flutuação não tem frequência fixa então elas, temos um ciclo; se a frequência não se altera e está associada com algum aspecto do calendario, então o padrão é sazonal. 
 
-A fabricação de equipamentos elétricos na zona do Euro (figura \@ref(fig:electrical) exibe um padrão sazonal dentro de cada ano, mas também um forte comportamento cíclico com um período de cerca 5 anos ou mais.
+Em geral, o tamanho médio dos ciclos é maior que o comprimento de um padrão sazonal, e a magnitude dos ciclos tende a variar mais do que a magnitude do padrão sazonal. Além disto, as flutuações dos ciclos são o resultado, quase sempre, de condições econômicas, e estão relacionadas ao ciclo de negócios. A duração dessas flutuações tendem a ser de no mínimo 2 anos.
+
+A figura \@ref(fig:electrical) mostra informações sobre a fabricação de equipamentos elétricos na zona do Euro. 
 
 ```{r electrical, fig.cap="Equipamentos elétricos produzidos na zona do Euro"}
-autoplot(fpp::elecequip) +
-  ggtitle("Equipamentos Elétricos Produzidos na Área do Euro") +
-  xlab("Ano") + 
-  ylab("Índice 2005 = 100")
+
+elecequip %>% 
+  tk_tbl() %>% 
+  plot_time_series(index, value,
+                   .title = "Equipamentos Elétricos Produzidos na Área do Euro",
+                   .x_lab = "Ano",
+                   .y_lab = "Índice 2005 = 100")
+
 ```
 
-Muitas pessoas confundem o comportamento sazonal, mas eles são bem diferentes. Se a flutuação não tem frequência fixa então elas são ciclos; se a frequência não se altera e está associada com algum aspecto do calendario, então o padrão é sazonal. Em geral, o tamanho médio dos ciclos é maior que o comprimento de um padrão sazonal, e a magnitude dos ciclos tende a variar mais do que a magnitude do padrão sazonal.
+É possível observar um padrão sazonal dentro de cada ano, mas também um forte comportamento cíclico com um período de cerca 5 anos ou mais.
 
 
 ## Decomposição
 
-_working in progress_
+Uma série de tempo possui três padrões básicos: tendência, sazonalidade e ciclo. Uma série de técnicas podem ser utilizadas para separar estes componentes individuais.  Geralmente, os componentes de ciclo e tendência são exibidos em conjunto (e chamados apenas de tendência), de modo que uma série temporal pode ser vista como composta de três componentes: um componente de ciclo-tendência, um componente de sazonalidade e o resto. 
+
+:::dica
+Algumas séries, sobretudo de alta frequência (minutos, dias, semanas), podem exibir múltiplos componentes de sazonalidade, correspondentes a diferentes períodos sazonais.
+:::
+
+
+### Decomposição STL
+
+A Decomposição de Tendência e Sazonalidade usando Loess (STL em inglês) é um método versáil e robusto para decomposição dos componentes de séries temporais. Uma das suas vantagens é a possibilidade de decompor qualquer tipo de sazonalidade, e não apenas mensal e trimestral como outros métodos.
+
+A decomposição STL é implementada no R com a função `stat::stl()`. O pacote  `timetk` fornece uma versão conveniente desta função com `plot_stl_diagnostics()`. Vamos aplicar esta função aos dados de equipamentos elétricos produzidos na zona do Euro (\@ref(fig:electrical)).
+
+A função `plot_stl_diagnostics()` tem dois parâmetros principais:
+
+* `.frequency`: parâmetro que permite ajustar o componente sazonal. Para a série acima, os dados são mensais, de modo que temos uma frequência de 12.
+
+* `.trend`: parâmetro que ajusta a janela de tendência. Uma inspeção parece indicar que os ciclos duram cerca de cinco anos em média.
+
+O valor padrão destes dois parâmetros é `"auto`, que permite que a função calcule automaticamente o período de sazonalidade e a janela de tendência. A figura \ref(fig:decomp-stl) mostra o resultado da decomposição STL.
+
+```{r decomp-stl, fig.cap = "Decomposição STL da Série de Produção de Equipamentos Elétricos", message=F, warning=F}
+elecequip_df <- elecequip %>% 
+  tk_tbl() %>% 
+  mutate(index = as.Date(index))
+
+elecequip_df %>% 
+  plot_stl_diagnostics(index, value,
+                       .title = "Decomposição STL da Série de Produção de Equipamentos Elétricos",.facet_scales = "free_y")
+
+```
+Na figura vemos cinco séries: (1) série observada; (2) o componente sazonal; (3) o ciclo tendência; (4) o resto; e a série ajustada sazonalmente.

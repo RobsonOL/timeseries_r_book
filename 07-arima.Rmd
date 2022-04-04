@@ -1,1 +1,11 @@
 # Modelos ARIMA
+
+
+O pacote `modeltime` tem suporte ao modelo ARIMA com o uso da função `arima_reg()`, seja usando a implementação do pacote `arima()` (`set_engine("arima")`), ou do pacote `auto.arima` (`set_engine("auto_arima")`). A função `arima_reg()` permite que se ajuste os seguintes parâmetros do modelo ARIMA:
+
+* `seasonal_period`: por padrão a função `arima_reg()` define a frequência sazonal dos dados, mas o usuário pode escolher fixar um valor diferente.
+
+* `non_seasonal_ar`, `non_seasonal_differences` e `non_seasonal_ma`: a ordem dos termos auto-regressivos, de integração e de médias móiveis. Estes parâmetros podem ser escolhidos automaticamente utilizando `set_engine("auto_arima")`. 
+
+* `seasonal_ar`, `seasonal_differences` e `seasonal_ma`: a ordem autoregressiva, de integração e média móveis para sazonalidade.
+

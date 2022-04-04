@@ -91,7 +91,7 @@ Abaixo convertemos `ausair` utilizando a função `tk_tbl()`.
 
 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(timetk)
 dados_passageiros <- ausair %>% 
   # converte ts em tibble

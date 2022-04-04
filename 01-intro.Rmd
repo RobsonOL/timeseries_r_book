@@ -16,3 +16,298 @@ Modelos podem realizar previsões imprecisas quando quando ele funciona muito be
 
 
 ## Um Projeto de Previsão de Ponta a Ponta
+
+O fluxo de trabalho necessário para realizar previsões de uma série temporal seguem uma sequência mais ou menos fixa que começa sempre com a visualização dos dados. 
+
+### Carregando os pacotes necessários
+
+Todo projeto de previsão é iniciado carregando os principais pacotes de manipulação de dados e de previsão. Com o `tidyverse` temos acesso a uma série de funções de manipulação de dados e de visualização. Muitas vezes os dados que temos a disposição não estão em um formato correto ou precisam de pequenos ajustes para serem utilizados pelos modelos preditivos.
+
+O pacote `timetk` contém um conjunto de funções para manipulação, visualização e diagnóstico em séries temporais. Já o pacote `modeltime` possui uma série de funções que tornam conveniente estimar modelos de séries temporais de uma maneira simples e intuitiva.
+
+
+```{r message=FALSE, warning=FALSE}
+# Pacotes de manipulação de dados
+library(tidyverse)
+
+# Pacotes de séries temporais
+library(modeltime, timetk)
+```
+
+### Dados
+
+Abaixo temos dados diários de acidentes em rodovias federais brasileiras. Vemos que os dados estão no formato desejado: cada linha representa um valor numérico associado a uma data específica.
+
+
+```{r}
+acidentes <- read_rds("resources/acidentes_estradas_brasil.rds")
+acidentes %>% 
+  head() %>% 
+  knitr::kable(caption = "Base de acidentes em rodovias federais, 2007 a 2021")
+```
+A função `skim` do pacote `skimr` é uma forma excelente de resumir um banco de dados. 
+
+
+```{r}
+skimr::skim(acidentes) 
+```
+
+Vemos que a coluna de datas está no formato `datetime`, e que a base possui informações de acidentes a partir de primeiro de janeiro de 2007 e fim em 30 de novembro de 2021. A variável dependente (`acidentes`) não possui valores faltantes (*missing values*), assim como valores negativos ou números muito fora do esperado, o que nos leva a crer que a base não precisa de nenhuma manipulação adicional. Em termos de estatísticas descritivas, temos uma média de 352 acidentes por dia; valor mínimo de 71 ocorrências, e máximo de 1101.
+
+A figura \@ref(fig:plot-acidentes) mostra a séries de acidentes em rodovias federais durante 2007 e 2021.
+
+```{r plot-acidentes, fig.cap="Acidentes diários em rodovias federais brasileiras, 2007-2021"}
+acidentes %>%
+  plot_time_series(Date,
+                   acidentes,
+                   .facet_scales = "free_y",
+                   .smooth = F,
+                   .title = "")
+
+```
+
+Podemos fazer algumas observações sobre a série:
+
+* É possível identificar dias com um número muito elevado de acidentes (*outliers*). Estes valores estão associados a datas como Natal e carnaval.
+
+* É possível identificar algumas mudanças de padrão que representam quebras estruturais na série. A primeira ocorreu em 2015, e representou uma mudança na forma como os acidentes eram reportados. Após 2015, acidentes sem vítimas não precisavam da presença de agentes rodoviários federais para serem registrados.
+
+* Em março de 2020 temos outra mudança abrupta no comportamento da série, que foi associada às primeiras medidas de prevenção contra o COVID-19.
+
+Para não termos que lidar com as mudanças estruturais ocorridas na série, vamos utilizar apenas os últimos 12 meses de dados para realizar as previsões. 
+
+A figura \@ref(fig:plot-acidentes-12) mostra a série limitada ao período entre novembro de 2020 e novembro de 2021. A série possui 366 observações, o que parece suficiente para realizar uma previsão simples. 
+
+```{r plot-acidentes-12, fig.cap="Total de acidentes em rodovias federais no Brasil", message=FALSE, warning=FALSE}
+df <- acidentes %>% 
+  filter_by_time(
+    .start_date = last(Date) %-time% "12 month",
+    .end_date = "end"
+  ) 
+  
+
+df %>%
+  plot_time_series(Date,
+                   acidentes,
+                   .facet_scales = "free_y",
+                   .smooth = F)
+
+```
+
+Observando apenas os últimos 12 meses temos uma visão melhor do comportamento dos dados. É possível observar que existe um padrão sazonal na série, com certos dias da semana apresentando um número elevado de acidentes.
+
+Para melhor entender estes padrões sazonais, a figura \@ref(fig:plot-seasonal-diag) mostra o resultado da função `plot_seasonal_diagnostics()`. 
+
+```{r plot-seasonal-diag, fig.cap = "Padrão sazonal da série de acidentes de trânsito"}
+df %>%
+  plot_seasonal_diagnostics(Date, acidentes)
+
+
+```
+É possível observar que os sábados e domingos possuem um número de acidentes maior do que a média. Assim, como as terças-feiras estão associadas com um menor número de acidentes.
+
+A figura \@ref(fig:acf-acidentes) mostra a correlação entre as observações atuais e suas defasagens. Assim, o dia anterior representa o *lag 1*, assim como o mesmo dia da semana passada representa o *lag 7*. Este tipo de gráfico se chama correlogramo e será explicado melhor na seção xxx. 
+
+```{r acf-acidentes, fig.cap = "Correlograma da série de acidentes de trânsito"}
+df %>%
+  plot_acf_diagnostics(Date, acidentes, .lag = 100, .show_white_noise_bars = T)
+
+```
+A figura confirma nossas suspeitas de que a série de acidentes tem um padrão bem distinto de sazonalidade. Especificamente, uma sazonalidade de 7 dias, que é associada com séries que possuem efeito de dia da semana.
+
+
+### Criando uma base de treinamento
+
+Antes de iniciar a modelagem da série temporal, é boa prática dividir a série em dois blocos: o primeiro bloco (chamado de base de treinamento) é onde o modelo aprenderá o comportamento dos acidentes. O segundo bloco (chamado de base de teste) é onde veremos se o modelo fez um bom trabalho em reproduzir o comportamento. Uma explicação mais profunda sobre como realizar essa divisão para séries temporais pode ser encontrada na seção xxxx.
+
+A figura \@ref(fig:treino-teste) mostra a base de treinamento e teste. Utilizaremos os primeiros 8 meses para treinar o modelo e testaremos sua capacidade preditiva ao comparar a previsão com o que foi observado nos últimos 4 meses.
+
+```{r treino-teste, fig.cap = "Série de treinamento e teste "}
+splits_br <- df %>%
+  time_series_split(date_var = Date,
+                    assess = "4 months",
+                    cumulative = TRUE
+  )
+
+# visualizar base de treino e teste
+splits_br %>%
+  tk_time_series_cv_plan() %>%
+  plot_time_series_cv_plan(Date, acidentes)
+
+
+```
+
+Um grande perigo de qualquer modelo de série temporal é a de que ele esteja sobre-ajustando os dados, ou seja, simplesmente imitando o comportamento visto no período de treinamento e sendo incapaz de generalizar para períodos futuros. Podemos minimizar este risco ao criar várias bases de treino e teste. Este processo de reamostragem será melhor explicado na seção xxx. 
+
+A figura \@ref(fig:cv-acidentes) mostra que criamos 4 reamostragens diferentes.
+
+
+```{r cv-acidentes, fig.cap = "Cross-validation para série de acidentes"}
+
+splits_reamostra_br <- df %>%
+  time_series_cv(Date,
+                 assess = "4 months",
+                 skip = "2 months",
+                 cumulative = TRUE,
+                 slice_limit =4)
+splits_reamostra_br %>%
+  tk_time_series_cv_plan() %>%
+  plot_time_series_cv_plan(Date, acidentes)
+
+```
+
+### Fórmula
+
+Vimos que nossa série possui um padrão sazonal bastante distinto, além de ser influenciada por dias importantes do calendário como Natal e carnaval. Portanto, um modelo que pretenda capturar bem o comportamento dos acidentes de trânsito deve incorporar essas informações.
+
+Assim, vamos criar variáveis indicativas para o dia da semana, o semestre, o trimestre, a semana do ano, o dia do ano e o dia do trimestre, além das variáveis indicativas de feriado. Na seção xxx será explicado em detalhes o processo de criação destas variáveis com o pacote `recipe`.
+
+
+```{r}
+# formula para modelos de séries temporais
+# precisa uma coluna de data como covariada
+
+receita_ts <- recipe(acidentes ~ Date + ., data = training(splits_br)) %>%
+  step_timeseries_signature(Date) %>%
+  step_rm(matches("(xts$)|(iso$)|(^.pm)")) %>%
+  step_holiday(Date) %>%
+  step_zv(all_predictors()) %>%
+  step_mutate(Date_month = factor(Date_month, ordered = TRUE)) %>%
+  step_dummy(all_nominal_predictors())
+
+receita_ts %>% 
+  prep() %>% 
+  bake(new_data = NULL) %>% 
+  head() %>% 
+  knitr::kable(caption = "Base de dados com novas variáveis")
+```
+
+
+### Especificando o modelo
+
+Com o pacote `modeltime` podemos especificar o modelo a ser utilizado. O primeiro modelo de previsão será o SNAIVE, ou modelo Naïve Sazonal. Este é um modelo extremamente simples que repete o último valor observado em um dia da semana para todos os valores futuros. Assim, se a última segunda-feira observada produziu 200 acidentes, ele irá repetir 200 em todas as segundas-feiras futuras. Este é um modelo simples, mas serve como um modelo de comparação (*baseline*) para modelos mais complexos.
+
+O nosso segundo modelo é um modelo de Regressão com Erros Arima, que será explicado em detalhes na seção xxx. Para melhorar a previsão do modelo, realizaremos um procedimento de *boosting* dos resíduos do modelo (explicado na seção xxx).
+
+O modelo de Regressão com Erros Arima *Boosted* possui uma série de hiperparâmetros que precisam ser definidos antes do modelo ser ajustado. A escolha destes hiperparâmetros pode produzir modelos com melhor ou pior performance. 
+
+```{r}
+# modelo regressao com erros arima boosted
+spec_snaive <- naive_reg() %>% 
+  set_engine("snaive")
+
+
+spec_regarima <- arima_boost(  mtry           = tune(),
+                               trees          = 1000,
+                               min_n          = tune(),
+                               tree_depth     = tune(),
+                               learn_rate     = tune(),
+                               loss_reduction = tune()
+                               #sample_size    = tune()
+) %>%
+  set_engine("auto_arima_xgboost")
+
+wflw_regarima <- workflow() %>%
+  add_model(spec_regarima) %>%
+  add_recipe(receita_ts)
+
+```
+
+Para escolhermos o melhor conjuntos de hiperparâmetros precisamos adotar um processo de *tuning*, que será melhor explicado na seção xxx. Abaixo utilizamos as quatro reamostragens construídas na seção xxx para rodar um número bastante elevado de modelos: para cada um das quatro reamostragens, vamos estimar um modelo para cada combinação de hiperparâmetro. 
+
+```{r message=FALSE, warning=FALSE}
+# Encontrar melhores hiperparâmetros ----
+# tune regarima
+set.seed(3333)
+tune_results_regarima <- tune_grid(
+  object     = wflw_regarima,
+  resamples  = splits_reamostra_br,
+  param_info = parameters(wflw_regarima),
+  grid       = 5,
+  control    = control_grid(verbose = FALSE,
+                            allow_par = TRUE,
+                            parallel_over = "everything")
+)
+
+
+```
+
+Abaixo vemos que para a primeira reamostragem (*Slice1*) ajustamos o modelo cinco vezes para diferentes valores dos hiperparâmetros `mtry`, `min_n`, `tree_depth` e `learn_rate`. 
+
+```{r}
+tune_results_regarima %>% 
+  unnest(cols = ".metrics") %>% 
+  filter(.metric == "rmse") %>% 
+  head()
+```
+Podemos tomar uma média do erro de previsão das 4 reamostragens. Ao encontrarmos os hiperparâmetros que produzem o modelo com menor erro (diferença entre o observado e o previsto) podemos ajustar o modelo sobre toda a base de treinamento. Podemos chamar este procedimento de finalização do modelo.
+
+```{r}
+regarima_tuned_best <- tune_results_regarima %>%
+  select_best("rmse")
+
+regarima_tuned_best %>% 
+  knitr::kable(caption = "Conjunto de hiperparâmetros que produziu modelo com melhor performance")
+
+```
+
+Abaixo temos a saída do melhor modelo de Regressão com Erros Arima. Uma explicação mais profunda sobre a interpretação da saída do modelo pode ser encontrada na seção xxx.
+
+```{r}
+wflw_fit_regarima <- wflw_regarima %>%
+  finalize_workflow(parameters = regarima_tuned_best) %>%
+  fit(training(splits_br))
+
+wflw_fit_regarima
+```
+
+Abaixo estimamos o modelo SNAIVE. Este modelo não possui hiperparâmetros e pode ser ajustado diretamente sobre a base de treinamento.
+
+```{r}
+wflw_fit_snaive <- workflow() %>% 
+  add_recipe(receita_ts) %>% 
+  add_model(spec_snaive) %>% 
+  fit(training(splits_br))
+  
+```
+
+### Previsão
+
+Por fim, podemos realizar as previsões dos modelos estimados. É sempre interessante realizar uma primeira previsão para o período de teste para verificar como o modelo se comporta quando comparamos sua previsão com dados que foram observados mas não utilizados durante o treinamento. A seção xxx explica em detalhes como podemos utilizar modelos para realizar previsões.
+
+A figura \@ref(fig:previsao-acidentes) mostra uma comparação entre os valores previstos e observados.
+
+
+```{r previsao-acidentes, fig.cap = "Previsão de acidentes em rodovias federais brasileiras", message=FALSE, warning=FALSE}
+
+tbl_calibracao <- modeltime_table(wflw_fit_regarima, wflw_fit_snaive) %>%
+  modeltime_calibrate(testing(splits_br)) 
+
+tbl_calibracao %>% 
+  modeltime_forecast(
+    new_data = testing(splits_br),
+    actual_data = df,
+    keep_data = TRUE
+  ) %>% 
+  filter_by_time(Date, 
+                 .start_date = last(Date) %-time% "3 month",
+                 .end_date = "end") %>% 
+  plot_modeltime_forecast(.legend_max_width = 10, .title = "")
+```
+
+### Performance do modelo
+
+Ambos os modelos parecem ter capturado bem o padrão sazonal da série, mas inspeções visuais das previsões podem ser enganosas. Assim, podemos utilizar medidas de desempenho do modelo que são construídas a partir da comparação entre os valores previstos e observados. A seção xxx traz uma explicação detalhada das medidas de desempenho mais utilizadas, assim como as vantagens e desvantagens de cada uma.
+
+A tabela abaixo mostra diferentes medidas de performance obtida pelos modelos. Valores menores das medidas representam modelos com menor erro (com exceção do `rsq`). Assim, para todas as medidas utilizadas, o modelo mais complexo (Regressão com Erros Arima), a previsão foi melhor do que a do modelo *baseline* SNAIVE.
+
+
+```{r}
+tbl_calibracao %>%
+  modeltime_accuracy() %>% 
+  table_modeltime_accuracy()
+
+```
+
+Assim, podemos utilizar o modelo de Regressão com Erros ARIMA para realizar previsões para o futuro. 
+

@@ -36,7 +36,7 @@ $$(1-\Phi_1 B)(1-B)\eta_t = (1+ \theta_1 B) \epsilon_t$$
 
 onde $\epsilon_t$ é a série de ruído branco.
 
-Note que o modelo tem dois termos de erro - o erro do modelo de regressão, que denotamos como $\eta_$. e o termo de erro do modelo ARIMA, que denotamos como $\epsilon_t$. Apenas os erros do modelo ARIMA são assumidos como ruído branco.
+Note que o modelo tem dois termos de erro - o erro do modelo de regressão, que denotamos como $\eta_t$. e o termo de erro do modelo ARIMA, que denotamos como $\epsilon_t$. Apenas os erros do modelo ARIMA são assumidos como ruído branco.
 
 ## Estimação
 
@@ -62,7 +62,7 @@ Se todas as variáveis são estacionárias, então podemos utilizar erros ARMA p
 
 ## Regressão com Erros ARIMA
 
-A função `Arima()` é capaz de ajustar um modelo de regressão com erros ARIMA se o argumento `xreg` for utilizado. Como diferenciação está especificada, a diferenciação é aplicada para todas as variáveis antes de estimar o modelo. O comando R utilizado é 
+A função `Arima()` é capaz de ajustar um modelo de regressão com erros ARIMA se o argumento `xreg` for utilizado. Como a diferenciação está especificada, ela é aplicada para todas as variáveis antes de estimar o modelo. O comando R utilizado é 
 
 ```{r eval=F}
 library(forecast)
@@ -74,43 +74,228 @@ que irá ajustar um modelo do tipo $y'_t = \beta_1 x'_t + \eta'_t$.
 
 A função `auto.arima()` também é capaz de utilizar covariadas com uso do termo `xreg`. O usuário deve especificar os preditores e `auto.arima()` seleciona o melhor modelo ARIMA para os erros. 
 
+O pacote `modeltime` tem suporte ao modelo ARIMA com o uso da função `arima_reg()` ao se utilizar uma fórmula com regressor externo.
+
 
 ### Exemplo: Consumo e Renda nos EUA
 
 A figura \@ref(fig:consumo-renda) mostra a mudança trimestral nos gastos com consumo pessoal e a renda disponível entre 1970 e 2016. Estamos interessados em prever o consumo com base na renda. Uma mudança na renda não necessariamente reflete uma mudança instântanea no consumo (exempl, depois de uma demissão, pode levar alguns meses para os gastos se ajustarem). Contudo, vamos ignorar esta complexidade e tentar medir o efeito instantâneo de uma mudança média na renda sore uma mudança média nos gastos.
 
-```{r consumo-renda, fig.cap="Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2010"}
-library(fpp)
-
-autoplot(usconsumption, facets = TRUE) +
-  xlab("Ano") + ylab("") +
-  ggtitle("Mudança Trimestral no Consumo e Renda, EUA")
-```
 ```{r}
-fit <- auto.arima(usconsumption[,"consumption"],
-  xreg=usconsumption[,"income"])
+us_change_df <- us_change %>% 
+  tk_tbl() %>% 
+  mutate(Quarter = as.Date(Quarter))
 
+us_change %>% 
+  pivot_longer(cols = 2:6) %>% 
+  filter(name %in% c("Consumption", "Income")) %>% 
+  plot_time_series(Quarter, value, 
+                   .facet_vars = name,
+                   .facet_scales = "free_y",
+                   .smooth = F,
+                   .title = "Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2019")
+```
+
+Vamos dividir a base em treinamento e teste para realizar a previsão proposta com a função `initial_time_split()`. Usando o parâmetro `prop = 0.75` fixamos 75% dos dados para a base de treinamento e 25% para a base de teste.
+
+```{r split-consumo, fig.cap="Base de Treinamento e Teste para dados de Consumo"}
+tbl_treinamento_teste <- 
+  us_change_df %>% 
+  initial_time_split(prop = 0.75)
+
+tbl_treinamento_teste %>% 
+  tk_time_series_cv_plan() %>% 
+  plot_time_series_cv_plan(Quarter, 
+                           Consumption,
+                           .title = "Base de Treinamento e Teste")
+```
+
+
+
+Seguindo o fluxo de trabalho do pacote `tidymodels`, começamos criando o modelo com a função `arima_reg()` e a conectamos à função `forecast::auto.arima()` usando a expressão `set_engine("auto_arima")`. Com o pacote `recipe` podemos definir uma fórmula que toma `Consumption` como variável dependente e `Income` como um regressor. Com a função `workflow` unimos modelo e fórmula para realizar o ajuste do modelo.
+
+```{r message=FALSE, warning=FALSE}
+modelo_regarima <- arima_reg() %>% 
+  set_engine("auto_arima")
+
+receita <- recipe(Consumption ~ Quarter + Income, training(tbl_treinamento_teste))
+fit <- workflow() %>% 
+  add_model(modelo_regarima) %>% 
+  add_recipe(receita) %>% 
+  fit(training(tbl_treinamento_teste))
+```
+Abaixo temos a saída do ajuste do modelo que foi ajustado para a base de treinamento.
+
+```{r}
 fit
 ```
 
+
 Os dados são claramente estacionários (já que estamos considerando mudanças percentuais em vez de gastos e renda bruta), de modo que não há necessidade de diferenciação. O modelo ajustado é
 
-$$y_t = 0.5750 + 0.2420x_t + \eta_t$$
-$$\eta_t = 0.6516 \eta_{t-1} + \epsilon_t - 0.5440 + 0.218 \epsilon_t$$
+$$y_t = 0.6180 + 0.2725x_t + \eta_t$$
+$$\eta_t = 0.5987 \eta_{t-1} + \epsilon_t - 0.5570\epsilon_{t-1} + 0.1840 \epsilon_{t-2}$$
 
-$$\epsilon ~ IID(0, 0.3502$$
+$$\epsilon \sim IID(0, 0.3545)$$
 
-Podemos recuperar as estimativas de $\eta_t$ e $\epsilon_t$ usando a função `residuals()`.
+Podemos recuperar as estimativas de $\eta_t$ e $\epsilon_t$ usando a função `residuals()`. A figura \@ref(fig:erros-arima) mostra que os resíduos do modelo parecem bem comportados, lembrando um processo de ruído branco.
 
-```{r erros-arima, fig.cap="Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado"}
-cbind("Erros de Regressão" = residuals(fit, type="regression"),
-      "Erros ARIMA" = residuals(fit, type="innovation")) %>% 
-  autoplot(facets=T)
+```{r erros-arima, fig.cap="Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado", message=FALSE, warning=FALSE}
+tbl_calibracao <- 
+  modeltime_calibrate(fit, 
+                      new_data = testing(tbl_treinamento_teste))
+  
+  
+tbl_calibracao %>% 
+  modeltime_residuals() %>%  
+  plot_modeltime_residuals(.title = "Resíduos do Modelo de Regressão com Erros ARIMA", 
+                           .legend_show = F)
+
 ```
-O teste de Ljung-Box, ACF e histograma parecem indicar que os resíduos não são significativamente diferentes de um ruído branco.
+
+Na figura \@ref(fig:erros-arima-acf) vemos o correlograma dos resíduos. As barras azuis indicam que as autocorrelações são indistinguíveis de um ruído branco.
+
+```{r erros-arima-acf, fig.cap="ACF dos Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado", message=FALSE, warning=FALSE}
+
+
+tbl_calibracao %>% 
+  modeltime_residuals() %>% 
+  plot_modeltime_residuals(.type = "acf", .lag = 40,
+    .title = "ACF dos Resíduos do Modelo de Regressão com Erros ARIMA", 
+    .show_white_noise_bar = T)
+
+```
+
+O teste de Ljung-Box, ACF e histograma parecem confirmar as informações do ACF, e indicam que os resíduos não são significativamente diferentes de um ruído branco.
+
+A tabela \@ref(tab:tab-residuos-regarima) mostra o resultado para testes de normalidade e de autocorrelação dos resíduos. O teste de Shapiro-Wilk indica que os resíduos parecem normais. Os testes de Ljung-Box e Box-Pierce mostram que os resíduos não são significativamente diferentes de um ruído branco.
+
+```{r tab-residuos-regarima}
+tbl_calibracao %>% 
+  modeltime_residuals() %>% 
+  modeltime_residuals_test() %>% 
+  select(-.model_id, -.model_desc) %>% 
+  knitr::kable(caption = "Testes para Resíduos do Modelo de Regressão com Erros ARIMA")
+
+```
+
+
+## Previsão
+
+A figura \@ref(fig:forecast-regarima) mostra a previsão feita para o período de teste. A linha azul mostra os dados reais e a linha vermelha, a previsão produzida pelo modelo.
+
+```{r forecast-regarima, fig.cap = "Previsão de Consumo do Modelo de Regressão com Erros ARIMA"}
+tbl_calibracao %>% 
+  modeltime_forecast(new_data = testing(tbl_treinamento_teste),
+                     actual_data = us_change_df) %>% 
+  plot_modeltime_forecast(.legend_show = F)
+```
+É importante destacar que a previsão de valores futuros envolve a previsão de valores futuros para os preditores. O intervalo de confiança produzido pela previsão não leva em consideração a incerteza adicional de ter que prever valores para os preditores, e assim devem ser interpretado como condicional aos valores assumidos. 
+ 
+Para finalizar, podemos calcular algumas medidas de performance. Os resultados são exibidos na tabela \@ref(tab:tab-medidas-regarima).
+
+```{r tab-medidas-regarima}
+tbl_calibracao %>% 
+  modeltime_accuracy(new_data = testing(tbl_treinamento_teste)) %>% 
+  select(-.model_id, -.model_desc, -.type) %>% 
+  knitr::kable(caption = "Medidas de Performance do Modelo de Regressão com Erros ARIMA")
+```
+
+Considerando que os dados de mudança percentual do consumo estão ao redor de zero, não é surpreendente que o valor calculado para o MAPE esteja tão elevado.
+
+
+## Exemplo 2: Previsão de Demanda por Eletricidade
+
+```{r eletricidade-diaria, fig.cap = "Demanda por Eletricidade diária e temperatura máxima apara o Estado de Vitoria na Australia, 2014"}
+vic_elec_daily <- vic_elec %>% 
+  tk_tbl() %>% 
+  filter(year(Time) == 2014) %>% 
+  group_by(Date) %>% 
+  summarise(
+    Demand = sum(Demand) / 1e3,
+    Temperature = max(Temperature),
+    Holiday = any(Holiday)
+  ) %>% 
+  mutate(Day_Type = case_when(
+    Holiday ~ "Feriado",
+    wday(Date) %in% 2:6 ~ "Fim-de-semana",
+    TRUE ~ "Dia-de-semana"
+  ))
+
+vic_elec_daily %>% 
+  pivot_longer(c(Demand, Temperature)) %>% 
+  plot_time_series(Date, value,
+                   .facet_vars = name,
+                   .title = "",
+                   .smooth = F)
+  
+```
+
+A figura \@ref(fig:energia-temp) mostra que existe uma relação não linear entre temperatura e demanda por eletricidade. Essa relação se altera a depender do tipo de dia: durante os fins de semana, a demanda por eletricidade é maior, mesmo quando controlamos por temperatura.
+
+```{r energia-temp, fig.cap = "Relação entre demanda diária por eletricidade e temperatura para o Estado de Vitória na Australia, 2014}
+vic_elec_daily %>% 
+  ggplot(aes(x = Temperature, y = Demand, colour = Day_Type)) +
+  geom_point() + 
+  labs(y = "Demanda por Eletricidade (GW)",
+       x = "Temperatura Máxima",
+       color = "Dia da Semana")
+```
 
 
 ```{r}
-checkresiduals(fit)
+elec_splits <- vic_elec_daily %>% 
+  initial_time_split(prop = 0.75)
+
+elec_splits %>% 
+    tk_time_series_cv_plan() %>% 
+  plot_time_series_cv_plan(Date, 
+                           Demand,
+                           .title = "Base de Treinamento e Teste")
+
+
+```
+
+
+```{r}
+
+
+receita_elec <- recipe(Demand ~ ., data = training(elec_splits)) %>% 
+  step_rm(Holiday) %>% 
+  step_dummy(Day_Type) %>% 
+  step_poly(Temperature)
+
+receita_elec %>% prep() %>% bake(new_data = NULL)
+  
+```
+```{r}
+
+fit_elec <- workflow() %>% 
+  add_model(modelo_regarima) %>% 
+  add_recipe(receita_elec) %>% 
+  fit(training(elec_splits))
+
+fit_elec
+```
+
+```{r message=FALSE, warning=FALSE}
+tbl_calibracao_elec <- fit_elec %>% 
+  modeltime_calibrate(new_data = testing(elec_splits))
+
+
+tbl_calibracao_elec %>% 
+  modeltime_residuals() %>% 
+  plot_modeltime_residuals(.type = "acf", .show_white_noise_bar = T, .lag = 21)
+```
+
+```{r}
+tbl_calibracao_elec %>% 
+  modeltime_forecast(new_data = testing(elec_splits),
+                     actual_data = vic_elec_daily) %>% 
+  plot_modeltime_forecast(.legend_max_width = 10)
+```
+
+```{r}
+
 ```
 

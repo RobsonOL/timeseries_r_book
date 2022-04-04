@@ -24,7 +24,7 @@
 <meta name="author" content="Robson Oliveira Lima" />
 
 
-<meta name="date" content="2021-12-17" />
+<meta name="date" content="2021-12-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -195,7 +195,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#padrões-das-séries-temporais"><i class="fa fa-check"></i><b>3.3</b> Padrões das Séries Temporais</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.3.1</b> Série sem padrão</a></li>
+<li class="chapter" data-level="3.3.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.3.1</b> Série Sem Padrão</a></li>
 <li class="chapter" data-level="3.3.2" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#uma-série-com-padrão"><i class="fa fa-check"></i><b>3.3.2</b> Uma Série com Padrão</a></li>
 <li class="chapter" data-level="3.3.3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#sazonalidade"><i class="fa fa-check"></i><b>3.3.3</b> Sazonalidade</a></li>
 <li class="chapter" data-level="3.3.4" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#tendência"><i class="fa fa-check"></i><b>3.3.4</b> Tendência</a></li>
@@ -273,6 +273,8 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="9.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>9.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
 </ul></li>
+<li class="chapter" data-level="9.3" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#previsão"><i class="fa fa-check"></i><b>9.3</b> Previsão</a></li>
+<li class="chapter" data-level="9.4" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-2-previsão-de-demanda-por-eletricidade"><i class="fa fa-check"></i><b>9.4</b> Exemplo 2: Previsão de Demanda por Eletricidade</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="modelos-avançados.html"><a href="modelos-avançados.html"><i class="fa fa-check"></i><b>10</b> Modelos Avançados</a>
 <ul>
@@ -314,15 +316,15 @@ div.csl-indent {
 <div id="ruído-branco" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Ruído Branco</h2>
 <p>Ruído branco é um tipo muito simples de série gerada como uma coleção de variáveis aleatoriamente não correlacionadas, <span class="math inline">\(w_t\)</span>, com média 0 e variância finita <span class="math inline">\(\sigma^2_w\)</span>. A figura <a href="modelos-estatísticos.html#fig:ruido-branco">4.1</a> mostra uma série desse tipo.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="modelos-estatísticos.html#cb22-1" aria-hidden="true" tabindex="-1"></a>ruido_branco <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">200</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span>
-<span id="cb22-2"><a href="modelos-estatísticos.html#cb22-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">ruido_branco =</span> <span class="fu">as.matrix</span>(ruido_branco), <span class="at">x =</span> <span class="fu">time</span>(ruido_branco)) </span>
-<span id="cb22-3"><a href="modelos-estatísticos.html#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="modelos-estatísticos.html#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="modelos-estatísticos.html#cb22-5" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb22-6"><a href="modelos-estatísticos.html#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> ruido_branco)) <span class="sc">+</span></span>
-<span id="cb22-7"><a href="modelos-estatísticos.html#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
-<span id="cb22-8"><a href="modelos-estatísticos.html#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb22-9"><a href="modelos-estatísticos.html#cb22-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Série Temporal do Tipo Ruido Branco&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="modelos-estatísticos.html#cb21-1" aria-hidden="true" tabindex="-1"></a>ruido_branco <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">200</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb21-2"><a href="modelos-estatísticos.html#cb21-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">ruido_branco =</span> <span class="fu">as.matrix</span>(ruido_branco), <span class="at">x =</span> <span class="fu">time</span>(ruido_branco)) </span>
+<span id="cb21-3"><a href="modelos-estatísticos.html#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="modelos-estatísticos.html#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="modelos-estatísticos.html#cb21-5" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb21-6"><a href="modelos-estatísticos.html#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> ruido_branco)) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="modelos-estatísticos.html#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb21-8"><a href="modelos-estatísticos.html#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb21-9"><a href="modelos-estatísticos.html#cb21-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Série Temporal do Tipo Ruido Branco&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:ruido-branco"></span>
 <img src="_main_files/figure-html/ruido-branco-1.png" alt="Série Temporal do Tipo Ruído Branco" width="672" />
 <p class="caption">
@@ -335,14 +337,14 @@ Figure 4.1: Série Temporal do Tipo Ruído Branco
 <p>Podemos substituir a série de ruído branco <span class="math inline">\(w_t\)</span> por uma média móvel que suaviza a série. Por exemplo, considere substituir <span class="math inline">\(w_t\)</span> por uma média dos seus valores atuais e dos seus valores vizinhos no passado e no futuro. Assim, deixe que:</p>
 <p><span class="math display">\[v_t = \frac{1}{3} (w_{t-1} + w_t + w_{t+1})\]</span></p>
 <p>que faz com que a série tenha a aparência mostrada na figura <a href="modelos-estatísticos.html#fig:media-movel">4.2</a>.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="modelos-estatísticos.html#cb23-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
-<span id="cb23-2"><a href="modelos-estatísticos.html#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">media_movel =</span> stats<span class="sc">::</span><span class="fu">filter</span>(ruido_branco, <span class="at">sides =</span> <span class="dv">2</span>, <span class="at">filter =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">3</span>)))</span>
-<span id="cb23-3"><a href="modelos-estatísticos.html#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="modelos-estatísticos.html#cb23-4" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb23-5"><a href="modelos-estatísticos.html#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> media_movel)) <span class="sc">+</span></span>
-<span id="cb23-6"><a href="modelos-estatísticos.html#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
-<span id="cb23-7"><a href="modelos-estatísticos.html#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb23-8"><a href="modelos-estatísticos.html#cb23-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Série Temporal de Média Móvel&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="modelos-estatísticos.html#cb22-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a href="modelos-estatísticos.html#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">media_movel =</span> stats<span class="sc">::</span><span class="fu">filter</span>(ruido_branco, <span class="at">sides =</span> <span class="dv">2</span>, <span class="at">filter =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">3</span>)))</span>
+<span id="cb22-3"><a href="modelos-estatísticos.html#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="modelos-estatísticos.html#cb22-4" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb22-5"><a href="modelos-estatísticos.html#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> media_movel)) <span class="sc">+</span></span>
+<span id="cb22-6"><a href="modelos-estatísticos.html#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb22-7"><a href="modelos-estatísticos.html#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb22-8"><a href="modelos-estatísticos.html#cb22-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Série Temporal de Média Móvel&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:media-movel"></span>
 <img src="_main_files/figure-html/media-movel-1.png" alt="Série temporal de Média Móvel" width="672" />
 <p class="caption">
@@ -358,18 +360,18 @@ Figure 4.2: Série temporal de Média Móvel
 <p>para <span class="math inline">\(t=1,2,...,500\)</span>.</p>
 <p>A equação acima representa uma regressão ou previsão dos valores atuais <span class="math inline">\(x_t\)</span> de uma série temporal como uma função dos dois valores passados da série, e portanto, o termo autoregressivo é sugerido para este modelo.</p>
 <p>Temos aqui um problema com os valores iniciais da série uma vez que as condições iniciais são importantes (<span class="math inline">\(x_0\)</span> e <span class="math inline">\(x_{-1}\)</span>). Mas, assumindo que temos estes valores, podemos gerar uma sequência de valores apenas substituindo estes valores iniciais na equação acima. O resultado é exibindo na figura <a href="modelos-estatísticos.html#fig:autoregressivo">4.3</a>.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="modelos-estatísticos.html#cb24-1" aria-hidden="true" tabindex="-1"></a>ruido_branco <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">250</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span>
-<span id="cb24-2"><a href="modelos-estatísticos.html#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># as primeiras 50 observações são excluídas para evitar problemas de startup</span></span>
-<span id="cb24-3"><a href="modelos-estatísticos.html#cb24-3" aria-hidden="true" tabindex="-1"></a>autoregressivo <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">filter</span>(ruido_branco, <span class="at">filter=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="sc">-</span>.<span class="dv">9</span>), <span class="at">method =</span> <span class="st">&quot;recursive&quot;</span>)[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>)]</span>
-<span id="cb24-4"><a href="modelos-estatísticos.html#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-5"><a href="modelos-estatísticos.html#cb24-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
-<span id="cb24-6"><a href="modelos-estatísticos.html#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">autoregressivo =</span> autoregressivo)</span>
-<span id="cb24-7"><a href="modelos-estatísticos.html#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-8"><a href="modelos-estatísticos.html#cb24-8" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb24-9"><a href="modelos-estatísticos.html#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
-<span id="cb24-10"><a href="modelos-estatísticos.html#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> autoregressivo)) <span class="sc">+</span> </span>
-<span id="cb24-11"><a href="modelos-estatísticos.html#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb24-12"><a href="modelos-estatísticos.html#cb24-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Autogressivo&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="modelos-estatísticos.html#cb23-1" aria-hidden="true" tabindex="-1"></a>ruido_branco <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">250</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb23-2"><a href="modelos-estatísticos.html#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># as primeiras 50 observações são excluídas para evitar problemas de startup</span></span>
+<span id="cb23-3"><a href="modelos-estatísticos.html#cb23-3" aria-hidden="true" tabindex="-1"></a>autoregressivo <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">filter</span>(ruido_branco, <span class="at">filter=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="sc">-</span>.<span class="dv">9</span>), <span class="at">method =</span> <span class="st">&quot;recursive&quot;</span>)[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>)]</span>
+<span id="cb23-4"><a href="modelos-estatísticos.html#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="modelos-estatísticos.html#cb23-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb23-6"><a href="modelos-estatísticos.html#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">autoregressivo =</span> autoregressivo)</span>
+<span id="cb23-7"><a href="modelos-estatísticos.html#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="modelos-estatísticos.html#cb23-8" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb23-9"><a href="modelos-estatísticos.html#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
+<span id="cb23-10"><a href="modelos-estatísticos.html#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> autoregressivo)) <span class="sc">+</span> </span>
+<span id="cb23-11"><a href="modelos-estatísticos.html#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb23-12"><a href="modelos-estatísticos.html#cb23-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Autogressivo&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:autoregressivo"></span>
 <img src="_main_files/figure-html/autoregressivo-1.png" alt="Série Temporal Autoregressiva" width="672" />
 <p class="caption">
@@ -388,25 +390,26 @@ Figure 4.3: Série Temporal Autoregressiva
 <p><span class="math display">\[x_t = \delta t + \sum_{j=1}^t w_t\]</span></p>
 <p>para <span class="math inline">\(t = 1,2,...\)</span>. Ou seja, a série é uma soma de passos erráticos. O random walk é um processo que fornece um bom modelo para fenômenos tão diversos quanto preço de ações ou a posição de particulas pequenas suspensas em um flúido (movimento Browniano).</p>
 <p>A figura <a href="modelos-estatísticos.html#fig:random-walk">4.4</a> mostra 500 observações geradas a partir de um modelo com <span class="math inline">\(\delta= 0\)</span>, <span class="math inline">\(\delta = 0.2\)</span> e <span class="math inline">\(\delta_w = 1\)</span>.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="modelos-estatísticos.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">154</span>)</span>
-<span id="cb25-2"><a href="modelos-estatísticos.html#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="modelos-estatísticos.html#cb25-3" aria-hidden="true" tabindex="-1"></a>ruido_branco  <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">200</span>)</span>
-<span id="cb25-4"><a href="modelos-estatísticos.html#cb25-4" aria-hidden="true" tabindex="-1"></a>random_walk <span class="ot">=</span> <span class="fu">cumsum</span>(ruido_branco)</span>
-<span id="cb25-5"><a href="modelos-estatísticos.html#cb25-5" aria-hidden="true" tabindex="-1"></a>ruido_branco_drift <span class="ot">=</span> ruido_branco <span class="sc">+</span> <span class="fl">0.2</span></span>
-<span id="cb25-6"><a href="modelos-estatísticos.html#cb25-6" aria-hidden="true" tabindex="-1"></a>random_walk_drift <span class="ot">=</span> <span class="fu">cumsum</span>(ruido_branco_drift)</span>
-<span id="cb25-7"><a href="modelos-estatísticos.html#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-8"><a href="modelos-estatísticos.html#cb25-8" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
-<span id="cb25-9"><a href="modelos-estatísticos.html#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">random_walk =</span> random_walk) <span class="sc">%&gt;%</span> </span>
-<span id="cb25-10"><a href="modelos-estatísticos.html#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">random_walk_drift =</span> random_walk_drift)</span>
-<span id="cb25-11"><a href="modelos-estatísticos.html#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-12"><a href="modelos-estatísticos.html#cb25-12" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb25-13"><a href="modelos-estatísticos.html#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
-<span id="cb25-14"><a href="modelos-estatísticos.html#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> random_walk, <span class="at">color =</span> <span class="st">&quot;Random Walk&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb25-15"><a href="modelos-estatísticos.html#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> random_walk_drift, <span class="at">color =</span> <span class="st">&quot;Random Walk com Drift&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb25-16"><a href="modelos-estatísticos.html#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb25-17"><a href="modelos-estatísticos.html#cb25-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Random Walk&quot;</span>,</span>
-<span id="cb25-18"><a href="modelos-estatísticos.html#cb25-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Random Walk sem Drift e Random Walk com Drift&quot;</span>,</span>
-<span id="cb25-19"><a href="modelos-estatísticos.html#cb25-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Modelo:&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="modelos-estatísticos.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">154</span>)</span>
+<span id="cb24-2"><a href="modelos-estatísticos.html#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="modelos-estatísticos.html#cb24-3" aria-hidden="true" tabindex="-1"></a>ruido_branco  <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">200</span>)</span>
+<span id="cb24-4"><a href="modelos-estatísticos.html#cb24-4" aria-hidden="true" tabindex="-1"></a>random_walk <span class="ot">=</span> <span class="fu">cumsum</span>(ruido_branco)</span>
+<span id="cb24-5"><a href="modelos-estatísticos.html#cb24-5" aria-hidden="true" tabindex="-1"></a>ruido_branco_drift <span class="ot">=</span> ruido_branco <span class="sc">+</span> <span class="fl">0.2</span></span>
+<span id="cb24-6"><a href="modelos-estatísticos.html#cb24-6" aria-hidden="true" tabindex="-1"></a>random_walk_drift <span class="ot">=</span> <span class="fu">cumsum</span>(ruido_branco_drift)</span>
+<span id="cb24-7"><a href="modelos-estatísticos.html#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="modelos-estatísticos.html#cb24-8" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb24-9"><a href="modelos-estatísticos.html#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">random_walk =</span> random_walk) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-10"><a href="modelos-estatísticos.html#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">random_walk_drift =</span> random_walk_drift)</span>
+<span id="cb24-11"><a href="modelos-estatísticos.html#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="modelos-estatísticos.html#cb24-12" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb24-13"><a href="modelos-estatísticos.html#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
+<span id="cb24-14"><a href="modelos-estatísticos.html#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> random_walk, <span class="at">color =</span> <span class="st">&quot;Random Walk&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb24-15"><a href="modelos-estatísticos.html#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> random_walk_drift, <span class="at">color =</span> <span class="st">&quot;Random Walk com Drift&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb24-16"><a href="modelos-estatísticos.html#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb24-17"><a href="modelos-estatísticos.html#cb24-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Random Walk&quot;</span>,</span>
+<span id="cb24-18"><a href="modelos-estatísticos.html#cb24-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Random Walk sem Drift e Random Walk com Drift&quot;</span>,</span>
+<span id="cb24-19"><a href="modelos-estatísticos.html#cb24-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Modelo:&quot;</span>)</span></code></pre></div>
+<pre><code>## Don&#39;t know how to automatically pick scale for object of type ts. Defaulting to continuous.</code></pre>
 <div class="figure"><span style="display:block;" id="fig:random-walk"></span>
 <img src="_main_files/figure-html/random-walk-1.png" alt="Série Temporal com Random Walk" width="672" />
 <p class="caption">
@@ -444,6 +447,9 @@ Figure 4.4: Série Temporal com Random Walk
 <span id="cb26-23"><a href="modelos-estatísticos.html#cb26-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-24"><a href="modelos-estatísticos.html#cb26-24" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb26-25"><a href="modelos-estatísticos.html#cb26-25" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(p1, p2, p3)</span></code></pre></div>
+<pre><code>## Don&#39;t know how to automatically pick scale for object of type ts. Defaulting to continuous.
+## Don&#39;t know how to automatically pick scale for object of type ts. Defaulting to continuous.
+## Don&#39;t know how to automatically pick scale for object of type ts. Defaulting to continuous.</code></pre>
 <div class="figure"><span style="display:block;" id="fig:sinal"></span>
 <img src="_main_files/figure-html/sinal-1.png" alt="Séries Temporais com diferentes sinais" width="672" />
 <p class="caption">

@@ -24,7 +24,7 @@
 <meta name="author" content="Robson Oliveira Lima" />
 
 
-<meta name="date" content="2021-12-17" />
+<meta name="date" content="2021-12-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -195,7 +195,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#padrões-das-séries-temporais"><i class="fa fa-check"></i><b>3.3</b> Padrões das Séries Temporais</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.3.1</b> Série sem padrão</a></li>
+<li class="chapter" data-level="3.3.1" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#série-sem-padrão"><i class="fa fa-check"></i><b>3.3.1</b> Série Sem Padrão</a></li>
 <li class="chapter" data-level="3.3.2" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#uma-série-com-padrão"><i class="fa fa-check"></i><b>3.3.2</b> Uma Série com Padrão</a></li>
 <li class="chapter" data-level="3.3.3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#sazonalidade"><i class="fa fa-check"></i><b>3.3.3</b> Sazonalidade</a></li>
 <li class="chapter" data-level="3.3.4" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html#tendência"><i class="fa fa-check"></i><b>3.3.4</b> Tendência</a></li>
@@ -273,6 +273,8 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="9.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>9.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
 </ul></li>
+<li class="chapter" data-level="9.3" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#previsão"><i class="fa fa-check"></i><b>9.3</b> Previsão</a></li>
+<li class="chapter" data-level="9.4" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-2-previsão-de-demanda-por-eletricidade"><i class="fa fa-check"></i><b>9.4</b> Exemplo 2: Previsão de Demanda por Eletricidade</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="modelos-avançados.html"><a href="modelos-avançados.html"><i class="fa fa-check"></i><b>10</b> Modelos Avançados</a>
 <ul>
@@ -309,6 +311,12 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="modelos-arima" class="section level1" number="8">
 <h1><span class="header-section-number">Capítulo 8</span> Modelos ARIMA</h1>
+<p>O pacote <code>modeltime</code> tem suporte ao modelo ARIMA com o uso da função <code>arima_reg()</code>, seja usando a implementação do pacote <code>arima()</code> (<code>set_engine("arima")</code>), ou do pacote <code>auto.arima</code> (<code>set_engine("auto_arima")</code>). A função <code>arima_reg()</code> permite que se ajuste os seguintes parâmetros do modelo ARIMA:</p>
+<ul>
+<li><p><code>seasonal_period</code>: por padrão a função <code>arima_reg()</code> define a frequência sazonal dos dados, mas o usuário pode escolher fixar um valor diferente.</p></li>
+<li><p><code>non_seasonal_ar</code>, <code>non_seasonal_differences</code> e <code>non_seasonal_ma</code>: a ordem dos termos auto-regressivos, de integração e de médias móiveis. Estes parâmetros podem ser escolhidos automaticamente utilizando <code>set_engine("auto_arima")</code>.</p></li>
+<li><p><code>seasonal_ar</code>, <code>seasonal_differences</code> e <code>seasonal_ma</code>: a ordem autoregressiva, de integração e média móveis para sazonalidade.</p></li>
+</ul>
 
 </div>
             </section>

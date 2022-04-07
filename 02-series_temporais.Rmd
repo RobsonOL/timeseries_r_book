@@ -346,7 +346,7 @@ A decomposição STL é implementada no R com a função `stat::stl()`. O pacote
 
 * `.trend`: parâmetro que ajusta a janela de tendência. Uma inspeção parece indicar que os ciclos duram cerca de cinco anos em média.
 
-O valor padrão destes dois parâmetros é `"auto`, que permite que a função calcule automaticamente o período de sazonalidade e a janela de tendência. Vamos aplicar esta função aos dados de equipamentos elétricos produzidos na zona do Euro (\@ref(fig:electrical)). A figura \ref(fig:decomp-stl) mostra o resultado desta decomposição STL.
+O valor padrão destes dois parâmetros é `"auto`, que permite que a função calcule automaticamente o período de sazonalidade e a janela de tendência. Vamos aplicar esta função aos dados de equipamentos elétricos produzidos na zona do Euro (\@ref(fig:electrical)). A figura \@ref(fig:decomp-stl) mostra o resultado desta decomposição STL.
 
 ```{r decomp-stl, fig.cap = "Decomposição STL da Série de Produção de Equipamentos Elétricos", message=F, warning=F}
 elecequip_df <- elecequip %>% 

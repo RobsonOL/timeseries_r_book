@@ -24,15 +24,15 @@
 <meta name="author" content="Robson Oliveira Lima" />
 
 
-<meta name="date" content="2021-12-30" />
+<meta name="date" content="2022-04-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="modelo-de-regressão-para-séries-temporais.html"/>
-<link rel="next" href="modelos-de-regressão-dinâmicos.html"/>
+<link rel="prev" href="tslm.html"/>
+<link rel="next" href="arimax.html"/>
 <script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -53,107 +53,9 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
-<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
-<script src="libs/typedarray-0.1/typedarray.min.js"></script>
-<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
-<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
-<script src="libs/core-js-2.5.3/shim.min.js"></script>
-<script src="libs/react-17.0.0/react.min.js"></script>
-<script src="libs/react-17.0.0/react-dom.min.js"></script>
-<script src="libs/reactwidget-1.0.0/react-tools.js"></script>
-<script src="libs/reactable-binding-0.2.3/reactable.js"></script>
 
 
-<style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-</style>
 
-<style type="text/css">
-/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}
-</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -171,7 +73,7 @@ div.csl-indent {
 <li><a href="./">Séries Temporais com R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prefácio</a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> url: your book url like <span>https://bookdown.org/yihui/bookdown</span></a>
 <ul>
 <li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#roteiro"><i class="fa fa-check"></i><b>1.1</b> Roteiro</a></li>
 <li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#pré-requisitos"><i class="fa fa-check"></i><b>1.2</b> Pré-requisitos</a></li>
@@ -181,7 +83,16 @@ div.csl-indent {
 <li class="chapter" data-level="2.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-que-pode-ser-previsto"><i class="fa fa-check"></i><b>2.1</b> O que pode ser previsto?</a></li>
 <li class="chapter" data-level="2.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#principais-modelos-de-previsão"><i class="fa fa-check"></i><b>2.2</b> Principais modelos de previsão</a></li>
 <li class="chapter" data-level="2.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
-<li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a></li>
+<li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#carregando-os-pacotes-necessários"><i class="fa fa-check"></i><b>2.4.1</b> Carregando os pacotes necessários</a></li>
+<li class="chapter" data-level="2.4.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#dados"><i class="fa fa-check"></i><b>2.4.2</b> Dados</a></li>
+<li class="chapter" data-level="2.4.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#criando-uma-base-de-treinamento"><i class="fa fa-check"></i><b>2.4.3</b> Criando uma base de treinamento</a></li>
+<li class="chapter" data-level="2.4.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#fórmula"><i class="fa fa-check"></i><b>2.4.4</b> Fórmula</a></li>
+<li class="chapter" data-level="2.4.5" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#especificando-o-modelo"><i class="fa fa-check"></i><b>2.4.5</b> Especificando o modelo</a></li>
+<li class="chapter" data-level="2.4.6" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#previsão"><i class="fa fa-check"></i><b>2.4.6</b> Previsão</a></li>
+<li class="chapter" data-level="2.4.7" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#performance-do-modelo"><i class="fa fa-check"></i><b>2.4.7</b> Performance do modelo</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html"><i class="fa fa-check"></i><b>3</b> Características de Séries Temporais</a>
 <ul>
@@ -231,7 +142,7 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="6.1.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#funções-para-dividir-uma-série-temporal"><i class="fa fa-check"></i><b>6.1.1</b> Funções para dividir uma série temporal</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#transformação-de-variáveis"><i class="fa fa-check"></i><b>6.2</b> Transformação de variáveis</a>
+<li class="chapter" data-level="6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#transformacao-dados"><i class="fa fa-check"></i><b>6.2</b> Transformação de variáveis</a>
 <ul>
 <li class="chapter" data-level="6.2.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#funções-para-transformar-dados"><i class="fa fa-check"></i><b>6.2.1</b> Funções para transformar dados</a></li>
 </ul></li>
@@ -243,38 +154,38 @@ div.csl-indent {
 <li class="chapter" data-level="6.3.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-ajustar-modelos-parsnip"><i class="fa fa-check"></i><b>6.3.4</b> Função para ajustar modelos: <code>parsnip</code></a></li>
 <li class="chapter" data-level="6.3.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#ajustando-os-modelos"><i class="fa fa-check"></i><b>6.3.5</b> Ajustando os modelos</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#valores-ajustados-e-resíduos"><i class="fa fa-check"></i><b>6.4</b> Valores ajustados e resíduos</a>
+<li class="chapter" data-level="6.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#analise-residuos"><i class="fa fa-check"></i><b>6.4</b> Valores ajustados e resíduos</a>
 <ul>
 <li class="chapter" data-level="6.4.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#teste-de-ljung-box"><i class="fa fa-check"></i><b>6.4.1</b> Teste de Ljung-Box</a></li>
 <li class="chapter" data-level="6.4.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-teste-dos-resíduos"><i class="fa fa-check"></i><b>6.4.2</b> Função para Teste dos Resíduos</a></li>
 </ul></li>
-<li class="chapter" data-level="6.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#medindo-a-performance-da-previsão"><i class="fa fa-check"></i><b>6.5</b> Medindo a performance da previsão</a>
+<li class="chapter" data-level="6.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#medindo-performance"><i class="fa fa-check"></i><b>6.5</b> Medindo a performance da previsão</a>
 <ul>
 <li class="chapter" data-level="6.5.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-dependentes-da-escala"><i class="fa fa-check"></i><b>6.5.1</b> Erros dependentes da escala</a></li>
 <li class="chapter" data-level="6.5.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-de-porcentagem"><i class="fa fa-check"></i><b>6.5.2</b> Erros de porcentagem</a></li>
 <li class="chapter" data-level="6.5.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-escalados"><i class="fa fa-check"></i><b>6.5.3</b> Erros Escalados</a></li>
 <li class="chapter" data-level="6.5.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-medidas-de-performance"><i class="fa fa-check"></i><b>6.5.4</b> Função para Medidas de Performance</a></li>
 </ul></li>
-<li class="chapter" data-level="6.6" data-path="considerações-práticas.html"><a href="considerações-práticas.html#métodos-de-reamostragem"><i class="fa fa-check"></i><b>6.6</b> Métodos de Reamostragem</a>
+<li class="chapter" data-level="6.6" data-path="considerações-práticas.html"><a href="considerações-práticas.html#metodos-reamostragem"><i class="fa fa-check"></i><b>6.6</b> Métodos de Reamostragem</a>
 <ul>
 <li class="chapter" data-level="6.6.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#validação-cruzada-para-séries-temporais"><i class="fa fa-check"></i><b>6.6.1</b> Validação Cruzada para Séries Temporais</a></li>
 <li class="chapter" data-level="6.6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#implementando-validação-cruzada"><i class="fa fa-check"></i><b>6.6.2</b> Implementando Validação Cruzada</a></li>
 <li class="chapter" data-level="6.6.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#ajustando-modelos-com-reamostragem"><i class="fa fa-check"></i><b>6.6.3</b> Ajustando Modelos com Reamostragem</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="modelo-de-regressão-para-séries-temporais.html"><a href="modelo-de-regressão-para-séries-temporais.html"><i class="fa fa-check"></i><b>7</b> Modelo de Regressão para Séries Temporais</a></li>
+<li class="chapter" data-level="7" data-path="tslm.html"><a href="tslm.html"><i class="fa fa-check"></i><b>7</b> Modelo de Regressão para Séries Temporais</a></li>
 <li class="chapter" data-level="8" data-path="modelos-arima.html"><a href="modelos-arima.html"><i class="fa fa-check"></i><b>8</b> Modelos ARIMA</a></li>
-<li class="chapter" data-level="9" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html"><i class="fa fa-check"></i><b>9</b> Modelos de Regressão Dinâmicos</a>
+<li class="chapter" data-level="9" data-path="arimax.html"><a href="arimax.html"><i class="fa fa-check"></i><b>9</b> Modelos de Regressão Dinâmicos</a>
 <ul>
-<li class="chapter" data-level="9.0.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#valor-de-utilizar-variáveis-explicativas"><i class="fa fa-check"></i><b>9.0.1</b> Valor de utilizar variáveis explicativas</a></li>
-<li class="chapter" data-level="9.0.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#modelos-dinâmicos-de-regressão"><i class="fa fa-check"></i><b>9.0.2</b> Modelos Dinâmicos de Regressão</a></li>
-<li class="chapter" data-level="9.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#estimação"><i class="fa fa-check"></i><b>9.1</b> Estimação</a></li>
-<li class="chapter" data-level="9.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#regressão-com-erros-arima"><i class="fa fa-check"></i><b>9.2</b> Regressão com Erros ARIMA</a>
+<li class="chapter" data-level="9.0.1" data-path="arimax.html"><a href="arimax.html#valor-de-utilizar-variáveis-explicativas"><i class="fa fa-check"></i><b>9.0.1</b> Valor de utilizar variáveis explicativas</a></li>
+<li class="chapter" data-level="9.0.2" data-path="arimax.html"><a href="arimax.html#modelos-dinâmicos-de-regressão"><i class="fa fa-check"></i><b>9.0.2</b> Modelos Dinâmicos de Regressão</a></li>
+<li class="chapter" data-level="9.1" data-path="arimax.html"><a href="arimax.html#estimação"><i class="fa fa-check"></i><b>9.1</b> Estimação</a></li>
+<li class="chapter" data-level="9.2" data-path="arimax.html"><a href="arimax.html#regressão-com-erros-arima"><i class="fa fa-check"></i><b>9.2</b> Regressão com Erros ARIMA</a>
 <ul>
-<li class="chapter" data-level="9.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>9.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
+<li class="chapter" data-level="9.2.1" data-path="arimax.html"><a href="arimax.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>9.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
 </ul></li>
-<li class="chapter" data-level="9.3" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#previsão"><i class="fa fa-check"></i><b>9.3</b> Previsão</a></li>
-<li class="chapter" data-level="9.4" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-2-previsão-de-demanda-por-eletricidade"><i class="fa fa-check"></i><b>9.4</b> Exemplo 2: Previsão de Demanda por Eletricidade</a></li>
+<li class="chapter" data-level="9.3" data-path="arimax.html"><a href="arimax.html#previsão-1"><i class="fa fa-check"></i><b>9.3</b> Previsão</a></li>
+<li class="chapter" data-level="9.4" data-path="arimax.html"><a href="arimax.html#exemplo-2-previsão-de-demanda-por-eletricidade"><i class="fa fa-check"></i><b>9.4</b> Exemplo 2: Previsão de Demanda por Eletricidade</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="modelos-avançados.html"><a href="modelos-avançados.html"><i class="fa fa-check"></i><b>10</b> Modelos Avançados</a>
 <ul>
@@ -311,7 +222,8 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="modelos-arima" class="section level1" number="8">
 <h1><span class="header-section-number">Capítulo 8</span> Modelos ARIMA</h1>
-<p>O pacote <code>modeltime</code> tem suporte ao modelo ARIMA com o uso da função <code>arima_reg()</code>, seja usando a implementação do pacote <code>arima()</code> (<code>set_engine("arima")</code>), ou do pacote <code>auto.arima</code> (<code>set_engine("auto_arima")</code>). A função <code>arima_reg()</code> permite que se ajuste os seguintes parâmetros do modelo ARIMA:</p>
+<p>Este capítulo discute conceitos básicos dos modelos ARMA.
+O pacote <code>modeltime</code> tem suporte ao modelo ARIMA com o uso da função <code>arima_reg()</code>, seja usando a implementação do pacote <code>arima()</code> (<code>set_engine("arima")</code>), ou do pacote <code>auto.arima</code> (<code>set_engine("auto_arima")</code>). A função <code>arima_reg()</code> permite que se ajuste os seguintes parâmetros do modelo ARIMA:</p>
 <ul>
 <li><p><code>seasonal_period</code>: por padrão a função <code>arima_reg()</code> define a frequência sazonal dos dados, mas o usuário pode escolher fixar um valor diferente.</p></li>
 <li><p><code>non_seasonal_ar</code>, <code>non_seasonal_differences</code> e <code>non_seasonal_ma</code>: a ordem dos termos auto-regressivos, de integração e de médias móiveis. Estes parâmetros podem ser escolhidos automaticamente utilizando <code>set_engine("auto_arima")</code>.</p></li>
@@ -324,8 +236,8 @@ div.csl-indent {
           </div>
         </div>
       </div>
-<a href="modelo-de-regressão-para-séries-temporais.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="modelos-de-regressão-dinâmicos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="tslm.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="arimax.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -379,20 +291,6 @@ gitbook.start({
 });
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
 
 </html>

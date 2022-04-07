@@ -1,4 +1,9 @@
-# Modelos de Regressão Dinâmicos
+# Modelos de Regressão Dinâmicos {#arimax}
+
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 O uso de variáveis explicativas exógenas é uma maneira óbvia de melhorar a precisão das precisões. Em vez de depender apenas de informações históricas sobre a série em si, podemos utilizar outras informações relevantes. 
 
@@ -233,7 +238,7 @@ vic_elec_daily %>%
 
 A figura \@ref(fig:energia-temp) mostra que existe uma relação não linear entre temperatura e demanda por eletricidade. Essa relação se altera a depender do tipo de dia: durante os fins de semana, a demanda por eletricidade é maior, mesmo quando controlamos por temperatura.
 
-```{r energia-temp, fig.cap = "Relação entre demanda diária por eletricidade e temperatura para o Estado de Vitória na Australia, 2014}
+```{r energia-temp, fig.cap = "Relação entre demanda diária por eletricidade e temperatura para o Estado de Vitória na Australia, 2014"}
 vic_elec_daily %>% 
   ggplot(aes(x = Temperature, y = Demand, colour = Day_Type)) +
   geom_point() + 
@@ -296,6 +301,6 @@ tbl_calibracao_elec %>%
 ```
 
 ```{r}
-
+tbl_calibracao_elec 
 ```
 

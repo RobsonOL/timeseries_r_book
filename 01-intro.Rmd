@@ -30,8 +30,13 @@ O pacote `timetk` contém um conjunto de funções para manipulação, visualiza
 # Pacotes de manipulação de dados
 library(tidyverse)
 
-# Pacotes de séries temporais
-library(modeltime, timetk)
+# Coleção de pacotes para análise de machine learning e estatística
+library(tidymodels)
+
+# Pacotes específicos de séries temporais
+library(modeltime)
+library(timetk)
+
 ```
 
 ### Dados

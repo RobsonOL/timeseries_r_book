@@ -3,6 +3,10 @@
 Aqui vamos descrever alguns conceitos fundamentais sobre a teoria de séries temporais. Em particular, entender o que é um processo estocástico, a média, a função de covariância, processos estocásticos e a função de autocorrelação.
 
 ```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
 library(tidyverse, timetk, fpp)
 ```
 
@@ -249,7 +253,7 @@ $$\rho_{xy}(s,t) = \frac{\gamma_{xt}(s,t)}{\sqrt{\gamma_{x}(s,s) \gamma_{y}(t,t)
 
 Podemos inclusive extender a ideia acima para o caso de mais de duas séries. 
 
-O pacote `timetk` oferece um banco de dados de vendas semanais na rede walmart. Além de informações de vendas semanais para diferentes departamentos de algumas lojas da Walmart. Além da série de tempo principal, temos algumas covariadas adicionais: `isHoliday`, que indica se a semana específica possui um feriado, `Temperature`, que indica a temperatura média da semana e `Fuel_Price`, que indica o preço do combustível naquela semana.
+O pacote `timetk` oferece um banco de dados de vendas semanais na rede walmart, com informações de vendas semanais para diferentes departamentos de lojas selecionadas da rede. O banco de dados ainda possui covariadas adicionais como `isHoliday`, que indica se a semana específica possui um feriado, `Temperature`, que indica a temperatura média da semana e `Fuel_Price`, que indica o preço do combustível naquela semana. Abaixo uma pequena amostra dos dados disponíveis:
 
 ```{r walmart}
 walmart_sales_weekly %>% 
@@ -257,15 +261,16 @@ walmart_sales_weekly %>%
   knitr::kable(caption = "Vendas semanais das lojas walmart")
 ```
 
-Na figura \@ref(fig:walmart_11) exibimos a série de vendas no tempo apenas para o departamento 1 da loja 1.
+Na figura \@ref(fig:walmart-11) exibimos a série de vendas no tempo apenas para o departamento 1 da loja 1.
 
-```{r walmart_11, fig.cap="Vendas semanais do Departamento 1 da Loja na Walmart"}
+```{r walmart-11, fig.cap="Vendas semanais do Departamento 1 da Loja na Walmart"}
+
 walmart_sales_weekly %>% 
   filter(id == "1_1") %>% 
-  plot_time_series(Date, Weekly_Sales)
+  plot_time_series(Date, Weekly_Sales, .interactive = F)
 ```
 
-Como temos acesso as covariadas `Temperature` e `Fuel_Price` podemos calcular não apenas o ACF, mas também a Função de Correlação-Cruzada com essas duas variáveis. Para tanto, vamos utilizar o parâmetro `.ccf_vars` na função `plot_acf_diagnostics` para incluir estas duas variáveis na análise.
+Observamos alguns picos de vendas semanais que devem estar correlacionados a períodos de feriado. As vendas devem estar relacionadas ainda com a temperatura média e o preço do combustível naquela semana. Como temos acesso as covariadas `Temperature` e `Fuel_Price` podemos calcular não apenas o ACF, mas também a Função de Correlação-Cruzada com essas duas variáveis. Para tanto, vamos utilizar o parâmetro `.ccf_vars` na função `plot_acf_diagnostics` para incluir estas duas variáveis na análise.
 
 
 ```{r ccf-walmart, fig.cap="Correlação Cruzada de Vendas Semanais com Temperatura e Preço de Combustível"}
@@ -279,8 +284,10 @@ walmart_sales_weekly %>%
   
 ```
 
-A função exibe o ACF e PACF de cada um dos departamentos de cada loja Walmart, além de calcular a correlação cruzada com temperatura e preço de combustíveis. Almas relações curiosas emergem, como a relação entre os valores de vendas semanais e valores passados de temperatura. É possível que essa relação esteja sendo intermediada pelo padrão sazonal de vendas mais fortes no fim do ano.
+A função exibe o ACF e PACF de cada um dos departamentos de cada loja Walmart, além de calcular a correlação cruzada com temperatura e preço de combustíveis.
 
-É importante destacar que o padrão da correlação cruzada é afetado pela estrutura das duas séries e a tendência que cada uma tem. É preferível sempre remover a tendência das séries ou levar em consideração a estrutura do ARIMA univariado da variável $x$ antes de aplicar um gráfico de CCF. Esses tópicos serão melhor discutidos na seção xxx e yyy.
+Uma análise da figura \@ref(fig:ccf-walmart) sugere algumas relações curiosas, como a relação entre os valores de vendas semanais e valores passados de temperatura. A relação com temperatura pode ser diferente a depender da localização geográfica da loja, uma vez que em estados frios, baixas temperaturas associadas ao período de inverno podem desestimular a ida de clientes às lojas físicas, enquanto que em estados quentes, esse padrão não seria observado. Além disto, é possível que essa relação entre vendas e temperatura esteja sendo intermediada pelo padrão sazonal de vendas mais fortes no fim do ano.
+
+É importante destacar que o padrão da correlação cruzada é afetado pela estrutura das duas séries e a tendência que cada uma tem. É preferível sempre remover a tendência das séries ou levar em consideração a estrutura do ARIMA univariado da variável $x$ antes de aplicar um gráfico de CCF. 
 
 

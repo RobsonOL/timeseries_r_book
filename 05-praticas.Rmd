@@ -1,21 +1,36 @@
 # Considerações Práticas
 
+Neste capítulo vamos discutir alguns aspectos do processo de criação de previsões de séries temporais. 
 
+Na seção \@ref(conjuntos-de-teste-e-treinamento) vamos analisar como é possível criar conjuntos de teste e treinamento a partir de dados de séries temporais. Ao separar os dados em séries em períodos de treinamento e teste, podemos comparar valores previstos por um modelo com valores reais que não foram utilizados durante o processo de treinamento. Uma boa previsão para fora da amostra garante que o modelo é capaz de generalizar bem o comportamento da série, e não está apenas memorizando certos comportamentos. Este procedimento é facilitado com o uso do pacote `rsample`.
 
+Na seção \@ref(transformacao-dados) vamos entender que antes de estimar os modelos de previsão, um extensivo processo de ajuste dos dados pode ser crucial para produzir bons resultados. Este processo passar pela identificação e correção de valores extremos (*outliers*), por ajustes em dados faltantes (*missing values*), criação de variáveis como *dummies* de feriado ou a transformação da variável original para sua versão em logarítimo. Cada uma dessas escolhas exige do analista a capacidade de ponderar prós e contras e um íntimo conhecimento dos dados utilizados. O pacote `recipes` fornece uma séries de funções convenientes para o ajuste dos dados.
+
+Na seção \@ref(rodando-um-modelo-simples) vamos mostrar como podemos utilizar o pacote `modeltime` para ajustar dois modelos simples de séries temporais.
+
+Após o ajuste do modelo, uma análise dos resíduos é importante para avaliar a qualidade do modelo ajustado. Na seção \@ref(analise-residuos) vamos investigar como a análise de normalidade dos resíduos e a autocorrelação podem nos ajudar na busca por um modelo com bom ajuste.
+
+Na seção \@ref(medindo-performance) vamos discutir como medir a performance de um modelo de previsão a partir dos seus erros de previsão. Para tanto, vamos analisar asss principais medidas utilizadas e como implementa-las no nosso *workflow* utilizando o pacote `yardstick`.
+
+Por fim, na seção \@ref(metodos-reamostragem) vamos investigar o papel dos métodos de reamostragem no processo de previsão de séries temporais.
 
 
 
 ## Conjuntos de teste e treinamento
 
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 A capacidade de um modelo de generalizar só pode ser realmente avaliada quando fazemos previsões de casos novos, para os quais o modelo não foi inicialmente treinado. 
 
-Uma opção bastante utilizada é a de dividir os dados em dois subconjuntos: **conjunto de treinamento** e **conjunto de teste**. O modelo é treinado nos conjuntos de treinamento e testado em novos casos, no conjunto de teste. Podemos então comparar as previsões do modelo com os casos de teste e construir medidas de erro, que irão indicar se o modelo funciona bem para observações inéditas.
+Uma opção bastante utilizada é a de dividir os dados em dois subconjuntos: **conjunto de treinamento** e **conjunto de teste**. O modelo é treinado nos conjuntos de treinamento e testado em novos casos, chamado de conjunto de teste. Podemos então comparar as previsões do modelo com os casos de teste e construir medidas de erro, que irão indicar se o modelo funciona bem para observações inéditas.
 
-A figura \@ref(fig:teste_treinamento) mostra uma série temporal separada em bases de treinamento e teste.
+A figura \@ref(fig:teste-treinamento) mostra uma série temporal separada em bases de treinamento e teste.
 
-```{r teste_treinamento, fig.cap = "Separação de uma série temporal em base de treinamento e de teste",echo=FALSE, message=FALSE, warning=FALSE}
-library(fpp3)
-library(tidymodels)
+```{r teste-treinamento, fig.cap = "Separação de uma série temporal em base de treinamento e de teste",echo=FALSE, message=FALSE, warning=FALSE}
+library(fpp3) # contém os dados us_gasoline
+library(tidymodels) # contém o pacote rsample, recipes e yardstick
 library(modeltime)
 library(timetk)
 
@@ -35,18 +50,18 @@ gasoline_split %>%
                              .line_type = 1,
                              ) 
 ```
-Na porção azul da figura, chamada de base de treinamento, o modelo de previsão é treinado. A partir desse modelo treinado, faremos previsões para o período de teste (vermelho), que são observações inéditas para o modelo, mas são informações conhecidas para o usuário. No exemplo acima, a base de teste é de 30% da série total. O tamanho da base de teste é usualmente de 20%. 
+Na porção azul da figura, chamada de base de treinamento, o modelo de previsão é treinado. A partir desse modelo treinado, faremos previsões para o período de teste (vermelho), que são observações inéditas para o modelo, mas são informações conhecidas para o usuário. No exemplo acima, a base de teste é de 30% da série total. Como regra de bolso podemos definir o tamanho da base de teste em ao menos 20% dos dados totais. 
 
-Um modelo que possui uma boa performance na própria base de treinamento não necessariamente será capaz de realizar boas previsões para casos inéditos. O modelo pode estar **sobreajustando** os dados de treinamento, e memorizando o comportamento do período de treinamento, mas sendo incapaz de generalizar bem. Afinal, é possível ajustar perfeitamente um conjunto de dados com um grande número de parâmetros. 
+Um modelo que possui uma boa performance na própria base de treinamento não necessariamente será capaz de realizar boas previsões para casos inéditos. O modelo pode estar **sobreajustando** os dados de treinamento, e memorizando o comportamento do período de treinamento, mas sendo incapaz de generalizar bem para novos casos. 
 
 ### Funções para dividir uma série temporal
 
-Na figura \@ref(fig:gasoline) podemos visualizar os dados de oferta semanal de gasolina para os EUA.
+Na figura \@ref(fig:gasoline) podemos visualizar os dados de oferta semanal de gasolina para os EUA. Estes dados são parte do pacote `fpp3`.
 
 
 ```{r gasoline, fig.cap="Oferta semanal de produtos de gasolina, EUA"}
 
-library(tidymodels) # contém o pacote rsample
+library(tidymodels) # contém o pacote rsample, yardstick e recipes
 library(fpp3) # contém os dados us_gasoline
 library(timetk)
 
@@ -62,9 +77,9 @@ us_gasoline %>%
                    .y_lab = "Milhões de barril")
 
 ```
-No código acima, utilizamos o pacote `rsample` (parte do `tidymodels`), que contém uma série de pacotes para modelagem estatística. Carregamos o pacote `fpp3`, que contém a base de dados `us_gasoline`. Usamos ainda o pacote `timetk`, com algumas funções convenientes para tratamento de séries temporais. Utilizamos a função `tk_tbl()` do pacote `timetk` para converter o objeto `ts` para `data.frame`, e convertemos a coluna de data para um formato que possa ser reconhecido pelas demais funções do pacote `timetk`. 
+No código acima, carregamos o pacote `tidymodels` (que contém os pacotes `rsample`, `recipes` e `yardstick` que serão utilizados ao longo do capítulo). Carregamos ainda o pacote `timetk`, que possui funções convenientes para tratamento de séries temporais, como a função `tk_tbl()`, que converte o objeto `ts` para `data.frame`.
 
-Para separar os dados em base de treinamento e teste, vamos utilizar o pacote `rsample`. Com a função `initial_split()` podemos criar bases aleatórias de treinamento e teste. Para uma série temporal, como a estrutura temporal dos dados é importante, em vez de uma seleção aleatória, vamos definir bases de treinamento e teste por faixas dos dados. Especificamente, vamos definir que a base de treinamento corresponderá a 70% do total de dados, totalizando 948 observações.
+Para separar os dados em base de treinamento e teste, vamos utilizar o pacote `rsample`. Com a função `initial_split()` podemos criar bases aleatórias de treinamento e teste. Contudo, para uma série temporal, como a estrutura temporal dos dados é importante, em vez de uma seleção aleatória dos valores que farão parte do conjunto de teste e do conjunto de treinamento, vamos definir estes conjuntos a partir de faixas temporais. Especificamente, vamos definir que a base de treinamento corresponderá aos primeiros 70% das observações, totalizando 948 observações.
 
 ```{r}
 gasoline_split <- us_gasoline %>%
@@ -72,10 +87,21 @@ gasoline_split <- us_gasoline %>%
 
 gasoline_split
 ```
-O pacote `rsample` oferece duas funções adicionais: `training()` e `testing`, que retorna apenas as observações referentes aquela faixa específica. Podemos ainda visualizar como os dados foram separados utilizando as funções `tk_time_series_cv_plan()` e `plot_time_series_cv_plan()`, que preparam os dados e visualizam o plano de teste e treinamento (figura \@ref(fig:treino_teste_gasolina)).
 
 
-```{r treino_teste_gasolina, fig.cap="Bases de Teste e Treinamento para dados de gasolina, EUA"}
+O objeto `gasoline_split` é uma lista com informações dos dados de treinamento e de teste. Podemos utilizar as funções `training()` e `testing` do pacote `rsample` para acessar apenas as observações referentes aquela faixa específica. Abaixo, temos um resumo dos dados de teste utilizando a função `testing(gasoline_split)`. Observe que as observações só tem inicio em abril de 2009.
+
+
+```{r}
+testing(gasoline_split) %>% 
+  head()
+```
+
+
+Podemos ainda visualizar como o período de treinamento e teste utilizando as funções `tk_time_series_cv_plan()` e `plot_time_series_cv_plan()`, que preparam os dados e visualizam o plano de teste e treinamento (figura \@ref(fig:treino-teste-gasolina)). 
+
+
+```{r treino-teste-gasolina, fig.cap="Bases de Teste e Treinamento para dados de gasolina, EUA"}
 df_treinamento <- training(gasoline_split)
 df_teste <- testing(gasoline_split)
 
@@ -90,20 +116,27 @@ gasoline_split %>%
 
 ```
 
+Na seção \@ref(rodando-um-modelo-simples) vamos utilizar a base de treinamento criada acima para estimar alguns modelos de séries temporais. Na seção \@ref(medindo-performance), utilizaremos a base de teste para avaliar os erros cometidos por estes modelos.
 
-## Transformação de variáveis
+
+## Transformação de variáveis {#transformacao-dados}
 
 Melhorias das previsões podem ser obtidas pela transformação das séries originais. Dados de total de vendas mensais podem ser afetados por efeitos calendários (meses com mais dias possuem naturalmente mais vendas totais). Uma forma de corrigir esta distorção é trabalhar com a média diária de vendas para cada mês.
 
 Dados agregados como produto interno bruto, total de empresas em uma cidade, total de leitos ou número de homicídios são distocidos por um efeito população. Uma transformação bastante popular é o de substituir a variável original por uma medida _per capita_. 
 
-Quando trabalhamos com variáveis monetárias, ajustes pela inflação são fundamentais para realizar comparações justas ao longo do tempo. Para realizar este ajuste, é necessário utilizar um índice de inflação apropriado. 
+Quando trabalhamos com variáveis monetárias como faturamento e arrecadação, ajustes pela inflação são fundamentais para realizar comparações justas ao longo do tempo. Para realizar este ajuste, é necessário utilizar um índice de inflação apropriado. 
 
-Outros tipos incluem transformações matemáticas, como a mudança da série original para sua versão logarítima. Para uma série original $y_1,...,y_T$, uma transformação logarítima tomará a forma $w_t = \log(y_t)$. Este tipo de transformação pode ser útil pela sua interpretabilidade, já que muadnças em um valor log são mudanças percentuais na escala original. Se o log na base 10 é utilizado, um aumento de 1 na escala log corresponde a multiplicar a variável original por 10. Contudo, se a variável original possui valores zero ou negativos, este tipo de transformação não é possível. 
+Outras transformações úteis incluem transformações matemáticas, como a mudança da série original para sua versão logarítima. Para uma série original $y_1,...,y_T$, uma transformação logarítima tomará a forma $w_t = \log(y_t)$. Este tipo de transformação pode ser útil pela sua interpretabilidade, já que mudanças em um valor *log* são mudanças percentuais na escala original. Se o log na base 10 é utilizado, um aumento de 1 na escala log corresponde a multiplicar a variável original por 10. Contudo, se a variável original possui valores zero ou negativos, este tipo de transformação não é possível. 
 
-### Funções para transformar dados
+Podemos ainda estar interessados em adicionar variáveis indicativas (*dummies*) para dia da semana, dia do mês ou feriados importantes no ano. Com isto, podemos capturar algum efeito sazonal ou efeito de calendário que não seria possível sem a adição destas variáveis. *Dummies* podem ainda ser utilizadas para indicar que determinadas observações são *outliers*, ou seja, representam desvios significativos do padrão normal da série temporal. 
 
-Antes de aplicar qualquer modelo aos dados, podemos utilizar o pacote `recipes` (parte do pacote `tidymodels`) para criar pequenas receitas de bolo com instruções de pré-processamento dos dados. Ele torna simples tarefas como a criação de variáveis `dummies`, a normalização de variáveis numéricas, a criação de variáveis derivadas da coluna de tempo (como dummy de dia, mês, ano e dia da semana), além de muitas outras operações de _feature engineering_ que são tão importantes, mas por vezes tediosas. E além, das transformações de variáveis, podemos ainda selecionar variáveis e remover colunas com variância zero.
+Por fim, a série temporal a ser prevista pode estar incompleta. Essas informações faltantes (*missing values*) podem ser preenchidas com a utilização de métodos de imputação de dados. Contudo, utilizar métodos de imputação exige do analista um profundo conhecimento dos dados. Se os dados faltantes são aleatórios ou muito próximo disso, a imputação simples dos dados não oferece custos importantes. 
+
+
+### Funções para transformar dados 
+
+Antes de aplicar qualquer modelo aos dados, podemos utilizar o pacote `recipes` (parte do pacote `tidymodels`) para criar pequenas receitas de bolo com instruções de pré-processamento dos dados. Ele torna simples tarefas como a criação de variáveis `dummies`, a normalização de variáveis numéricas, a criação de variáveis derivadas da coluna de tempo (como dummy de dia, mês, ano e dia da semana), além de muitas outras operações de _feature engineering_ que são tão importantes, mas por vezes tediosas. 
 
 Trabalhando com a base de dados `us_gasoline`, vamos converter os dados originais para sua versão logarítima. Primeiro, com a função `recipe` podemos utilizar uma fórmula para indicar a variável dependente e as variáveis independentes. No caso de uma série temporal univariada, a coluna de tempo (`Week`) pode ser incluida como variável independente. Precisamos ainda indicar qual a base a ser transformada, que será a base de treinamento.
 
@@ -149,7 +182,7 @@ O pacote `recipe` permite outras transformações a partir de funções como  `s
 
 ## Rodando um modelo simples
 
-Nas próximas seções veremos modelos mais complexos, e mais apropriados para os dados utilizados. Por enquanto, vamos utilizar alguns modelos simples, que podem servir como _benchmarking_ para os modelos por vi. 
+Nas próximas seções veremos modelos mais complexos e mais apropriados para os dados utilizados. Por enquanto, vamos utilizar alguns modelos simples, que podem servir como _benchmarking_ para os modelos por vi. 
 
 ### Método da Média
 
@@ -189,6 +222,11 @@ O pacote `modeltime` extende o total de modelos para incluir modelos exclusivos 
 
 
 ```{r}
+
+modelo_media <- window_reg() %>% 
+  set_engine("window_function",
+             window_function = mean)
+
 modelo_snaive <- naive_reg(
         seasonal_period = 52
     ) %>%
@@ -206,10 +244,15 @@ Para o modelo Naïve Sazonal, precisamos fixar o parâmetro de período da sazon
 
 Agora temos os três ingredientes mais importantes para nosso modelo preditivo: (1) temos as bases de treinamento e teste, (2) temos uma receita de bolo com o passo-a-passo do pré-processamento que deve ser aplicado em todas as bases de dados; e (3) declaramos o modelo que deve ser ajustado. Para facilitar a integração de todas essas peças, podemos utilizar o pacote `workflows`, parte da suite `tidymodels`.
 
-Iniciamos um workflow sempre com a função `workflow()`. Adicionamos o modelo definido acima com `add_model()` e a receita que deve ser aplicada aos dados com `add_recipe()`. O último passo é o ajuste do modelo, onde passamos a base de treinamento construída pelo pacote `rsample` para que estimar o modelo naïve e naïve sazonal.
+Iniciamos um workflow sempre com a função `workflow()`. Adicionamos o modelo definido acima com `add_model()` e a receita que deve ser aplicada aos dados com `add_recipe()`. O último passo é o ajuste do modelo, onde passamos a base de treinamento construída pelo pacote `rsample` para estimar o modelo naïve e naïve sazonal.
 
 
 ```{r}
+workflow_media <- workflow() %>% 
+  add_recipe(receita_gasolina) %>% 
+  add_model(modelo_media) %>% 
+  fit(training(gasoline_split))
+
 workflow_naive <- workflow() %>% 
   add_recipe(receita_gasolina) %>% 
   add_model(modelo_naive) %>% 
@@ -225,6 +268,7 @@ Para facilitar o trabalho quando temos diversos modelos, podemos criar uma tabel
 
 ```{r}
 tbl_modelos <- modeltime_table(
+  workflow_media,
   workflow_snaive,
   workflow_naive
   )
@@ -243,11 +287,13 @@ tbl_calibracao %>%
 
 ```
 
-A última observação da base de treinamento foi na semana do dia 30 de março de 2009. Naquele dia, o log do total de barris foi de 9,024. O método naïve simplesmente reproduziu este valor para todo o período de teste. Por isso vemos uma reta verde. 
+A última observação da base de treinamento foi na semana do dia 30 de março de 2009. Naquele dia, o log do total de barris foi de 9,024. O método naïve simplesmente reproduziu este valor para todo o período de teste. Por isso vemos uma reta verde. Já o método da média, reproduziu o valor médio de todo o período. É possível notar que a média não é um bom previsor desta série, uma vez que a série passou por mudanças importantes na sua tendência.
 
-O modelo naïve com sazonalidade é capaz de capturar o comportamento da série surpreendemente bem, uma vez que a série tem um comportamento sazonal bem marcante.
+O modelo naïve com sazonalidade, apesar de sua simplicidade, é capaz de capturar o comportamento da série surpreendemente bem, uma vez que a série tem um comportamento sazonal bem marcante.
 
-## Valores ajustados e resíduos
+É importante reforçar, que os modelos acima são meramente métodos de _benchmarking_. Em uma situação real, outros modelos mais adequados seriam utilizados, a exemplo dos modelos que serão vistos na seção \@ref(tslm), \@ref(Modelos-ARIMA) e \@ref(arimax).
+
+## Valores ajustados e resíduos {#analise-residuos}
 
 Cada observação na série temporal pode ser prevista usando todas as observações anteriores. Chamamos estas novas observações de valores ajustados (`fitted values`), e eles são denotados por $\hat{y}_{t|t-1}$, ou simplesmente $\hat{y}_t$. 
 
@@ -348,7 +394,7 @@ O teste de Durbin-Watson também testa a hipótese de autocorrelação, e parece
 
 
 
-## Medindo a performance da previsão
+## Medindo a performance da previsão {#medindo-performance}
 
 O erro de previsão é medido como a diferença entre o valor observado e o previsto e pode ser escrito como 
 
@@ -410,7 +456,7 @@ O pacote [yardstick](https://yardstick.tidymodels.org/) facilita a criação de 
 
 O pacote `modeltime` nos fornece a função `modeltime_accuracy()`, que permite utilizar as funções do `yardstick` para objetos do tipo `workflow`. 
 
-A tabela \@ref(tab:medidas-desempenho) mostra as medidas de desempenho de previsão para os dois modelos estimados. Para tanto, passamos a tabela de calibração para a função `modeltime_accuracy()`.
+A tabela \@ref(tab:medidas-desempenho) mostra as medidas de desempenho de previsão para os três modelos estimados. Para tanto, passamos a tabela de calibração para a função `modeltime_accuracy()`. Esta função produz uma tabela dinâmica com as principais métricas de performance discriminadas para cada modelo.
 
 
 ```{r medidas-desempenho}
@@ -420,9 +466,9 @@ tbl_calibracao %>%
   kableExtra::kable(caption = "Medidas de Desempenho para Previsão Naïve e Naïve com Sazonalidade")
 
 ```
-Considerando que estamos comparando modelos diferentes aplicados aos mesmos dados, a questão de escala não é relevante. Da mesma forma, independentemente da medida utilizada, os dois modelos parecem produzir resultados semelhantes.
+Considerando que estamos comparando modelos diferentes aplicados aos mesmos dados, a questão de escala não é relevante. Da mesma forma, independentemente da medida utilizada, os dois modelos Naive parecem produzir resultados semelhantes, com o modelo de médias bem atrás.
 
-## Métodos de Reamostragem
+## Métodos de Reamostragem {#metodos-reamostragem}
 
 Métodos de reamostragem são sistemas de simulação empírica que emulam o processo de usar parte dos dados para modelagem e uma parte diferente dos dados para avaliação da performance. O diagrama abaixo ilustra como métodos de reamostragem geralmente operam:
 

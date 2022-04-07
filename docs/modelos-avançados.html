@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Capítulo 10 Modelos Avançados | Séries Temporais com R</title>
+  <title>Capítulo 10 Modelos Avançados | Untitled</title>
   <meta name="description" content="Um livro sobre séries temporais para usuários de R." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Capítulo 10 Modelos Avançados | Séries Temporais com R" />
+  <meta property="og:title" content="Capítulo 10 Modelos Avançados | Untitled" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Capítulo 10 Modelos Avançados | Séries Temporais com R" />
+  <meta name="twitter:title" content="Capítulo 10 Modelos Avançados | Untitled" />
   
   <meta name="twitter:description" content="Um livro sobre séries temporais para usuários de R." />
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Robson Oliveira Lima" />
 
 
-<meta name="date" content="2021-12-30" />
+<meta name="date" content="2022-04-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -181,7 +181,16 @@ div.csl-indent {
 <li class="chapter" data-level="2.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-que-pode-ser-previsto"><i class="fa fa-check"></i><b>2.1</b> O que pode ser previsto?</a></li>
 <li class="chapter" data-level="2.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#principais-modelos-de-previsão"><i class="fa fa-check"></i><b>2.2</b> Principais modelos de previsão</a></li>
 <li class="chapter" data-level="2.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
-<li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a></li>
+<li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#carregando-os-pacotes-necessários"><i class="fa fa-check"></i><b>2.4.1</b> Carregando os pacotes necessários</a></li>
+<li class="chapter" data-level="2.4.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#dados"><i class="fa fa-check"></i><b>2.4.2</b> Dados</a></li>
+<li class="chapter" data-level="2.4.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#criando-uma-base-de-treinamento"><i class="fa fa-check"></i><b>2.4.3</b> Criando uma base de treinamento</a></li>
+<li class="chapter" data-level="2.4.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#fórmula"><i class="fa fa-check"></i><b>2.4.4</b> Fórmula</a></li>
+<li class="chapter" data-level="2.4.5" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#especificando-o-modelo"><i class="fa fa-check"></i><b>2.4.5</b> Especificando o modelo</a></li>
+<li class="chapter" data-level="2.4.6" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#previsão"><i class="fa fa-check"></i><b>2.4.6</b> Previsão</a></li>
+<li class="chapter" data-level="2.4.7" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#performance-do-modelo"><i class="fa fa-check"></i><b>2.4.7</b> Performance do modelo</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html"><i class="fa fa-check"></i><b>3</b> Características de Séries Temporais</a>
 <ul>
@@ -273,7 +282,7 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="9.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>9.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
 </ul></li>
-<li class="chapter" data-level="9.3" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#previsão"><i class="fa fa-check"></i><b>9.3</b> Previsão</a></li>
+<li class="chapter" data-level="9.3" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#previsão-1"><i class="fa fa-check"></i><b>9.3</b> Previsão</a></li>
 <li class="chapter" data-level="9.4" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-2-previsão-de-demanda-por-eletricidade"><i class="fa fa-check"></i><b>9.4</b> Exemplo 2: Previsão de Demanda por Eletricidade</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="modelos-avançados.html"><a href="modelos-avançados.html"><i class="fa fa-check"></i><b>10</b> Modelos Avançados</a>
@@ -288,7 +297,13 @@ div.csl-indent {
 <li class="chapter" data-level="11.1" data-path="modelos-hierárquicos.html"><a href="modelos-hierárquicos.html#séries-temporais-agrupadas"><i class="fa fa-check"></i><b>11.1</b> Séries Temporais Agrupadas</a></li>
 <li class="chapter" data-level="11.2" data-path="modelos-hierárquicos.html"><a href="modelos-hierárquicos.html#hierarquia-temporal"><i class="fa fa-check"></i><b>11.2</b> Hierarquia Temporal</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a>
+<ul>
+<li class="chapter" data-level="11.3" data-path="references.html"><a href="references.html#r-markdown"><i class="fa fa-check"></i><b>11.3</b> R Markdown</a></li>
+<li class="chapter" data-level="11.4" data-path="references.html"><a href="references.html#slide-with-bullets"><i class="fa fa-check"></i><b>11.4</b> Slide with Bullets</a></li>
+<li class="chapter" data-level="11.5" data-path="references.html"><a href="references.html#slide-with-r-output"><i class="fa fa-check"></i><b>11.5</b> Slide with R Output</a></li>
+<li class="chapter" data-level="11.6" data-path="references.html"><a href="references.html#slide-with-plot"><i class="fa fa-check"></i><b>11.6</b> Slide with Plot</a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -301,7 +316,7 @@ div.csl-indent {
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Séries Temporais com R</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Untitled</a>
           </h1>
         </div>
 

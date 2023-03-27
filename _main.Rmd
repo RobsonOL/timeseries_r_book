@@ -1,0 +1,2260 @@
+---
+title: "Forecasting Series Temporais com R"
+author: "Robson Oliveira Lima"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  Uma breve introdução sobre previsão com séries temporais para usuários de R utilizando o pacote modeltime.
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+---
+
+# Prefácio
+
+Este é um livro online que fornece uma breve introdução aos principais métodos de previsão em séries temporais.
+
+R é uma linguagem de programação gratuita e bastante popular para análise estatística.
+
+Este livro é uma tentativa de traduzir o livro online [Forecasting: Principles and Practice](https://otexts.com/fpp3/index.html), que é uma das principais referências para o ensino de previsão com R. Ao mesmo tempo, seus exemplos serão adaptados para os pacotes [timetk](https://business-science.github.io/timetk/) [@R-timetk] e [modetime](https://business-science.github.io/modeltime/index.html) [@R-modeltime]. 
+
+O pacote `modeltime` é uma biblioteca do R que fornece uma estrutura flexível para modelagem, previsão e avaliação de séries temporais. Ele é construído com base em outros pacotes de séries temporais do R, como forecast, prophet e fable, e visa simplificar o processo de modelagem e previsão de séries temporais.
+
+O `modeltime` oferece uma variedade de modelos para a modelagem de séries temporais, incluindo modelos ARIMA, modelos de suavização exponencial, modelos de regressão, modelos de redes neurais, entre outros. Ele também permite que os usuários combinem e comparem vários modelos para selecionar o melhor modelo para uma determinada série temporal.
+
+Além disso, o modeltime possui uma série de funções úteis para visualização de séries temporais, diagnóstico de modelos e avaliação de desempenho de previsão, muitas delas implementadas na biblioteca `timetk`. 
+
+Em resumo, o `modeltime` é uma ferramenta poderosa para modelagem e previsão de séries temporais no R. Ele oferece uma ampla variedade de modelos e funcionalidades para ajudar os usuários a analisar e prever dados de séries temporais com eficácia.
+Estes dois pacotes tornam a tarefa de realizar previsão muito conveniente.
+
+
+## Pré-requisitos
+
+Para acompanhar este livro, o usuário deve ter o R e RStudio instalados na sua máquina. Conhecimento básico dos pacotes `dplyr` e `ggplot2` é recomendado. Outros pacotes e funções do universo `tidyverse` podem ser utilizados ao longo do livro.
+
+Uma breve descrição da instalação do R/RStudio e das principais funções do `tidyverse` pode ser encontrada no Apêndice.
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown', "modeltime"
+), 'packages.bib')
+```
+
+
+
+## Sobre o Autor
+
+Meu nome é Robson Oliveira, sou Doutor em Economia pela Universidade Federal da Paraíba e professor efetivo do Instituto Federal da Paraíba.
+
+Você pode me encontrar no meu [site pessoal](https://robsonolima.com.br/), onde discuto temas variados como séries temporais, modelos de causalidade e R em geral.
+
+<!--chapter:end:index.Rmd-->
+
+# Os fundamentos de séries temporais{#intro}
+
+Para que uma criança aprenda a identificar um gato, é preciso que os pais apontem para vários gatos e digam "gato". Essa tarefa pode ser repetida algumas poucas vezes por crianças, mas para um modelo de previsão, essa tarefa não é tão simples, e exige uma grande quantidade de dados para que o modelo seja capaz de generalizar bem para novos casos. Para séries temporais, novos casos são as observações futuras. 
+
+É importante também que os dados sejam representativos dos novos casos e que eles sejam de boa qualidade. Informações com erros de medidas, presença de valores discrepantes (chamados de _outliers_) ou cheio de ruídos, podem gerar previsões de baixa qualidade mesmo que o modelo utilizado seja "adequado".
+
+Modelos podem realizar previsões imprecisas quando quando ele funciona muito bem para os dados de treinamento, mas não é capaz de prever com precisão novas informações. 
+
+
+## O que pode ser previsto?
+
+## Principais modelos de previsão
+
+## O passo-a-passo de realizar uma previsão
+
+
+
+## Um Projeto de Previsão de Ponta a Ponta
+
+O fluxo de trabalho necessário para realizar previsões de uma série temporal seguem uma sequência mais ou menos fixa que começa sempre com a visualização dos dados. 
+
+### Carregando os pacotes necessários
+
+Todo projeto de previsão é iniciado carregando os principais pacotes de manipulação de dados e de previsão. Com o `tidyverse` temos acesso a uma série de funções de manipulação de dados e de visualização. Muitas vezes os dados que temos a disposição não estão em um formato correto ou precisam de pequenos ajustes para serem utilizados pelos modelos preditivos.
+
+O pacote `timetk` contém um conjunto de funções para manipulação, visualização e diagnóstico em séries temporais. Já o pacote `modeltime` possui uma série de funções que tornam conveniente estimar modelos de séries temporais de uma maneira simples e intuitiva.
+
+
+```{r message=FALSE, warning=FALSE}
+# Pacotes de manipulação de dados
+library(tidyverse)
+
+# Coleção de pacotes para análise de machine learning e estatística
+library(tidymodels)
+
+# Pacotes específicos de séries temporais
+library(modeltime)
+library(timetk)
+
+```
+
+### Dados
+
+Abaixo temos dados diários de acidentes em rodovias federais brasileiras. Vemos que os dados estão no formato desejado: cada linha representa um valor numérico associado a uma data específica.
+
+
+```{r}
+acidentes <- read_rds("resources/acidentes_estradas_brasil.rds")
+acidentes %>% 
+  head() %>% 
+  knitr::kable(caption = "Base de acidentes em rodovias federais, 2007 a 2021")
+```
+A função `skim` do pacote `skimr` é uma forma excelente de resumir um banco de dados. 
+
+
+```{r}
+skimr::skim(acidentes) 
+```
+
+Vemos que a coluna de datas está no formato `datetime`, e que a base possui informações de acidentes a partir de primeiro de janeiro de 2007 e fim em 30 de novembro de 2021. A variável dependente (`acidentes`) não possui valores faltantes (*missing values*), assim como valores negativos ou números muito fora do esperado, o que nos leva a crer que a base não precisa de nenhuma manipulação adicional. Em termos de estatísticas descritivas, temos uma média de 352 acidentes por dia; valor mínimo de 71 ocorrências, e máximo de 1101.
+
+A figura \@ref(fig:plot-acidentes) mostra a séries de acidentes em rodovias federais durante 2007 e 2021.
+
+```{r plot-acidentes, fig.cap="Acidentes diários em rodovias federais brasileiras, 2007-2021"}
+acidentes %>%
+  plot_time_series(Date,
+                   acidentes,
+                   .facet_scales = "free_y",
+                   .smooth = F,
+                   .title = "")
+
+```
+
+Podemos fazer algumas observações sobre a série:
+
+* É possível identificar dias com um número muito elevado de acidentes (*outliers*). Estes valores estão associados a datas como Natal e carnaval.
+
+* É possível identificar algumas mudanças de padrão que representam quebras estruturais na série. A primeira ocorreu em 2015, e representou uma mudança na forma como os acidentes eram reportados. Após 2015, acidentes sem vítimas não precisavam da presença de agentes rodoviários federais para serem registrados.
+
+* Em março de 2020 temos outra mudança abrupta no comportamento da série, que foi associada às primeiras medidas de prevenção contra o COVID-19.
+
+Para não termos que lidar com as mudanças estruturais ocorridas na série, vamos utilizar apenas os últimos 12 meses de dados para realizar as previsões. 
+
+A figura \@ref(fig:plot-acidentes-12) mostra a série limitada ao período entre novembro de 2020 e novembro de 2021. A série possui 366 observações, o que parece suficiente para realizar uma previsão simples. 
+
+```{r plot-acidentes-12, fig.cap="Total de acidentes em rodovias federais no Brasil", message=FALSE, warning=FALSE}
+df <- acidentes %>% 
+  filter_by_time(
+    .start_date = last(Date) %-time% "12 month",
+    .end_date = "end"
+  ) 
+  
+
+df %>%
+  plot_time_series(Date,
+                   acidentes,
+                   .facet_scales = "free_y",
+                   .smooth = F)
+
+```
+
+Observando apenas os últimos 12 meses temos uma visão melhor do comportamento dos dados. É possível observar que existe um padrão sazonal na série, com certos dias da semana apresentando um número elevado de acidentes.
+
+Para melhor entender estes padrões sazonais, a figura \@ref(fig:plot-seasonal-diag) mostra o resultado da função `plot_seasonal_diagnostics()`. 
+
+```{r plot-seasonal-diag, fig.cap = "Padrão sazonal da série de acidentes de trânsito"}
+df %>%
+  plot_seasonal_diagnostics(Date, acidentes)
+
+
+```
+É possível observar que os sábados e domingos possuem um número de acidentes maior do que a média. Assim, como as terças-feiras estão associadas com um menor número de acidentes.
+
+A figura \@ref(fig:acf-acidentes) mostra a correlação entre as observações atuais e suas defasagens. Assim, o dia anterior representa o *lag 1*, assim como o mesmo dia da semana passada representa o *lag 7*. Este tipo de gráfico se chama correlogramo e será explicado melhor na seção xxx. 
+
+```{r acf-acidentes, fig.cap = "Correlograma da série de acidentes de trânsito"}
+df %>%
+  plot_acf_diagnostics(Date, acidentes, .lag = 100, .show_white_noise_bars = T)
+
+```
+A figura confirma nossas suspeitas de que a série de acidentes tem um padrão bem distinto de sazonalidade. Especificamente, uma sazonalidade de 7 dias, que é associada com séries que possuem efeito de dia da semana.
+
+
+### Criando uma base de treinamento
+
+Antes de iniciar a modelagem da série temporal, é boa prática dividir a série em dois blocos: o primeiro bloco (chamado de base de treinamento) é onde o modelo aprenderá o comportamento dos acidentes. O segundo bloco (chamado de base de teste) é onde veremos se o modelo fez um bom trabalho em reproduzir o comportamento. Uma explicação mais profunda sobre como realizar essa divisão para séries temporais pode ser encontrada na seção xxxx.
+
+A figura \@ref(fig:treino-teste) mostra a base de treinamento e teste. Utilizaremos os primeiros 8 meses para treinar o modelo e testaremos sua capacidade preditiva ao comparar a previsão com o que foi observado nos últimos 4 meses.
+
+```{r treino-teste, fig.cap = "Série de treinamento e teste "}
+splits_br <- df %>%
+  time_series_split(date_var = Date,
+                    assess = "4 months",
+                    cumulative = TRUE
+  )
+
+# visualizar base de treino e teste
+splits_br %>%
+  tk_time_series_cv_plan() %>%
+  plot_time_series_cv_plan(Date, acidentes)
+
+
+```
+
+Um grande perigo de qualquer modelo de série temporal é a de que ele esteja sobre-ajustando os dados, ou seja, simplesmente imitando o comportamento visto no período de treinamento e sendo incapaz de generalizar para períodos futuros. Podemos minimizar este risco ao criar várias bases de treino e teste. Este processo de reamostragem será melhor explicado na seção xxx. 
+
+A figura \@ref(fig:cv-acidentes) mostra que criamos 4 reamostragens diferentes.
+
+
+```{r cv-acidentes, fig.cap = "Cross-validation para série de acidentes"}
+
+splits_reamostra_br <- df %>%
+  time_series_cv(Date,
+                 assess = "4 months",
+                 skip = "2 months",
+                 cumulative = TRUE,
+                 slice_limit =4)
+splits_reamostra_br %>%
+  tk_time_series_cv_plan() %>%
+  plot_time_series_cv_plan(Date, acidentes)
+
+```
+
+### Fórmula
+
+Vimos que nossa série possui um padrão sazonal bastante distinto, além de ser influenciada por dias importantes do calendário como Natal e carnaval. Portanto, um modelo que pretenda capturar bem o comportamento dos acidentes de trânsito deve incorporar essas informações.
+
+Assim, vamos criar variáveis indicativas para o dia da semana, o semestre, o trimestre, a semana do ano, o dia do ano e o dia do trimestre, além das variáveis indicativas de feriado. Na seção xxx será explicado em detalhes o processo de criação destas variáveis com o pacote `recipe`.
+
+
+```{r}
+# formula para modelos de séries temporais
+# precisa uma coluna de data como covariada
+
+receita_ts <- recipe(acidentes ~ Date + ., data = training(splits_br)) %>%
+  step_timeseries_signature(Date) %>%
+  step_rm(matches("(xts$)|(iso$)|(^.pm)")) %>%
+  step_holiday(Date) %>%
+  step_zv(all_predictors()) %>%
+  step_mutate(Date_month = factor(Date_month, ordered = TRUE)) %>%
+  step_dummy(all_nominal_predictors())
+
+receita_ts %>% 
+  prep() %>% 
+  bake(new_data = NULL) %>% 
+  head() %>% 
+  knitr::kable(caption = "Base de dados com novas variáveis")
+```
+
+
+### Especificando o modelo
+
+Com o pacote `modeltime` podemos especificar o modelo a ser utilizado. O primeiro modelo de previsão será o SNAIVE, ou modelo Naïve Sazonal. Este é um modelo extremamente simples que repete o último valor observado em um dia da semana para todos os valores futuros. Assim, se a última segunda-feira observada produziu 200 acidentes, ele irá repetir 200 em todas as segundas-feiras futuras. Este é um modelo simples, mas serve como um modelo de comparação (*baseline*) para modelos mais complexos.
+
+O nosso segundo modelo é um modelo de Regressão com Erros Arima, que será explicado em detalhes na seção xxx. Para melhorar a previsão do modelo, realizaremos um procedimento de *boosting* dos resíduos do modelo (explicado na seção xxx).
+
+O modelo de Regressão com Erros Arima *Boosted* possui uma série de hiperparâmetros que precisam ser definidos antes do modelo ser ajustado. A escolha destes hiperparâmetros pode produzir modelos com melhor ou pior performance. 
+
+```{r}
+# modelo regressao com erros arima boosted
+spec_snaive <- naive_reg() %>% 
+  set_engine("snaive")
+
+
+spec_regarima <- arima_boost(  mtry           = tune(),
+                               trees          = 1000,
+                               min_n          = tune(),
+                               tree_depth     = tune(),
+                               learn_rate     = tune(),
+                               loss_reduction = tune()
+                               #sample_size    = tune()
+) %>%
+  set_engine("auto_arima_xgboost")
+
+wflw_regarima <- workflow() %>%
+  add_model(spec_regarima) %>%
+  add_recipe(receita_ts)
+
+```
+
+Para escolhermos o melhor conjuntos de hiperparâmetros precisamos adotar um processo de *tuning*, que será melhor explicado na seção xxx. Abaixo utilizamos as quatro reamostragens construídas na seção xxx para rodar um número bastante elevado de modelos: para cada um das quatro reamostragens, vamos estimar um modelo para cada combinação de hiperparâmetro. 
+
+```{r message=FALSE, warning=FALSE}
+# Encontrar melhores hiperparâmetros ----
+# tune regarima
+set.seed(3333)
+tune_results_regarima <- tune_grid(
+  object     = wflw_regarima,
+  resamples  = splits_reamostra_br,
+  param_info = parameters(wflw_regarima),
+  grid       = 5,
+  control    = control_grid(verbose = FALSE,
+                            allow_par = TRUE,
+                            parallel_over = "everything")
+)
+
+
+```
+
+Abaixo vemos que para a primeira reamostragem (*Slice1*) ajustamos o modelo cinco vezes para diferentes valores dos hiperparâmetros `mtry`, `min_n`, `tree_depth` e `learn_rate`. 
+
+```{r}
+tune_results_regarima %>% 
+  unnest(cols = ".metrics") %>% 
+  filter(.metric == "rmse") %>% 
+  head()
+```
+Podemos tomar uma média do erro de previsão das 4 reamostragens. Ao encontrarmos os hiperparâmetros que produzem o modelo com menor erro (diferença entre o observado e o previsto) podemos ajustar o modelo sobre toda a base de treinamento. Podemos chamar este procedimento de finalização do modelo.
+
+```{r}
+regarima_tuned_best <- tune_results_regarima %>%
+  select_best("rmse")
+
+regarima_tuned_best %>% 
+  knitr::kable(caption = "Conjunto de hiperparâmetros que produziu modelo com melhor performance")
+
+```
+
+Abaixo temos a saída do melhor modelo de Regressão com Erros Arima. Uma explicação mais profunda sobre a interpretação da saída do modelo pode ser encontrada na seção xxx.
+
+```{r}
+wflw_fit_regarima <- wflw_regarima %>%
+  finalize_workflow(parameters = regarima_tuned_best) %>%
+  fit(training(splits_br))
+
+wflw_fit_regarima
+```
+
+Abaixo estimamos o modelo SNAIVE. Este modelo não possui hiperparâmetros e pode ser ajustado diretamente sobre a base de treinamento.
+
+```{r}
+wflw_fit_snaive <- workflow() %>% 
+  add_recipe(receita_ts) %>% 
+  add_model(spec_snaive) %>% 
+  fit(training(splits_br))
+  
+```
+
+### Previsão
+
+Por fim, podemos realizar as previsões dos modelos estimados. É sempre interessante realizar uma primeira previsão para o período de teste para verificar como o modelo se comporta quando comparamos sua previsão com dados que foram observados mas não utilizados durante o treinamento. A seção xxx explica em detalhes como podemos utilizar modelos para realizar previsões.
+
+A figura \@ref(fig:previsao-acidentes) mostra uma comparação entre os valores previstos e observados.
+
+
+```{r previsao-acidentes, fig.cap = "Previsão de acidentes em rodovias federais brasileiras", message=FALSE, warning=FALSE}
+
+tbl_calibracao <- modeltime_table(wflw_fit_regarima, wflw_fit_snaive) %>%
+  modeltime_calibrate(testing(splits_br)) 
+
+tbl_calibracao %>% 
+  modeltime_forecast(
+    new_data = testing(splits_br),
+    actual_data = df,
+    keep_data = TRUE
+  ) %>% 
+  filter_by_time(Date, 
+                 .start_date = last(Date) %-time% "3 month",
+                 .end_date = "end") %>% 
+  plot_modeltime_forecast(.legend_max_width = 10, .title = "")
+```
+
+### Performance do modelo
+
+Ambos os modelos parecem ter capturado bem o padrão sazonal da série, mas inspeções visuais das previsões podem ser enganosas. Assim, podemos utilizar medidas de desempenho do modelo que são construídas a partir da comparação entre os valores previstos e observados. A seção xxx traz uma explicação detalhada das medidas de desempenho mais utilizadas, assim como as vantagens e desvantagens de cada uma.
+
+A tabela abaixo mostra diferentes medidas de performance obtida pelos modelos. Valores menores das medidas representam modelos com menor erro (com exceção do `rsq`). Assim, para todas as medidas utilizadas, o modelo mais complexo (Regressão com Erros Arima), a previsão foi melhor do que a do modelo *baseline* SNAIVE.
+
+
+```{r}
+tbl_calibracao %>%
+  modeltime_accuracy() %>% 
+  table_modeltime_accuracy()
+
+```
+
+Assim, podemos utilizar o modelo de Regressão com Erros ARIMA para realizar previsões para o futuro. 
+
+
+<!--chapter:end:01-intro.Rmd-->
+
+# Características de Séries Temporais
+
+Séries temporais se referem a dados observados em diferentes pontos no tempo. O uso de métodos estatísticos convencionais como o de regressão linear dependem e suposições de que as observações são independentes entre si, uma hipótese que não faz sentido quando se trabalha com observações no tempo: cada observação está correlacionada com as observações mais próximas no tempo. Assim, um choque no valor da ação que ocorre ontem tem efeitos no preço da ação hoje. 
+
+Na economia observamos a taxa semanal de juros, o preço de fechamento das ações, o índice de preço mensal, as vendas anuais, e por ai vai. Em meteorologia, observamos as temperaturas médias diárias, a precipitação anual, índices de seca e outros. Na agricultura temos o registro anual da colheita e da produção de leite, erosão do solo e valor das exportações. A lista de áreas em que séries temporais podem ser estudadas não tem fim. 
+
+O objetivo da análise de séries temporais são de: (1) entender ou modelar os mecanismos que produzem a série observada e (2) prever valores futuros de uma série com base na história da série, e quando possível, com relação a outras séries ou fatores.
+
+## Objeto `ts`
+
+Uma série temporal pode ser representada como uma lista de números em sequência, onde cada número é uma informação sobre um período específico de tempo. No R, essas informações podem ser registradas como objetos `ts`.
+
+A tabela \@ref(tab:tabela-generica) mostra um exemplo de dados anuais para o período entre 2012 e 2016.
+
+```{r tabela-generica, echo=FALSE, tidy=FALSE}
+knitr::kable(
+  data.frame(Ano = seq(2012,2016), `Observações` = c(123, 39, 78, 52, 110)),
+  caption = 'Informações no Tempo',
+  booktabs = TRUE
+)
+```
+
+Podemos transformar as informações acima em um objeto `ts` utilizando a função `ts()`:
+
+```{r}
+y <- ts(c(123,39,78,52,110), start = 2012)
+y
+```
+
+Se seus dados são anuais, com uma observação por ano, você precisa apenas fornecer o ano inicio (ou o ano final).
+
+Para observações que são mais frequentes que uma vez ao ano, é preciso fornecer um argumento de frequência (`frequency`). Por exemplo, se seus dados são mensais, então ele pode ser convertido para um objeto `ts` da seguinte maneira:
+
+```{r}
+dados_mensais <- c(10, 30, 50, 70, 90)
+y <- ts(dados_mensais, start = 2015, frequency = 12)
+y
+```
+
+Dados também podem ser observados como um objetivo do tipo `data.frame`. Neste caso, existe uma coluna de dados com as observações e outra coluna no formato de dados.
+
+
+### Frequências de uma série temporal
+
+A frequência é o número de observações antes que o padrão sazonal se repita. Quando usamos a função `ts` no R, podemos utilizar as seguintes frequências:
+
+
+```{r tabela-frequencia, echo=FALSE, tidy=FALSE}
+knitr::kable(
+  data.frame(Dados = c("Anual", "Trimestral", "Mensal", "Semanal"), `Frequência` = c(1,4,12,52)),
+  caption = 'Frequências de uma Série Temporal',
+  booktabs = TRUE
+)
+```
+
+Em relação ao padrão semanal, na verdade temos $365.25/7 = 52.18$ semanas em média em um ano, e não 52 semanas. Contudo, a maioria das funções que utilizam a função `ts` exigem que a `frequency` seja fornecida como um número inteiro.
+
+Se a frequência de observações é maior do que uma vez por semana, existem algumas formas de lidar com a situação. Por exemplo, dados diários podem ter um padrão de sazonalidade semanal (`frequency = 7`) ou uma sazonalidade anual (`frequency = 365.25`). De modo similar, dados que são observados por minuto, podem ter um padrão sazonal a cada hora (`frequency = 60`), uma sazonalidade diária (`frequency = 1440`, ou $24 \times 60$), uma sazonalidade semanal (`frequency = 10080`, ou $24 \times 60 \times 7$) e anual (`frequency = 525960`, ou $24 \times 60 \times 365.25$).
+
+Para utilizar um objeto `ts` nestes casos, é preciso decidir que desses padrões sazonais é mais importante. Contudo, o R permite lidar com dados com múltiplas sazonalidades utilizando técnicas mais avançadas.
+
+
+## Gráficos de Séries Temporais
+
+Para séries temporais, o gráfico apropriado mostra as observações no tempo, com observações consecutivas sendo unidas por uma linha reta. A figura \@ref(fig:fig-passageiros) mostra um exemplo de um gráfico de séries temporais.
+
+```{r fig-passageiros, fig.cap="Total de passageiros semanais na Compainha Áerea Ansett", message=FALSE, warning=FALSE}
+library(fpp)
+library(tidyverse)
+
+
+autoplot(ausair) + 
+  ggtitle("Total de Passageiros aéreos registrados na Australia, 1970-2009") +
+  xlab("Ano") +
+  ylab("Milhões")
+```
+
+Os dados fazem parte do pacote `fpp`, que acompanha o livro **Forecasting: Principles and Practice**. Com a função `autoplot()`, produzimos gráficos no tempo a partir de objetos `ts`. 
+
+### Convertendo tk para data.frame
+
+Objetos `ts` podem não ser tão conveniente de trabalhar quanto objetos `data.frame` ou `tibble`. Quando trabalhamos com estes formatos, as informações de data e horário ficam em uma coluna específica. 
+
+O pacote `timetk` possui uma série de funções convenientes para converter objetos `ts` para outros formatos:
+
+* `tk_tbl`: converte o objeto `ts` para um objeto `tibble` (objeto equivalente a um dataframe). 
+
+* `tk_ts` faz o caminho inverso. 
+
+Abaixo convertemos `ausair` utilizando a função `tk_tbl()`. 
+
+
+
+```{r message=FALSE, warning=FALSE}
+library(timetk)
+dados_passageiros <- ausair %>% 
+  # converte ts em tibble
+  tk_tbl()
+
+dados_passageiros  %>%  tail() %>% 
+  knitr::kable()
+  
+```
+
+
+:::dica
+O mesmo resultado de `tk_tbl()` pode ser obtido com o código: `dados_passageiros <- data.frame(data = time(ausair), passageiros = matrix(ausair))`
+:::
+
+
+Com `dados_passageiros` no formato `data.frame` é possível produzir um gráfico de séries temporais utilizando o pacote `timetk` e sua função `plot_time_series()`. Para tanto, informamos a coluna de data e de variável dependente (figura \@ref(fig:passageiros-ggplot)).
+
+```{r passageiros-ggplot, fig.cap="Total anual de passageiros na Australia", message=FALSE, warning=FALSE}
+
+library(timetk)
+dados_passageiros %>% 
+  plot_time_series(.date_var = index, # variável de data
+                   .value = value,    # variável dependente
+                   # title, y_lab e x_lab são opções de customização
+                   .title = "Total anual de passageiros aéreos na Australia, 1970-2009",
+                   .y_lab = "Em milhões",
+                   .x_lab = "Ano")
+```
+
+
+Independemente da forma como o gráfico é produzido, ele revela algumas características interessantes:
+
+* Em 1989 houve uma redução abrupta no número de passageiro transportados.
+
+* O mesmo ocorre me 2008/2009. 
+
+* Existe uma tendência geral de aumento no número de passageiros.
+
+* Como os dados são anuais, não podemos observar padrões sazonais dentro de um ano.
+
+* Para realizar previsão dessa série, todas essas características precisam ser levadas em conta. 
+
+:::dica
+Uma alternativa à função `plot_time_series()` para produzir gráficos de séries temporais, 
+é o pacote `ggplot2`. Por exemplo, é possível gerar o mesmo gráfico acima com o código `ggplot(aes(x = index, y = value)) + geom_line()` após carregar o pacote com `library(ggplot2)`. 
+:::
+
+
+
+## Padrões das Séries Temporais
+
+Séries temporais podem ser descritas por seu padrão de comportamento. Usamos palavras como **tendência**, **sazonalidade** e **padrão cíclico** para descrever esses padrões. Modelos de previsão tentam utilizar estes padrões para realizar previsões.
+
+
+### Série Sem Padrão
+
+Na figura \@ref(fig:chuva-la) vemos a média de precipitação na cidade americana de Los Angelos durante o período de 1878 a 1992. Estes dados estão no pacote `TSA`, que acompanha o livro @cryer2008time. 
+
+
+```{r chuva-la, fig.cap='Padrão de Chuvas em Los Angeles', message=FALSE, warning=FALSE}
+library(TSA)
+
+data(larain)
+
+larain_tbl <- larain %>% 
+  tk_tbl() %>% 
+  rename(chuva_anual = value,
+         data = index)
+
+larain_tbl %>% 
+  plot_time_series(.date_var = data,
+                   .value = chuva_anual,
+                   .title = "Chuva Anual em Los Angeles, 1878 - 1992",
+                   .x_lab = "",
+                   .y_lab = "Precipitação em polegadas")
+
+```
+
+É possível perceber uma variação no volume de chuvas ao longo dos anos -- alguns anos com um volume de chuva mais alto, outros mais baixo. 
+
+Estamos interessados se os valores da chuva estão relacionados entre si. Será que ao conhecer o comportamento da chuva em um conjunto de anos podemos prever o que ocorrerá em anos consecutivos? 
+
+Para responder esta questão, podemos criar uma variável relativa a chuva do ano anterior e compara-la com a chuva no ano corrente utilizando a função `lag()`. Na figura \@ref(fig:dispersao) exibimos as duas informações lado a lado com um gráfico de dispersão. 
+
+```{r dispersao, fig.cap='Relação entre chuva atual e o volume de chuva do ano anterior',message=FALSE, warning=FALSE}
+
+larain_tbl <- larain_tbl %>% 
+  mutate(chuva_ano_anterior = lag(chuva_anual)) 
+
+larain_tbl %>% 
+  ggplot(aes(x = chuva_anual, y = chuva_ano_anterior)) + 
+  geom_point() + 
+  geom_smooth() +
+  labs(x = "Chuva anual",
+       y = "Volume de chuva do ano anterior",
+       title = "Volume de Chuva em Los Angeles, 1876 - 1992",
+       subtitle = "Relação entre a Chuva Anual e o Volume de Chuva no Ano Anterior")
+```
+
+É possível observar que é perfeitamente possível que um ano com um elevado volume de chuvas seja seguido por um ano com baixo volume, e vice-versa. Assim, o volume de chuva que ocorre em um ano não explica muito bem o comportamento da chuva nos anos seguintes. 
+
+Essa série não parece ter nenhum tipo de tendência, que indicaria que o volume de chuva está aumentando ou diminuindo ao longo do tempo. Não parece existir correlação entre a chuva de um ano e do ano anterior, de modo que podemos ter um ano com um volume muito alto de chuva e no ano seguinte, um volume baixo. De um ponto de vista de modelagem e de previsão, está não é uma série muito interessante.
+
+
+### Uma Série com Padrão
+
+A figura \@ref(fig:grafico-coelhos) mostra uma série de total anual de coelhos canadenses para o périodo entre 1905-1934. 
+
+```{r grafico-coelhos, fig.cap = 'Ambundância de Coelhos Canadenses', warning=F, message=F}
+data(hare)
+hare_df <- hare %>% 
+  tk_tbl() %>% 
+  rename(data = index,
+         ambudancia_coelhos = value)
+  
+hare_df %>% 
+  plot_time_series(.date_var = data,
+                   .value = ambudancia_coelhos,
+                   .smooth = FALSE,
+                   .x_lab = "Ano",
+                   .y_lab = "Ambundância de Coelhos",
+                   .title = "Ambundância de Coelhos Canadenses, 1905-1934")
+
+```
+
+Diferentemente da série de chuva em Los Angeles, as observações de um ano estão correlacionadas de maneira muito próxima com aquelas observadas no ano anterior. Um número grande em um ano é seguido de um número semelhante no ano seguinte. 
+
+Na figura \@ref(dispersao-coelhos) é possível observar com mais clareza como existe uma relação entre a ambudância de coelhos de anos consecutivos. 
+
+```{r dispersao-coelhos, fig.cap = "Correlação entre ambundância de coelhos de anos consecutivos", message=FALSE, warning=FALSE}
+hare_df %>% 
+  mutate(ambudancia_ano_anterior = lag(ambudancia_coelhos)) %>% 
+  ggplot(aes(x = ambudancia_coelhos, y = ambudancia_ano_anterior)) + 
+  geom_point() + 
+  geom_smooth()
+```
+
+
+
+### Sazonalidade
+
+Um **padrão sazonal** ocorre quando uma série é afetada por fatores sazonais como o tempo do ano ou o dia da semana. Sazonalidade é sempre de uma frequência conhecida e fixa. 
+
+
+A figura \@ref(fig:tempdub) mostra uma série temporal de temperatura mensais registradas para uma cidade no estado americano do Iowa. 
+
+```{r tempdub, fig.cap="Temperatura média anual em Iowa", message=F, warning=F}
+data(tempdub)
+
+tempdub %>%
+  tk_tbl() %>% 
+  rename(data = index, 
+         temperatura = value) %>% 
+  plot_time_series(.date_var = data,
+                   .value = temperatura,
+                   .x_lab = "Ano",
+                   .y_lab = "Temperatura",
+                   .title = "Temperatura Média Mensal no Estado do Iowa, 1964-1976")
+
+```
+
+Nela observamos uma movimento sazonal muito regular. Sazonalidade para valores mensais ocorre quando observações que são separadas por 12 meses estão relacionados de alguma maneira. Assim, as temperaturas em janeiro de 1910 estão relacionadas com as temperaturas de janeiro de 1911, 1912 e assim por diante. Todos os meses de janeiro e fevereiro são muito frios e são similares em valores de temperatura. O que não quer dizer que todos os meses de janeiro terão a mesma temperatura, ou os meses de junho terão sempre a mesma temperatura média. 
+
+Se desejarmos prever os valores futuros de temperatura em Iowa, precisamos de um modelo capture estas similaridades entre temperaturas dos mesmos meses. 
+
+Abaixo vemos um outro exemplo de série sazonal (figura \@ref(fig:figura-diabetes)). Ela exibe uma série de vendas de drogas contra diabetes nos EUA. A série possui um comportamento sazonal bastante marcante.
+
+```{r figura-diabetes, fig.cap="Vendas de Medicamento contra diabetes", message=F, warning=F}
+a10_df <- a10 %>% 
+  tk_tbl() %>% 
+  rename(data = index,
+         vendas_drogas = value)
+
+
+a10_df %>% 
+  plot_time_series(data, vendas_drogas,
+                   .x_lab = "Ano",
+                   .y_lab = "Milhões de US$",
+                   .title = "Vendas de Drogas Anti-diabéticos")
+```
+
+Como temos uma série mensal de vendas de drogas ao longo dos anos, podemos verificar o comportamento a sazonalidade dentro dos anos, trimestres e meses. O pacote `timetk` oferece uma a função `plot_seasonal_diagnostics()`, que produz uma série de sub-séries sazonais. A figura \@ref(fig:seasonal_timetk) a saída desta função.
+
+
+```{r seasonal_timetk, fig.cap="Gráfico sazonal das vendas mensais de medicamentos contra diabetes"}
+library(timetk)
+
+a10_df %>% 
+  plot_seasonal_diagnostics(data, vendas_drogas, .interactive = F)
+```
+
+A figura nos permite observar o padrão sazonal com mais clareza, e é especialmente útil para entender o padrão interno dentro de um ano, assim como encontrar anos com mudanças de padrão. Especificamente observamos um aumento significativo da venda de drogas no início do ano.
+
+
+
+### Tendência
+
+A série de vendas de drogas também exibe um padrão de tendência. Uma tendência ocorre quando existe um aumento (ou redução) de longo prazo nos dados. A tendência não precisa ser linear, e muitas vezes pode apresentar mudanças de direção, que ocorrem quando uma tendência de aumento se converte em uma tendência de queda. 
+
+A figura \@ref(fig:cafe) mostra outra série com padrão forte de tendência crescente.
+
+```{r cafe, fig.cap="Gastos com consumo fora do domicílio na Australia"}
+cafe %>% 
+  tk_tbl() %>% 
+  plot_time_series(index, value,
+                   .title = "Gastos Trimestrais com consumo fora do domicílio, Australia",
+                   .x_lab = "Ano",
+                   .y_lab = "Milhões")
+```
+
+Os gastos dos australianos com consumo fora do domicílio (cafés e restaurantes) tem uma tendência crescente durante todo  o período. Ela também exibe um comportamento sazonal dentro de um mesmo ano.
+
+### Padrão Cíclico
+
+Um comportamento cíclico surge quando os dados exibem um padrão de altas e quedas que lembra a sazonalidade, mas ao contrário desta, o ciclo não possui frequência fixa. Muitos confundem o comportamento sazonal, mas eles são bem diferentes. Se a flutuação não tem frequência fixa, temos um ciclo; se a frequência não se altera e está associada com algum aspecto do calendario, então o padrão é sazonal. 
+
+Em geral, o tamanho médio dos ciclos é maior que o comprimento de um padrão sazonal, e a magnitude dos ciclos tende a variar mais do que a magnitude do padrão sazonal. Além disto, as flutuações dos ciclos são o resultado, quase sempre, de condições econômicas, e estão relacionadas ao ciclo de negócios. A duração dessas flutuações tendem a ser de no mínimo 2 anos.
+
+A figura \@ref(fig:electrical) mostra informações sobre a fabricação de equipamentos elétricos na zona do Euro. 
+
+```{r electrical, fig.cap="Equipamentos elétricos produzidos na zona do Euro"}
+
+elecequip %>% 
+  tk_tbl() %>% 
+  plot_time_series(index, value,
+                   .title = "Equipamentos Elétricos Produzidos na Área do Euro",
+                   .x_lab = "Ano",
+                   .y_lab = "Índice 2005 = 100")
+
+```
+
+É possível observar um padrão sazonal dentro de cada ano, mas também um forte comportamento cíclico com um período de cerca 5 anos ou mais.
+
+
+## Decomposição
+
+Vimos que uma série de tempo possui três padrões básicos: tendência, sazonalidade e ciclo. Uma série de métodos são utilizados para separar estes padrões em componentes individuais.  Geralmente, os componentes de ciclo e tendência são exibidos em conjunto (e chamados apenas de tendência), de modo que uma série temporal pode ser vista como composta de três partes: um componente de ciclo-tendência, um componente de sazonalidade e o resto. 
+
+:::dica
+Algumas séries, sobretudo de alta frequência (minutos, dias, semanas), podem exibir múltiplos componentes de sazonalidade, correspondentes a diferentes períodos sazonais.
+:::
+
+
+### Decomposição STL
+
+A Decomposição de Tendência e Sazonalidade usando Loess (STL em inglês) é um método versáil e robusto para decomposição dos componentes de séries temporais. Uma das suas vantagens é a possibilidade de decompor qualquer tipo de sazonalidade, e não apenas mensal e trimestral como outros métodos.
+
+A decomposição STL é implementada no R com a função `stat::stl()`. O pacote  `timetk` fornece uma versão conveniente desta função com `plot_stl_diagnostics()`. A função `plot_stl_diagnostics()` tem dois parâmetros principais:
+
+* `.frequency`: parâmetro que permite ajustar o componente sazonal. Para a série acima, os dados são mensais, de modo que temos uma frequência de 12.
+
+* `.trend`: parâmetro que ajusta a janela de tendência. Uma inspeção parece indicar que os ciclos duram cerca de cinco anos em média.
+
+O valor padrão destes dois parâmetros é `"auto`, que permite que a função calcule automaticamente o período de sazonalidade e a janela de tendência. Vamos aplicar esta função aos dados de equipamentos elétricos produzidos na zona do Euro (\@ref(fig:electrical)). A figura \@ref(fig:decomp-stl) mostra o resultado desta decomposição STL.
+
+```{r decomp-stl, fig.cap = "Decomposição STL da Série de Produção de Equipamentos Elétricos", message=F, warning=F}
+elecequip_df <- elecequip %>% 
+  tk_tbl() %>% 
+  mutate(index = as.Date(index))
+
+elecequip_df %>% 
+  plot_stl_diagnostics(index, value,
+                       .title = "Decomposição STL da Série de Produção de Equipamentos Elétricos",.facet_scales = "free_y")
+
+```
+Na figura vemos cinco séries: (1) a série observada; (2) o componente sazonal extraído; (3) o ciclo-tendência; (4) o resto, que representa a série filtrada da sua tendência e sazonalidade; e a série ajustada sazonalmente.
+
+
+<!--chapter:end:02-series_temporais.Rmd-->
+
+# Modelos Estatísticos
+
+O objetivo principal da análise de séries temporais é desenvolver modelos matemáticos que ofereçam uma descrição plausível do dado amostral. Nós vamos assumir que uma série temporal pode ser definida como uma coleção de variáveis aleatórias indexadas de acordo com a ordem que elas são obtidas no tempo. 
+
+Por exemplo, podemos considerar uma série temporal como uma sequência de variáveis aleatórias $y_1, y_2, y_3, ...$, onde a variável aleatória $y_1$ denota o valor tomado de uma série no primeiro período do tempo, a variável $y_2$ denota o valor para o segundo período no tempo, e assim em diante.  Em geral, uma coleção de variáveis aleatórias, $\{Y_t\}$, indexada por $t$ é referida como um **processo estocástico**. 
+
+
+## Ruído Branco
+
+Ruído branco é um tipo muito simples de série gerada como uma coleção de variáveis aleatoriamente não correlacionadas, $w_t$, com média 0 e variância finita $\sigma^2_w$. A figura \@ref(fig:ruido-branco) mostra uma série desse tipo.
+
+
+```{r ruido-branco, fig.cap = 'Série Temporal do Tipo Ruído Branco', message=FALSE, warning=FALSE}
+ruido_branco = rnorm(200,0,1)
+df = data.frame(ruido_branco = as.matrix(ruido_branco), x = time(ruido_branco)) 
+
+
+df %>% 
+  ggplot(aes(x = x, y = ruido_branco)) +
+  geom_line() + 
+  labs(x = "Tempo", y = "y",
+       title = "Série Temporal do Tipo Ruido Branco")
+
+```
+
+
+## Média Móvel e Filtro
+
+Podemos substituir a série de ruído branco $w_t$ por uma média móvel que suaviza a série. Por exemplo, considere substituir $w_t$ por uma média dos seus valores atuais e dos seus valores vizinhos no passado e no futuro. Assim, deixe que:
+
+$$v_t = \frac{1}{3} (w_{t-1} + w_t + w_{t+1})$$
+
+que faz com que a série tenha a aparência mostrada na figura \@ref(fig:media-movel). 
+
+```{r media-movel, fig.cap = 'Série temporal de Média Móvel', message=FALSE, warning=FALSE}
+df <- df %>% 
+  mutate(media_movel = stats::filter(ruido_branco, sides = 2, filter = rep(1/3, 3)))
+
+df %>% 
+  ggplot(aes(x = x, y = media_movel)) +
+  geom_line() + 
+  labs(x = "Tempo", y = "y",
+       title = "Série Temporal de Média Móvel")
+
+```
+
+Uma inspeção da série mostra uma versão mais suavizada do gráfico de ruído branco é produzida, refletindo o fato que oscilações grandes são menos aparentes. 
+
+## Autoregressões
+
+Suponha que consideremos possamos calcular uma série $y$ como uma equação de segunda-ordem da série de ruídos brancos $w_t$:
+
+$$y_t = y_{t-1} - 0.9y_{t-2} + w_t$$
+
+para $t=1,2,...,500$. 
+
+A equação acima representa uma regressão ou previsão dos valores atuais $x_t$ de uma série temporal como uma função dos dois valores passados da série, e portanto, o termo autoregressivo é sugerido para este modelo. 
+
+Temos aqui um problema com os valores iniciais da série uma vez que as condições iniciais são importantes ($x_0$ e $x_{-1}$). Mas, assumindo que temos estes valores, podemos gerar uma sequência de valores apenas substituindo estes valores iniciais na equação acima. O resultado é exibindo na figura \@ref(fig:autoregressivo).
+
+```{r autoregressivo, fig.cap='Série Temporal Autoregressiva',message=FALSE, warning=FALSE}
+ruido_branco <- rnorm(250,0,1)
+# as primeiras 50 observações são excluídas para evitar problemas de startup
+autoregressivo <- stats::filter(ruido_branco, filter=c(1,-.9), method = "recursive")[-(1:50)]
+
+df <- df %>% 
+  mutate(autoregressivo = autoregressivo)
+
+df %>% 
+  ggplot(aes(x = x)) +
+  geom_line(aes(y = autoregressivo)) + 
+  labs(x = "Tempo", y = "y",
+       title = "Autogressivo")
+
+
+```
+
+O modelo autoregressivo acima mostra um comportamento periódico. O modelo autoregressivo acima e suas generalizações podem ser utilizados como um modelo explicativo para muitos tipos de séries observadas.
+
+
+## Random Walk com Drift
+
+Um modelo para analisar tendências, como as vistas em temperaturas globais, é o _random walk com drift_. Intuitivamente, em cada período do tempo, a variável toma um passo independente para cima ou para baixo, por isso o termo *random walk*. 
+
+A variável vai subir ou descer? A probabilidade dos dois eventos é igual. Uma analogia comumente utilizada é a de um bêbado caminhando em zig-zag pela rua enquanto tenta se mover em frente: o caminho que ele segue é uma caminhada aleatória ou _random walk_. 
+
+Assim, o modelo de random walk pode ser definido pela equação:
+
+$$y_t = \delta + y_{t-1} + w_t$$
+
+para $t = 1,2,...,...$ com condições iniciais $y_0 = 0$ e onde $w_t$é um ruido branco. A constante $\delta$ é chamada de drift, e quando $\delta = 0$, chamamos o modelo simplesmente de *random walk*.  Quando $\delta =0$, o valor da série em $t$ é o valor da variável no tempo $t-1$ mais um movimento completamente aleatório determinado por $w_t$.  Note que podemos reescrever a equação do random walk com drift ao acumular a soma de vários ruídos brancos:
+
+$$x_t = \delta t + \sum_{j=1}^t w_t$$
+
+para $t = 1,2,...$. Ou seja, a série é uma soma de passos erráticos. O random walk é um processo que fornece um bom modelo para fenômenos tão diversos quanto preço de ações ou a posição de particulas pequenas suspensas em um flúido (movimento Browniano).
+
+A figura \@ref(fig:random-walk) mostra 500 observações geradas a partir de um modelo com $\delta= 0$, $\delta = 0.2$ e  $\delta_w = 1$. 
+
+```{r random-walk, fig.cap='Série Temporal com Random Walk'}
+set.seed(154)
+
+ruido_branco  = rnorm(200)
+random_walk = cumsum(ruido_branco)
+ruido_branco_drift = ruido_branco + 0.2
+random_walk_drift = cumsum(ruido_branco_drift)
+
+df <- df %>% 
+  mutate(random_walk = random_walk) %>% 
+  mutate(random_walk_drift = random_walk_drift)
+
+df %>% 
+  ggplot(aes(x = x)) + 
+  geom_line(aes(y = random_walk, color = "Random Walk")) +
+  geom_line(aes(y = random_walk_drift, color = "Random Walk com Drift")) +
+  labs(x = "Tempo", y = "",
+       title = "Random Walk",
+       subtitle = "Random Walk sem Drift e Random Walk com Drift",
+       color = "Modelo:")
+
+```
+
+
+## Sinal no Ruído
+
+Muitos modelos realistas para gerar séries temporais assumem um sinal com algum tipo de variação periódica que é contaminada pela adição de um ruído aleatório. Por exemplo, considere um modelo do tipo:
+
+$$y_t = 2 \cos \left(2 \pi \frac{t + 15}{50}\right) + w_t$$
+
+para $t = 1,2,...,200$, onde o primeiro termo é o sinal. Abaixo temos um modelo aditivo simples na forma de $y_t = s_t + w_t$, onde $s_t$ denota algum sinal desconhecido e $w_t$ denota um ruído branco. O problema de detectar um sinal e então extrair $s_t$ é de grande interesse. Em economia, o sinal pode ser uma tendência ou um componente sazonal da série. 
+
+
+```{r sinal, fig.cap="Séries Temporais com diferentes sinais"}
+curva_onda = 2*cos(2*pi*1:200/50 + .6*pi)
+df <- df %>% 
+  mutate(curva_onda = curva_onda,
+         curva_onda_ruido = curva_onda + ruido_branco,
+         curva_onda_ruido_forte = curva_onda + 5*ruido_branco)
+
+
+p1 <- df %>% 
+  ggplot(aes(x = x, y = curva_onda)) +
+  geom_line() +
+  labs(title = "Curva em Onda", y = "", x = "")
+
+p2 <- df %>% 
+  ggplot(aes(x = x, y = curva_onda_ruido)) + 
+  geom_line() +
+  labs(title = "Curva em Onda  + Ruído", y = "", x = "")
+
+
+p3 <- df %>% 
+  ggplot(aes(x = x, y = curva_onda_ruido_forte)) +
+  geom_line() +
+  labs(title = "Curva em Onda + Ruído Forte", y = "", x = "")
+
+  
+gridExtra::grid.arrange(p1, p2, p3)
+
+```
+
+
+
+
+<!--chapter:end:03-modelos.Rmd-->
+
+# Conceitos Teóricos
+
+Aqui vamos descrever alguns conceitos fundamentais sobre a teoria de séries temporais. Em particular, entender o que é um processo estocástico, a média, a função de covariância, processos estocásticos e a função de autocorrelação.
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+library(tidyverse, timetk, fpp)
+```
+
+
+## Média, Variâncias e Covariâncias
+
+Agora vamos introduzir várias medidas teoricas utilizadas para descrever como séries temporais se comportam. Como é usual em estatística, a descrição completa da série envolve uma função de distribuição multivariada a amostra conjunta dos valores $y_1, y_2, ..., y_n$, enquanto que uma descrição mais econômica pode ser obtida em termos das funções média e de autocorrelação. Como a correlação é uma característica essencial da análise de séries temporais, as medidas de descrição mais úteis são aquelas expressadas em termos função de autocorrelação e função de autovariância.
+
+Vamos discutir alguns conceitos importantes relacionados a todos os tipo de modelos estatísticos de série temporal. Especificamente podemos utilizar algumas medidas para descrever uma série temporal.
+
+## Função Média
+
+A função média descreve o valor esperado de uma série temporal. Assim, para um processo estocástico $\{ Y_t\}$, a função média é definida como:
+
+$$\mu_t = E(Y_t)$$
+para $t = 0,1,2,...$. Assim, $\mu_t$ é o valor esperado do processo no tempo $t$. 
+
+**Exemplo 1: Função Média de Média Móvel**
+
+Para uma media móvel dada por $\frac{1}{3}(w_{t-1} + w_t + w_{t+1})$, seu valor esperado (função média) é igual a zero, $\mu_y = 0$. Assim, a função média ao redor de zero descreve bem o comportamento geral da média móvel. O mesmo pode ser dito do ruído branco.
+
+```{r ruido_media, fig.cap="Função Média de um ruído branco"}
+df %>% 
+  ggplot(aes(x = x, y = ruido_branco)) + 
+  geom_line(aes(color = "Ruído Branco")) + 
+  geom_hline(aes(yintercept = 0, color = "Função Média"), linetype = 2, size = 1.5) +
+  labs(x = "Tempo", y = "",
+       title = "Média Móvel",
+       subtitle = "Função Média da Média Móvel é Zero",
+       color = "") +
+  theme(legend.position = "bottom")
+  
+```
+
+**Exemplo 2: Função Média de Random Walk com Drift**
+
+Para um *random walk com drift* qual a função média? Dado que este modelo é dado por $y_t = \delta t + \sum_{j=1}^t w_t$, como $E(w_t) = 0$ e como $\delta$ é uma constante, temos
+
+
+$$\mu(yt) = \delta t$$
+
+Assim, a função média de uma *random walk com drift* é uma linha reta com inclinação $\delta$. Uma comparação de uma random walk com drift e sua função média pode ser vista na figura \@ref(fig:random-media).
+
+```{r random-media, fig.cap = "Função média de uma série random walk com drift"}
+
+df %>% 
+  # criar a função média da random walk
+  mutate(funcao_media_random_walk = .2*x) %>% 
+  ggplot(aes(x = x)) + 
+  geom_line(aes(y = random_walk_drift, color = "Random Walk com Drift")) +
+  geom_line(aes(y = funcao_media_random_walk, color = "Função Média"), linetype = 2, size = 1.5) +
+  labs(x = "Tempo", y = "",
+       title = "Random Walk com Drift Delta = 0.2",
+       subtitle = "A função Média é uma linha Reta com Inclinação Delta = 0.2",
+       color = "Modelo:")
+ 
+```
+
+
+**Exemplo 3: Função Média de um Sinal mais Ruído**
+
+A função média para um modelo aditivo na forma $y_t = s_t + w_t$ é obtido por:
+
+
+$$\mu_{yt} = E(y_t) = E[2 \cos(2\pi \frac{2t + 15}{50}) + w_t]$$
+
+Novamente, $E(w_t) = 0$ e os demais termos são constantes, logo:
+
+$$\mu_{yt} = E(y_t) = 2 \cos(2\pi \frac{2t + 15}{50})$$
+A média móvel é apenas o sinal sem o ruído. 
+
+```{r sinal_media, fig.cap="Função Média de uma série com sinal"}
+
+df %>% 
+  ggplot(aes(x = x)) +
+  geom_line(aes(y = curva_onda, color = "Função Média"), size = 1.5, linetype = 2) +
+  geom_line(aes(y = curva_onda_ruido, color = "Sinal com Ruído")) + 
+  labs(title = "Curva em Onda e Sua Função Média",
+       subtitle = "A função Média é o Sinal sem Ruído",
+       color = "") +
+  theme(legend.position = "bottom")
+
+```
+
+
+## Função de Autocovariância
+
+A função de autocovariância mostra a covariância de um processo consigo mesmo em dois pontos diferentes no tempo. Assim, para uma série mensal de preços, a função de autocovariância mostra a relação entre $y_{jan}$ e $y_{fev}$, que são os valores observados de preço para janeiro e fevereiro, respectivamente.
+
+A função de autocovariância $\gamma_{t,s}$ é definida como:
+
+$$\gamma_{t,s} = Cov(Y_t, Y_s)$$
+
+para $t,s=0,1,2,...$
+
+Onde $Cov(Y_t,Y_s) = E[(Y_t - \mu_t)(Y_s - \mu_s)] = E[Y_t Y_s) - \mu_t \mu_s$.
+
+Portanto, a autocovariância mede a dependência linear entre dois pontos na mesma série observadas em pontos diferentes. Séries que são muito suavizadas exibem funções de autocovariância que permanecem altas mesmo quando o $t$ e o $s$ estão muito longes entre si. Séries com muita agitação tendem a ter funções de autocovariância que são próximas de zero para valores muito distantes entre si. 
+
+Lembre que se $s = t$, ou seja, se estivermos comparando uma observação no tempo consigo mesmo, a autovariância se reduz ao valor de variância, porque
+
+$$\gamma_{y}(t,t) = E[(y_t - \mu_t)^2] = \text{Var}(x_t)$$
+
+**Exemplo 1: Autocovariância de Ruído Branco**
+
+Para uma série temporal ruído branco $w_t$ que tem $E(w_t)=0$, temos que
+
+$$\gamma_w = Cov(w_s, w_t) = 0$$
+
+para $s \neq t$. Assim, a relação linear entre duas observações é zero. O valor de uma observação num ponto no tempo não influencia em nada os valores observados nos demais pontos do tempo.
+
+
+**Exemplo 2: Autocovariância de uma Média Móvel**
+
+Considere nosso exemplo de uma média móvel. Assim, 
+
+$$\gamma_v (s,t) = cov(v_s, v_t) = cov \{ \frac{1}{3}(w_{s-1} + w_s + w_{s+1}), \frac{1}{3}(w_{t-1} + w_t + w_{t+1}) \}$$
+
+Quando $s = t$, temos
+
+$$\gamma_v (s,t) = \frac{1}{9}cov\{(w_{t-1} + w_t + w_{t+1}), (w_{t-1} + w_t + w_{t+1}) \}$$
+
+$$\gamma_v (s,t) = \frac{1}{9}\[ cov(w_{t-1}, w_{t-1} + cov(w_{t} + w_t) + cov(w_{t+1} + w_{t+1}) \]$$
+
+$$\gamma_v (s,t) = \frac{3}{9} \sigma^2_w$$
+
+O mesmo exercício pode ser feito para $s = t + 1$, quando analisamos observações que estão distantes uma observação entre si (janeiro e março, por exemplo), onde $\gamma_v (t + 1, t) = \frac{2}{9}\sigma^2_w$. Quando as observaçãos estão separadas por dois períodos, $|s-t| = 2$, temos $\gamma_v(s,t) = \frac{1}{9}\sigma^2_w$, e quando as observações estão separadas por mais de dois períodos, $|s-t| > 2$, temos $\gamma_v(s,t) = 0$. 
+
+Assim, quando suavizamos um ruído branco utilizando uma média móvel, adicionamos um pouco de covariância, mas esta dependência linear se reduz com o aumento da separação entre os valores. Assim, a relação entre janeiro e fevereiro é mais forte que a relação entre janeiro e março. Contudo, a relação entre janeiro e abril seria igual a zero, dado que $| \text{Jan} - \text{Abr} | > 2$.
+
+
+
+**Exemplo 3: Autocovariância de um Random Walk**
+
+Para um modelo random walk, $y_t = \sum_{j = 1}^t w_t$, temos que
+
+$$\gamma_y (s,t) = cov(y_s, y_t) = cov \left( \sum_{j=1}^2 w_j, \sum_{k=1}^t w_t\right) = \min\{s,t\} \sigma^2_w$$
+
+porque o $w_t$ são variáveis não correlacionadas entre si. Nota que, diferentemente dos exemplos anteriores, a função autocovariância de uma _random walk_ depende no valor em particular de $s$ e $t$, e não na separação entre as observações ou no *lag*. Perceba também que a variãncia de uma random walk, $var(y_t) = t \sigma^2_w$, aumenta sem limites quando $t$ cresce. O efeito desta variância pode ser observada na figura para o random walk. Conforme $t$ aumenta, mais e mais a variável se distancia da sua função média $\delta t$.
+
+```{r cov-random-walk, fig.cap="Autocovariância de uma random walk com drift"}
+
+df %>% 
+  # criar a função média da random walk
+  mutate(funcao_media_random_walk = .2*x) %>% 
+  ggplot(aes(x = x)) + 
+  geom_line(aes(y = random_walk_drift, color = "Random Walk com Drift")) +
+  geom_line(aes(y = funcao_media_random_walk, color = "Função Média"), linetype = 2, size = 1.5) +
+  labs(x = "Tempo", y = "",
+       title = "Random Walk com Drift Delta = 0.2",
+       subtitle = "Quanto maior o t, maior a distância entre a Série e sua Função Média",
+       color = "Modelo:") + 
+  theme(legend.position = "bottom")
+ 
+```
+
+## A Função de Autocorrelação (FAC)
+
+A correlação mensura a relação linear entre duas variáveis. A autocorrelação por sua vez mede a relação linear entre valores defasados ( _lagged_ ) de uma série temporal.
+
+Uma forma de mensurar como um valor se relaciona a um valor passado é utilizando a Função de Autocorrelação (FAC), ou ACF em inglês. Ela mede a previsibilidade linear da série no tempo $t$, usando apenas os valores de $y_s$. A função de autocorrelação é definida como
+
+$$\rho (s,t) = \frac{\gamma(s,t)}{\sqrt{\gamma(s,s)\gamma(t,t)}}$$
+
+O valor de $\rho$, a covariância, esta sempre no intervalo $[-1,1]$. Se pudermos prever $y_t$ perfeitamente a partir de $y_s$ através de uma relação linear $y_t = \beta_0 + \beta_1 y_s$, então a correlação será $+1$ quando $\beta_1 > 0$, e a correlação será $-1$ quando $\beta_1 <0$. Portanto, temos uma medida grosseira da nossa habilidade de prever a série no tempo $t$ utilizando os valores no tempo $s$.
+
+Vamos observar esse comportamento na prática utilizando os dados trimestrais de produção de cerveja. A figura \@ref(fig:beer) mostra a série.
+
+```{r beer, fig.cap="Produção trimestral de cerveja"}
+beer2 <- window(ausbeer, start=1992)
+
+autoplot(beer2) +
+  ggtitle("Produção trimestral de Cerveja, Australia") +
+  ylab("") + xlab("Ano")
+```
+
+É possível observar que os dados possuem um comportamento sazonal bem marcante. Vamos visualizar esse comportamento utilizando o correlograma, o gráfico que nos retorna os coeficientes de autocorrelação.
+
+
+```{r beer-auto, fig.cap="Função de autocorrelação para a produção trimestral de cerveja"}
+library(forecast)
+
+
+ggAcf(beer2)
+```
+
+O gráfico parece mostrar:
+
+* O $r_4$ é maior que outros _lags_. Isso é um resultado do padrão sazonal da série.  Os picos tendem a ser separados por quatro trimestres e os vales tendem a ser separados por quatro trimestres.
+
+* $r_2$ é mais negativo que outros _lags_ porque os vales e picos tendem a ser separados por dois trimestres.
+
+* A linha azul indica se a correlação é significamente diferente de zero. 
+
+### Tendência e sazonalidade em Correlogramas
+
+Quando os dados possuem uma tendência, as autocorrelações para pequenas defasagens é grande e positiva porque as observações próximas no tempo possuem valores semelhantes.
+
+Assim, o ACF de uma série com tendência tende a ter valores positivos que lentamente decaem conforme o número de valores defasados (lags) aumenta.
+
+A demanda por energia elétrica na australia (figura \@ref(fig:energia-aus)) possui um misto de padrão sazonal e tendência.
+
+```{r energia-aus, fig.cap="Demanda por Energia Elétrica na Australia, 1980-1995"}
+aelec <- window(elec, start=1980)
+autoplot(aelec) + xlab("Year") + ylab("GWh")
+
+```
+
+E a função de autocorrelação da série (figura \@ref(fig:acf-energia)) tem um decaimento lento devido a tendência, enquanto possui pequenas ondas, que ocorrem devido ao comportamento sazonal da série.
+
+```{r acf-energia, fig.cap="ACF da demanda australiana por energia elétrica"}
+ggAcf(aelec, lag=48)
+
+```
+
+O pacote `timetk` fornece uma função para gerar o correlograma.
+
+```{r}
+aelec_df <- data.frame(electrical_demand = matrix(aelec),
+           date = time(aelec)) %>% 
+  mutate(date = as.Date(date))
+
+
+aelec_df %>% 
+  plot_acf_diagnostics(date, electrical_demand,
+                       .show_white_noise_bars = T,
+                       .interactive = F)
+```
+
+
+A figura ilustra além do ACF, a função de autocorrelação parcial (PACF, em inglês) que será melhor explicada na seção xxx.
+
+
+
+### A Função de Covariância-Cruzada e de Correlação-Cruzada
+
+De maneira geral, gostariamos de medir a previsibilidade de uma outra série $y_t$ a partir da série $x_s$. Assumindo que ambas as séries tem variância finita, nós temos a seguinte definição para a função de covariância cruzada:
+
+$$\gamma_{x,y}(s,t) = cov(x_s, y_t) = E[(x_s - \mu_{xs})]$$
+
+A função de correlação cruzada (FCC) é dada por:
+
+$$\rho_{xy}(s,t) = \frac{\gamma_{xt}(s,t)}{\sqrt{\gamma_{x}(s,s) \gamma_{y}(t,t)}}$$
+
+Podemos inclusive extender a ideia acima para o caso de mais de duas séries. 
+
+O pacote `timetk` oferece um banco de dados de vendas semanais na rede walmart, com informações de vendas semanais para diferentes departamentos de lojas selecionadas da rede. O banco de dados ainda possui covariadas adicionais como `isHoliday`, que indica se a semana específica possui um feriado, `Temperature`, que indica a temperatura média da semana e `Fuel_Price`, que indica o preço do combustível naquela semana. Abaixo uma pequena amostra dos dados disponíveis:
+
+```{r walmart}
+walmart_sales_weekly %>% 
+  head() %>% 
+  knitr::kable(caption = "Vendas semanais das lojas walmart")
+```
+
+Na figura \@ref(fig:walmart-11) exibimos a série de vendas no tempo apenas para o departamento 1 da loja 1.
+
+```{r walmart-11, fig.cap="Vendas semanais do Departamento 1 da Loja na Walmart"}
+
+walmart_sales_weekly %>% 
+  filter(id == "1_1") %>% 
+  plot_time_series(Date, Weekly_Sales, .interactive = F)
+```
+
+Observamos alguns picos de vendas semanais que devem estar correlacionados a períodos de feriado. As vendas devem estar relacionadas ainda com a temperatura média e o preço do combustível naquela semana. Como temos acesso as covariadas `Temperature` e `Fuel_Price` podemos calcular não apenas o ACF, mas também a Função de Correlação-Cruzada com essas duas variáveis. Para tanto, vamos utilizar o parâmetro `.ccf_vars` na função `plot_acf_diagnostics` para incluir estas duas variáveis na análise.
+
+
+```{r ccf-walmart, fig.cap="Correlação Cruzada de Vendas Semanais com Temperatura e Preço de Combustível"}
+walmart_sales_weekly %>% 
+  group_by(id) %>% 
+  select(id, Date, Weekly_Sales, Temperature, Fuel_Price) %>% 
+  plot_acf_diagnostics(Date, Weekly_Sales, # Calcular ACF & PACF
+                       .ccf_vars = c(Temperature, Fuel_Price), # CCF
+                       .lags = "3 months",
+                       .interactive = FALSE)
+  
+```
+
+A função exibe o ACF e PACF de cada um dos departamentos de cada loja Walmart, além de calcular a correlação cruzada com temperatura e preço de combustíveis.
+
+Uma análise da figura \@ref(fig:ccf-walmart) sugere algumas relações curiosas, como a relação entre os valores de vendas semanais e valores passados de temperatura. A relação com temperatura pode ser diferente a depender da localização geográfica da loja, uma vez que em estados frios, baixas temperaturas associadas ao período de inverno podem desestimular a ida de clientes às lojas físicas, enquanto que em estados quentes, esse padrão não seria observado. Além disto, é possível que essa relação entre vendas e temperatura esteja sendo intermediada pelo padrão sazonal de vendas mais fortes no fim do ano.
+
+É importante destacar que o padrão da correlação cruzada é afetado pela estrutura das duas séries e a tendência que cada uma tem. É preferível sempre remover a tendência das séries ou levar em consideração a estrutura do ARIMA univariado da variável $x$ antes de aplicar um gráfico de CCF. 
+
+
+
+<!--chapter:end:04-conceitos.Rmd-->
+
+# Considerações Práticas
+
+Neste capítulo vamos discutir alguns aspectos do processo de criação de previsões de séries temporais. 
+
+Na seção \@ref(conjuntos-de-teste-e-treinamento) vamos analisar como é possível criar conjuntos de teste e treinamento a partir de dados de séries temporais. Ao separar os dados em séries em períodos de treinamento e teste, podemos comparar valores previstos por um modelo com valores reais que não foram utilizados durante o processo de treinamento. Uma boa previsão para fora da amostra garante que o modelo é capaz de generalizar bem o comportamento da série, e não está apenas memorizando certos comportamentos. Este procedimento é facilitado com o uso do pacote `rsample`.
+
+Na seção \@ref(transformacao-dados) vamos entender que antes de estimar os modelos de previsão, um extensivo processo de ajuste dos dados pode ser crucial para produzir bons resultados. Este processo passar pela identificação e correção de valores extremos (*outliers*), por ajustes em dados faltantes (*missing values*), criação de variáveis como *dummies* de feriado ou a transformação da variável original para sua versão em logarítimo. Cada uma dessas escolhas exige do analista a capacidade de ponderar prós e contras e um íntimo conhecimento dos dados utilizados. O pacote `recipes` fornece uma séries de funções convenientes para o ajuste dos dados.
+
+Na seção \@ref(rodando-um-modelo-simples) vamos mostrar como podemos utilizar o pacote `modeltime` para ajustar dois modelos simples de séries temporais.
+
+Após o ajuste do modelo, uma análise dos resíduos é importante para avaliar a qualidade do modelo ajustado. Na seção \@ref(analise-residuos) vamos investigar como a análise de normalidade dos resíduos e a autocorrelação podem nos ajudar na busca por um modelo com bom ajuste.
+
+Na seção \@ref(medindo-performance) vamos discutir como medir a performance de um modelo de previsão a partir dos seus erros de previsão. Para tanto, vamos analisar asss principais medidas utilizadas e como implementa-las no nosso *workflow* utilizando o pacote `yardstick`.
+
+Por fim, na seção \@ref(metodos-reamostragem) vamos investigar o papel dos métodos de reamostragem no processo de previsão de séries temporais.
+
+
+
+## Conjuntos de teste e treinamento
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+A capacidade de um modelo de generalizar só pode ser realmente avaliada quando fazemos previsões de casos novos, para os quais o modelo não foi inicialmente treinado. 
+
+Uma opção bastante utilizada é a de dividir os dados em dois subconjuntos: **conjunto de treinamento** e **conjunto de teste**. O modelo é treinado nos conjuntos de treinamento e testado em novos casos, chamado de conjunto de teste. Podemos então comparar as previsões do modelo com os casos de teste e construir medidas de erro, que irão indicar se o modelo funciona bem para observações inéditas.
+
+A figura \@ref(fig:teste-treinamento) mostra uma série temporal separada em bases de treinamento e teste.
+
+```{r teste-treinamento, fig.cap = "Separação de uma série temporal em base de treinamento e de teste",echo=FALSE, message=FALSE, warning=FALSE}
+library(fpp3) # contém os dados us_gasoline
+library(tidymodels) # contém o pacote rsample, recipes e yardstick
+library(modeltime)
+library(timetk)
+
+data("us_gasoline")
+
+gasoline_split <- us_gasoline %>%
+  tk_tbl() %>% 
+  mutate(Week = as.Date(Week)) %>% 
+  initial_time_split(prop = 0.7) 
+
+gasoline_split %>% 
+    tk_time_series_cv_plan() %>% 
+    plot_time_series_cv_plan(Week, Barrels, 
+                             .title = "Bases de Teste e Treinamento",
+                             .interactive = FALSE,
+                             #.line_alpha = 0.5,
+                             .line_type = 1,
+                             ) 
+```
+Na porção azul da figura, chamada de base de treinamento, o modelo de previsão é treinado. A partir desse modelo treinado, faremos previsões para o período de teste (vermelho), que são observações inéditas para o modelo, mas são informações conhecidas para o usuário. No exemplo acima, a base de teste é de 30% da série total. Como regra de bolso podemos definir o tamanho da base de teste em ao menos 20% dos dados totais. 
+
+Um modelo que possui uma boa performance na própria base de treinamento não necessariamente será capaz de realizar boas previsões para casos inéditos. O modelo pode estar **sobreajustando** os dados de treinamento, e memorizando o comportamento do período de treinamento, mas sendo incapaz de generalizar bem para novos casos. 
+
+### Funções para dividir uma série temporal
+
+Na figura \@ref(fig:gasoline) podemos visualizar os dados de oferta semanal de gasolina para os EUA. Estes dados são parte do pacote `fpp3`.
+
+
+```{r gasoline, fig.cap="Oferta semanal de produtos de gasolina, EUA"}
+
+library(tidymodels) # contém o pacote rsample, yardstick e recipes
+library(fpp3) # contém os dados us_gasoline
+library(timetk)
+
+data("us_gasoline")
+
+us_gasoline <- us_gasoline %>%
+  tk_tbl() %>% 
+  mutate(Week = as.Date(Week))
+
+us_gasoline %>% 
+  plot_time_series(Week, Barrels,
+                   .title = "Oferta semanal de produtos de gasolina, EUA",
+                   .y_lab = "Milhões de barril")
+
+```
+No código acima, carregamos o pacote `tidymodels` (que contém os pacotes `rsample`, `recipes` e `yardstick` que serão utilizados ao longo do capítulo). Carregamos ainda o pacote `timetk`, que possui funções convenientes para tratamento de séries temporais, como a função `tk_tbl()`, que converte o objeto `ts` para `data.frame`.
+
+Para separar os dados em base de treinamento e teste, vamos utilizar o pacote `rsample`. Com a função `initial_split()` podemos criar bases aleatórias de treinamento e teste. Contudo, para uma série temporal, como a estrutura temporal dos dados é importante, em vez de uma seleção aleatória dos valores que farão parte do conjunto de teste e do conjunto de treinamento, vamos definir estes conjuntos a partir de faixas temporais. Especificamente, vamos definir que a base de treinamento corresponderá aos primeiros 70% das observações, totalizando 948 observações.
+
+```{r}
+gasoline_split <- us_gasoline %>%
+  initial_time_split(prop = 0.7) 
+
+gasoline_split
+```
+
+
+O objeto `gasoline_split` é uma lista com informações dos dados de treinamento e de teste. Podemos utilizar as funções `training()` e `testing` do pacote `rsample` para acessar apenas as observações referentes aquela faixa específica. Abaixo, temos um resumo dos dados de teste utilizando a função `testing(gasoline_split)`. Observe que as observações só tem inicio em abril de 2009.
+
+
+```{r}
+testing(gasoline_split) %>% 
+  head()
+```
+
+
+Podemos ainda visualizar como o período de treinamento e teste utilizando as funções `tk_time_series_cv_plan()` e `plot_time_series_cv_plan()`, que preparam os dados e visualizam o plano de teste e treinamento (figura \@ref(fig:treino-teste-gasolina)). 
+
+
+```{r treino-teste-gasolina, fig.cap="Bases de Teste e Treinamento para dados de gasolina, EUA"}
+df_treinamento <- training(gasoline_split)
+df_teste <- testing(gasoline_split)
+
+gasoline_split %>% 
+    tk_time_series_cv_plan() %>% 
+    plot_time_series_cv_plan(Week, Barrels, 
+                             .title = "Bases de Teste e Treinamento",
+                             .interactive = FALSE,
+                             #.line_alpha = 0.5,
+                             .line_type = 1,
+                             ) 
+
+```
+
+Na seção \@ref(rodando-um-modelo-simples) vamos utilizar a base de treinamento criada acima para estimar alguns modelos de séries temporais. Na seção \@ref(medindo-performance), utilizaremos a base de teste para avaliar os erros cometidos por estes modelos.
+
+
+## Transformação de variáveis {#transformacao-dados}
+
+Melhorias das previsões podem ser obtidas pela transformação das séries originais. Dados de total de vendas mensais podem ser afetados por efeitos calendários (meses com mais dias possuem naturalmente mais vendas totais). Uma forma de corrigir esta distorção é trabalhar com a média diária de vendas para cada mês.
+
+Dados agregados como produto interno bruto, total de empresas em uma cidade, total de leitos ou número de homicídios são distocidos por um efeito população. Uma transformação bastante popular é o de substituir a variável original por uma medida _per capita_. 
+
+Quando trabalhamos com variáveis monetárias como faturamento e arrecadação, ajustes pela inflação são fundamentais para realizar comparações justas ao longo do tempo. Para realizar este ajuste, é necessário utilizar um índice de inflação apropriado. 
+
+Outras transformações úteis incluem transformações matemáticas, como a mudança da série original para sua versão logarítima. Para uma série original $y_1,...,y_T$, uma transformação logarítima tomará a forma $w_t = \log(y_t)$. Este tipo de transformação pode ser útil pela sua interpretabilidade, já que mudanças em um valor *log* são mudanças percentuais na escala original. Se o log na base 10 é utilizado, um aumento de 1 na escala log corresponde a multiplicar a variável original por 10. Contudo, se a variável original possui valores zero ou negativos, este tipo de transformação não é possível. 
+
+Podemos ainda estar interessados em adicionar variáveis indicativas (*dummies*) para dia da semana, dia do mês ou feriados importantes no ano. Com isto, podemos capturar algum efeito sazonal ou efeito de calendário que não seria possível sem a adição destas variáveis. *Dummies* podem ainda ser utilizadas para indicar que determinadas observações são *outliers*, ou seja, representam desvios significativos do padrão normal da série temporal. 
+
+Por fim, a série temporal a ser prevista pode estar incompleta. Essas informações faltantes (*missing values*) podem ser preenchidas com a utilização de métodos de imputação de dados. Contudo, utilizar métodos de imputação exige do analista um profundo conhecimento dos dados. Se os dados faltantes são aleatórios ou muito próximo disso, a imputação simples dos dados não oferece custos importantes. 
+
+
+### Funções para transformar dados 
+
+Antes de aplicar qualquer modelo aos dados, podemos utilizar o pacote `recipes` (parte do pacote `tidymodels`) para criar pequenas receitas de bolo com instruções de pré-processamento dos dados. Ele torna simples tarefas como a criação de variáveis `dummies`, a normalização de variáveis numéricas, a criação de variáveis derivadas da coluna de tempo (como dummy de dia, mês, ano e dia da semana), além de muitas outras operações de _feature engineering_ que são tão importantes, mas por vezes tediosas. 
+
+Trabalhando com a base de dados `us_gasoline`, vamos converter os dados originais para sua versão logarítima. Primeiro, com a função `recipe` podemos utilizar uma fórmula para indicar a variável dependente e as variáveis independentes. No caso de uma série temporal univariada, a coluna de tempo (`Week`) pode ser incluida como variável independente. Precisamos ainda indicar qual a base a ser transformada, que será a base de treinamento.
+
+```{r}
+receita_gasolina <- us_gasoline %>% recipe(Barrels ~ Week, training(gasoline_split))
+receita_gasolina
+```
+Agora podemos realizar as transformações desejadas. Primeiro vamos utilizar a função `step_log` para criar uma versão log da variável dependente, que é selecionada a partir da função selecionadora `all_outcomes` (alternativamente podemos utilizar o nome da variável).
+
+
+:::dica
+Outros seletores específicos do pacote `recipe` são: `all_numeric_predictors()`, `all_numeric()`,
+`all_predictors()` e `all_outcomes`. 
+:::
+
+
+```{r}
+receita_gasolina <- receita_gasolina %>% 
+  step_log(all_outcomes()) 
+```
+
+Na tabela \@ref(tab:tab_gasolina_log) vemos como a função `recipe` transformou a coluna `Barrels` para formato log.
+
+```{r tab_gasolina_log}
+receita_gasolina %>% 
+  prep() %>% 
+  juice() %>% 
+  head() %>% 
+  knitr::kable()
+
+```
+
+
+
+:::dica
+
+O pacote `recipe` permite outras transformações a partir de funções como  `step_meanimpute`, `step_sqrt()`, `step_BoxCox()`, `step_mutate()`, `step_cut() `e  `step_date()`. Uma lista de todas as transformações possíveis pode ser obtida na [documentação](https://recipes.tidymodels.org/reference/) do `recipe`.
+
+:::
+
+
+
+
+## Rodando um modelo simples
+
+Nas próximas seções veremos modelos mais complexos e mais apropriados para os dados utilizados. Por enquanto, vamos utilizar alguns modelos simples, que podem servir como _benchmarking_ para os modelos por vi. 
+
+### Método da Média
+
+Para este modelo, a previsão de todos os valores futuros é igual a média dos dados históricos. Se deixarmos os dados históricos serem denotados por $y_1,...,y_T$, então os valores futuros serão dados como
+
+$$\hat{y}_{T+h|T} = \bar{y}=\frac{y_1 + ... +y_T}{T}$$
+
+A notação $\hat{y}_{T+h|T}$ pode ser entendido como estimação de $\hat{y}_{T+h}$ baseada nos dados de $y_1,...,y_T$.
+
+
+### Método Naïve
+
+Para previsões naïve, fazemos a previsão baseada no valor da última observação. Assim,
+
+$$\hat{y}_{T+h|T} = y_T$$
+
+A previsão naïve pode ser ótima quando temos dados de passeio aleatório.
+
+
+### Método Naïve Sazonal
+
+É um método útil para dados sazonais. Neste caso, cada valor previsto é igual ao último valor observado do mesmo período sazonal do ano (ou o mesmo mês do ano anterior). Formalmente, a previsão para o tempo $T+h$ é escrita como 
+
+$$\hat{y}_{T+h|T} = y_{T+h-m(k+1)}$$
+onde $m=\text{período sazonal}$, e $k$ é a parte inteira de $(h-1)/m$ (exemplo, o número de anos completos no período de previsão antes do tempo $T+h$). Assim, com dados mensais, a previsão para todos os meses de fevereiro serão iguais ao valor do último fevereiro observad. Com dados trimestrais, a previsão de todos os segundos trimestres serão iguais ao último segundo trimestre observado.
+
+### Função para ajustar modelos: `parsnip`
+
+Finalmente, após as etapas de pré-processamento dos dados e a criação de um conjunto de treinamento e teste podemos utilizar o pacote `parsnip` para estimar alguns modelos.
+
+O `parsnip` realiza um ótimo trabalho em unificar uma série de diferentes modelos estatísticos e de _machine learning_ em um único ambiente. O pacote é extremamente conveniente porque permite que o usuário utilize uma única forma de se comunicar com diferentes modelos que inicialmente possuiam sintaxes totalmente diferentes ou exigiam dados em diferentes formatos (`matrix`, `ts`, `data.frame`).
+
+Para utilizar o `parsnip`, sempre começamos definindo o modelo. Assim, para estimar uma regressão linear utilizamos a função `linear_reg()` e para estimar um random forest utilizamos a função `rand_forest()`. Contudo, muitos outros modelos estão presentes, como o modelo ARIMA (`arima_reg`), o modelo prophet (`prophet_reg`), Support Vector Machines (`svm_poly` e `svm_rbf`), regressão logística (`logistic_reg`), KNN (`nearest_neighbor`) e muitos outros. Uma lista completa de todos os modelos suportados pode ser encontrada na [documentação](https://parsnip.tidymodels.org/articles/articles/Models.html) do `parsnip`.
+
+O pacote `modeltime` extende o total de modelos para incluir modelos exclusivos de séries temporais. Vamos utilizar ajustar os dados de log de gasolina para o modelo naïve e o modelo naïve sazonal. Primeiro vamos definir o modelo a ser ajustado com a função `naive_reg()`, e fixar o pacote R que contêm a função `naive()` original.
+
+
+
+```{r}
+
+modelo_media <- window_reg() %>% 
+  set_engine("window_function",
+             window_function = mean)
+
+modelo_snaive <- naive_reg(
+        seasonal_period = 52
+    ) %>%
+    set_engine("snaive")
+
+modelo_naive <- naive_reg() %>%
+    set_engine("naive")
+
+```
+
+Para o modelo Naïve Sazonal, precisamos fixar o parâmetro de período da sazonalidade. Como os dados de gasolina estão em frequência semanal, temos uma sazonalidade bem peculiar, dado que o período de sazonalidade é de em média $365,25/7=52,18$. A maioria dos modelos sazonais só aceitam valores inteiros para a frequência, e mesmo um valor aproximado de 52 períodos pode gerar resultados inadequados. Independemente dessa falha conhecida, vamos utilizar um `seasonal_period = 52` como parâmetro do `naive_reg`.
+
+
+### Ajustando os modelos
+
+Agora temos os três ingredientes mais importantes para nosso modelo preditivo: (1) temos as bases de treinamento e teste, (2) temos uma receita de bolo com o passo-a-passo do pré-processamento que deve ser aplicado em todas as bases de dados; e (3) declaramos o modelo que deve ser ajustado. Para facilitar a integração de todas essas peças, podemos utilizar o pacote `workflows`, parte da suite `tidymodels`.
+
+Iniciamos um workflow sempre com a função `workflow()`. Adicionamos o modelo definido acima com `add_model()` e a receita que deve ser aplicada aos dados com `add_recipe()`. O último passo é o ajuste do modelo, onde passamos a base de treinamento construída pelo pacote `rsample` para estimar o modelo naïve e naïve sazonal.
+
+
+```{r}
+workflow_media <- workflow() %>% 
+  add_recipe(receita_gasolina) %>% 
+  add_model(modelo_media) %>% 
+  fit(training(gasoline_split))
+
+workflow_naive <- workflow() %>% 
+  add_recipe(receita_gasolina) %>% 
+  add_model(modelo_naive) %>% 
+  fit(training(gasoline_split))
+
+workflow_snaive <- workflow() %>% 
+  add_recipe(receita_gasolina) %>% 
+  add_model(modelo_snaive) %>% 
+  fit(training(gasoline_split))
+```
+
+Para facilitar o trabalho quando temos diversos modelos, podemos criar uma tabela de modelos com a função `modeltime_table()`, parte do pacote `modeltime`. Nela incluimos os arquivos com os modelos ajustados (`workflow_*`). 
+
+```{r}
+tbl_modelos <- modeltime_table(
+  workflow_media,
+  workflow_snaive,
+  workflow_naive
+  )
+```
+
+Por fim, usamos a função `modeltime_calibrate()` para produzir os valores previstos (_fitted_) para o período de teste e o valor dos resíduos. Mais a frente vamos analisar melhor os resíduos, mas antes vamos observar como os dois modelos realizaram as previsões para a oferta de produtos de gasolina (figura \@ref(fig:forecast-gasoline)). Para tanto usamos a função `modeltime_forecast()`, para preparar um `data.frame` com as previsões e os dados observados, e a função `plot_modeltime_forecast()` para produzir a visualização desejada.
+
+```{r forecast-gasoline, fig.cap="Previsão de métodos naïve para produtos de gasolina nos EUA"}
+tbl_calibracao <- tbl_modelos %>% 
+  modeltime_calibrate(new_data = testing(gasoline_split))
+
+tbl_calibracao %>% 
+  modeltime_forecast(new_data = testing(gasoline_split),
+                     actual_data = us_gasoline) %>% 
+  plot_modeltime_forecast()
+
+```
+
+A última observação da base de treinamento foi na semana do dia 30 de março de 2009. Naquele dia, o log do total de barris foi de 9,024. O método naïve simplesmente reproduziu este valor para todo o período de teste. Por isso vemos uma reta verde. Já o método da média, reproduziu o valor médio de todo o período. É possível notar que a média não é um bom previsor desta série, uma vez que a série passou por mudanças importantes na sua tendência.
+
+O modelo naïve com sazonalidade, apesar de sua simplicidade, é capaz de capturar o comportamento da série surpreendemente bem, uma vez que a série tem um comportamento sazonal bem marcante.
+
+É importante reforçar, que os modelos acima são meramente métodos de _benchmarking_. Em uma situação real, outros modelos mais adequados seriam utilizados, a exemplo dos modelos que serão vistos na seção \@ref(tslm), \@ref(Modelos-ARIMA) e \@ref(arimax).
+
+## Valores ajustados e resíduos {#analise-residuos}
+
+Cada observação na série temporal pode ser prevista usando todas as observações anteriores. Chamamos estas novas observações de valores ajustados (`fitted values`), e eles são denotados por $\hat{y}_{t|t-1}$, ou simplesmente $\hat{y}_t$. 
+
+Já os resíduos são a diferença entre os valores observados e os valores ajustados do modelo:
+
+$$e_t = y_t - \hat{y}_t$$
+Se os dados foram transformados, é sempre útil olhar os resíduos na escala transformada. Resíduos na escala transformada são chamados de **resíduos da inovação**, e podemos denotar por $w_t - \hat{w}_t$, dado que $w_t = \log{y_t}$. 
+
+Podemos acessar os valores observados, previstos e os resíduos para os dois modelos ao observar a tabela de calibração gerada pela função `modeltime_calibrate()`.
+
+```{r tab_residuos}
+tbl_calibracao %>% 
+  unnest(.calibration_data) %>% 
+  head(10) 
+```
+ 
+É sempre útil checar se um modelo capturou de modo adequado as informações dos dados. Para tanto podemos utilizar algumas ferramentas de diagnósticos de resíduos para verificar se:
+
+1. os resíduos são não correlacionados. Se existe correlação entre os resíduos, então existe informação presente nos resíduos que deveria ter sido utilizada para computar as previsões.
+ 
+2. Os resíduos devem ter média zero. Se a média é diferente de zero, então as previsões estão viesadas.
+
+Qualquer previsão que não satisfaz estas propriedades pode ser melhorado. Contudo, isto não significa que um modelo que satisfaça essas condições seja um modelo que não possa ser melhorado. Assim, checar essas informações é uma forma de garantir que o método está utilizando toda a informação dispoível, mas não é uma boa forma de selecionar o método ideal a ser escolhido.
+
+É útil (mas não necessário) que os resíduos também variância constante (a chamada homocedasticidade), e sejam normalmente distribuidos. Estas propriedades tornam os cálculos de intervalo de confiança mais precisos. 
+
+Vamos utilizar a tabela de calibração para plotar os resíduos do modelo naïve sazonal. A figura \@ref(fig:residuo-snaive) mostra os resíduos da previsão de gasolina utilizando o método naïve sazonal.
+
+
+```{r residuo-snaive, fig.cap="Resíduos do Modelo Naïve Sazonal"}
+tbl_calibracao %>% 
+  unnest(.calibration_data) %>% 
+  filter(.model_desc == "SNAIVE [52]") %>% 
+  plot_time_series(Week, .residuals, .title = "Resíduos do Modelo Naïve Sazonal")
+```
+
+ Os resíduos parecem ter média zero no início e fim do período de teste, mas entre os anos de 2011 e 2014, temos resíduos que não possuem média zero, o que pode ser o resultado de um comportamento diferente da média história que não está sendo capturado pelo modelo de previsão. Isto pode indicar que as previsões produzidas por este método possuem um viés. É a impressão que temos quando analisamos a figura \@ref(fig:forecast-gasoline)). A previsão parece sempre superestimar o log da oferta de produtos de gasolina. 
+ 
+ Podemos ainda produzir o histograma dos resíduos do método naïve sazonal para verificar se os resíduos possuem uma distribuição que se assemelhe a uma normal. A figura \@ref(fig:hist-naive) parece indicar que os resíduos não são exatamente normais. 
+
+```{r hist-naive, fig.cap="Histograma dos Resíduos de um método Naïve"}
+tbl_calibracao %>% 
+  unnest(.calibration_data) %>% 
+  filter(.model_desc == "SNAIVE [52]") %>% 
+  ggplot(aes(x = .residuals)) +
+  geom_histogram() + 
+  labs(title = "Histograma dos Resíduos de um método Naïve")
+
+```
+Resíduos não normais podem indicar que as previsões a partir deste método podem até produzir resultados não viesados, mas os intervalos de confiança estimados podem ser imprecisos, uma vez que o seu cálculo assumem sempre distribuição normal.
+
+Por fim, podemos verificar se os erros são autocorrelacionados utilizando a função de autocorrelação apresentada na seção xxx. A figura \@ref(fig:acf-naive) mostra o correlograma produzido pela função `plog_acf_diagnostics()`.
+
+```{r acf-naive, fig.cap="Correlograma dos resíduos do método naïve aplicado a série de gasolina"}
+tbl_calibracao %>% 
+  unnest(.calibration_data) %>% 
+  filter(.model_desc == "SNAIVE [52]") %>% 
+  plot_acf_diagnostics(Week, .residuals, 
+                       .show_white_noise_bars = T,
+                       .lags = 100,
+                       .title = "Correlograma dos resíduos do método naïve aplicado a série de gasolina")
+
+```
+O correlograma parece indicar que os resíduos produzidos pelo método naïve são autocorrelacionados e que o modelo pode ser melhorado. A autocorrelação dos resíduos pode ser testada formalmente a partir de alguns testes estatísticos como o teste de Ljung-Box e o teste de Box-Pierce.
+
+
+### Teste de Ljung-Box
+
+O gráfico da Função de Autocorrelação $r_k$ mostra a autocorrelação para cada lag $k$, e realiza um teste de hipótese que avalia se a autocorrelação $r_k$ é estatísticamente diferente daquilo que se considera um ruido branco. Cada uma destes testes de hipótese carrega a possibilidade de produzir falsos positivos, de modo que alguns valores de autocorrelações moderados, podem ser confundidos com um resíduo com autocorrelação remanescente, mas quando tomamos em conjunto parecem excessivos. Assim, é possível testar se os primeiros $K$ autocorrelações são significativamente diferentes de um ruído branco. 
+
+Um teste para um grupo de autocorrelações foi proposto por @box1970distribution. Este teste é baseado na estatística
+
+$$Q = n(\hat{r}^2_1  + \hat{r}^2_2  + ... + \hat{r}^2_K)$$
+
+onde $K$ é o número máximo de *lags* sendo considerados e $n$ é o número de observações. Se cada $r_k$ é próxima de zero, então $Q$ será pequeno. Se alguns dos valores de $r_k$ são grandes, então $Q$ será grande. @hyndman2018forecasting sugere um valor de $K=10$ para dados não-sazonais, e de $K=2m$, para dados sazonais, onde $m$ é o período de sazonalidade. 
+
+Para um valor elevado de $n$, $Q$ tem uma distribuição chi-quadrado, mas segundo @ljung1978measure, mesmo valores de $n = 100$ pode produzir aproximações não satisfatórias. Eles propõem uma versão modificada do teste de Box-Pierce, chamada de teste Ljung-Box, que define uma estatística de teste cuja distribuição nula é muito mais próxima da distribuição chi-quadrado. A estatística é dada por
+
+$$Q_* = n(n+2)\left( \frac{\hat{r}^2_1}{n-1} + \frac{\hat{r}^2_2}{n-2} + ... + \frac{\hat{r}^2_K}{n-K} \right)$$
+
+Novamente, valores elevados de $Q_*$ sugerem que a autocorrelação não é um produto de ruído branco.
+
+### Função para Teste dos Resíduos
+
+A função `modeltime_residuals_test()` toma os resíduos de cada modelo guardado na tabela de calibração `tbl_calibracao` e retorna uma série de testes estatísticos para os resíduos. A tabela \@ref(tab:tabela-teste-residuos) mostra os resultados dos testes de resíduos produzidos por esta função.
+
+
+```{r tabela-teste-residuos}
+tbl_calibracao %>% 
+  modeltime_residuals() %>% 
+  modeltime_residuals_test() %>% 
+  knitr::kable(caption = "Testes estatísticos para os resíduos")
+```
+
+Além dos p-valores dos testes de Pierce-Box e Ljung-Box para autocorrelação, que não rejeitam a presença de autocorrelação, a tabela ainda mostra o resultado para o teste de Durbin-Watson e o p-valor para o teste de Shapiro-Wilks.
+
+O teste de Durbin-Watson também testa a hipótese de autocorrelação, e parece indicar a presença de autocorrelação positiva (valores entre 0 e <2). O teste de Shapiro-Wilks testa mais rigorosamente a hipótese de normalidade dos resíduos, com uma hipótese nula de que os resíduos são normalmente distribuidos. O teste funciona ao calcular a correlação entre os resíduos e os quantis normais. Quanto menor esta correlação, maior a evidência de normalidade. Analisando a tabela, ao nível de significância de 0,05, nossos resíduos não parecem ser normalmente distribuidos, confirmando nossa inspeção visual do histograma dos resíduos.
+
+
+
+## Medindo a performance da previsão {#medindo-performance}
+
+O erro de previsão é medido como a diferença entre o valor observado e o previsto e pode ser escrito como 
+
+$$e_{T+h} = y_{T+h} - \hat{y}_{T+h|T}$$
+onde os dados de treinamento são dados por $\{y_1, y_2, ..., y_T\}$ e dados de teste são dados por $\{y_{T+1}, y_{T+2},...\}$.
+
+Lembrando que os erros de previsão são a diferença entre dados observados e previstos para o período de teste, enquanto resíduos são a diferença entre dados observados e ajustados no período de treinamento.
+
+### Erros dependentes da escala
+
+Algumas medidas de erro de previsão são dependentes da escala dos dados, não sendo indicados para comparação entre previsões feitas para séries temporais em escalas diferentes.
+
+As medidas de erro dependente de escala mais comuns são o Erro Médio Absoluto (MAE, em inglês) e o Raiz quadrada do Erro Quadrado Médio (RMSE, em inglês):
+
+$$\text{MAE} = \text{média}(|e_t|)$$
+$$\text{RMSE} = \sqrt{\text{média}(e_t^2)}$$
+
+### Erros de porcentagem
+
+Erros de porcentagem não dependem da escala da série temporal, sendo utilizando para comparar performance de previsão de séries temporais de escalas diferentes. A médida mais utilizada é o Erro percentual da Média Absoluta (MAPE, em inglês). Esta medida é dada pela fórmula
+
+$$\text{MAPE} = \text{média}(|p_t|)$$
+onde $p_t = 100 e_t / y_t$. 
+
+A principal desvantagem deste tipo de medida é apresentar valores infinitos quando o valor de $y_t = 0$ e valores extremos quando $y_t \rightarrow 0$. Este tipo de médida também é assimétrica, na medida que penaliza mais erros negativos em detrimento de erros positivos. Uma medida percentual alternativa é a MAPE simétrica ou sMAPE, que é definida como
+
+$$\text{sMAPE} = \text{média} \left(200 \frac{|y_t - \hat{y}_t|}{y_t + \hat{y}_t}\right)$$
+
+Contudo, se $y_t$ e $\hat{y}_t$ são próximos de zero, a medida também envolve uma fração com denominador próximo de zero. 
+
+
+### Erros Escalados
+
+Como uma alternativa aos erros de percentagem, @hyndman2006another propõem reescalar os erros baseados na medida de MAE dos dados de treinamento de um método de previsão simples. 
+
+Para uma série temporal sem sazonalidade, uma forma de definir o erro de escala utiliza uma previsão naïve:
+
+$$q_j = \frac{e_j}{\frac{1}{T-1} \sum_{t=2}^T |y_t - y_{t-1}|}$$
+Como o numerador e o denominador envolvem valores que estão na escala dos dados originais, $q_j$ é independente da escala dos dados. 
+
+* $q_j < 1$: $q_j$ é produzido por uma previsão melhor que a média de previsão um passo-a-frente do modelo naïve computado nos dados de treinamente. 
+
+* $q_j > 1$ se a previsão é pior.
+
+Para dados com sazonalidade, o erro escalado pode ser definido ao utilizar uma previsão naïve com sazonalidade.
+
+$$q_j = \frac{e_j}{\frac{1}{T-m} \sum_{t=2}^T |y_t - y_{t-m}|}$$
+Assim, o Erro Escalado Médio Absoluto (*Mean Absolute Scaled Error*, MASE) é dado por
+
+$$\text{MASE} = \text{média}(|q_j|)$$
+
+Alternativamente podemos calcular o *Root Mean Squared Scaled Error* (RMSSE) como 
+
+$$\text{RMSSE} = \sqrt{\text{média}(q_j^2)}$$
+
+### Função para Medidas de Performance
+
+O pacote [yardstick](https://yardstick.tidymodels.org/) facilita a criação de medidas de performance dos modelos estimados, produzindo as principais medidas de desempenho para problemas de regressão (RMSE, R-Quadrado e outros) e de classificação (matriz de confusão, precisão, acurácia e outros).
+
+O pacote `modeltime` nos fornece a função `modeltime_accuracy()`, que permite utilizar as funções do `yardstick` para objetos do tipo `workflow`. 
+
+A tabela \@ref(tab:medidas-desempenho) mostra as medidas de desempenho de previsão para os três modelos estimados. Para tanto, passamos a tabela de calibração para a função `modeltime_accuracy()`. Esta função produz uma tabela dinâmica com as principais métricas de performance discriminadas para cada modelo.
+
+
+```{r medidas-desempenho}
+tbl_calibracao %>%
+  modeltime_accuracy(new_data = testing(gasoline_split)) %>% 
+  #select(.model_desc, mape, rmse) %>% 
+  kableExtra::kable(caption = "Medidas de Desempenho para Previsão Naïve e Naïve com Sazonalidade")
+
+```
+Considerando que estamos comparando modelos diferentes aplicados aos mesmos dados, a questão de escala não é relevante. Da mesma forma, independentemente da medida utilizada, os dois modelos Naive parecem produzir resultados semelhantes, com o modelo de médias bem atrás.
+
+## Métodos de Reamostragem {#metodos-reamostragem}
+
+Métodos de reamostragem são sistemas de simulação empírica que emulam o processo de usar parte dos dados para modelagem e uma parte diferente dos dados para avaliação da performance. O diagrama abaixo ilustra como métodos de reamostragem geralmente operam:
+
+
+![Métodos de Reamostragem](resources/resamples.png)
+
+A reamostragem é conduzida apenas na base de treinamento. Para cada reamostragem, os dados são particionados em duas subamostras: uma **base de análise**, onde o modelo é ajustado e uma **base de avaliação**, onde o modelo é avaliado. Estas duas bases são análogas ao conjunto de treinamento e de teste. Utilizamos os termos análise e avaliação para evitar confusões com a divisão inicial entre base de treinamento e de teste.
+
+Um dos métodos mais conhecidos de reamostragem é a validação cruzada. Neste tipo de reamostragem, os dados são aleatoriamente particionados em $V$ conjuntos de tamanho igual (chamados de "folds"). Para $V = 3$ e 1200 observações, podemos atribuir 300 observações para a base de teste e 900 para a base de treinamento. Podemos então selecionar aleatoriamente 300 observações para o conjunto de reamostragem 1, 300 para o conjunto de reamostragem 2 e 300 observações para o conjunto de reamostragem 3.
+
+Para um processo de validação cruzada de 3-folds, para cada interação, um *fold* é guardado para gerar a avaliação do modelo e os outros dois *folds* são utilizados para ajustar o modelo. Este modelo continua para cada *fold*, para que sejam produzidos três conjuntos de medidas de performance. A medida final de performance é a média (ou mediana) das medidas das $V$ replicações.
+
+
+
+### Validação Cruzada para Séries Temporais
+
+Para dados de séries temporais, onde existem componentes como tendência e sazonalidade que dependem da ordem das observações, métodos de reamostragem como *cross-validation* e *bootstrap* podem impedir os modelos de estimar estas características.
+
+
+Uma forma de corrigir este problema é utilizar validação cruzada para séries temporais. O diagrama abaixo mostra a base de treinamento de uma série temporal com 15 observações ordenadas no tempo. A primeira reamostragem possui 11 destas observações, sendo as 8 primeiras amostras reservadas para o **périodo de análise** e as 3 observações seguintes para o **período de avaliação**. Na segunda interação (reamostragem 2), a primeira amostra da base de treinamento é descartada e as bases de análise e avaliação "caminham" um período para frente.
+
+
+
+![Validação Cruzada Para Séries Temporais](resources/cross_validation_tseries.png)
+
+Algumas variações deste método existem: (1) podemos permitir que o conjunto de análise cresça cumulativamente (sem descartar as observações iniciais) e (2) podemos separar as diferentes reamostragens por blocos de semanas ou meses.
+
+### Implementando Validação Cruzada
+
+O pacote `timetk` oferece a função `time_series_cv` para construção de validação cruzada para séries temporais. Além dos dados, a função toma uma série de diferentes parâmetros:
+
+* `initial`: número de observações utilizados no período de análise. 
+
+* `assess`: número de observações utilizadas no período de avaliação.
+
+* `skip`: permite que nem todos as observações sejam utilizadas na base de análise. Para dados diários, um `skip=7` faz com que tenhamos apenas 1 informação por semana.
+
+* `lag`: Incluir uma defasagem entre o período de análise e de avaliação.
+
+* `cumulative`: Se o período de análise deve crescer cumulativamente.
+
+* `slice_limit`: o número máximo de reamostragens a serem retornadas pela função.
+
+Abaixo mostramos um exemplo de `timee_series_cv` com os dados de gasolina. Como temos 26 anos de dados semanais, vamos fixar o período de análise em 18 anos (`initial = "18 years"`), e o período de avaliação em 4 anos (`assess = "4 years"`). 
+
+```{r}
+cross_validation <- time_series_cv(
+  data = us_gasoline,
+  date_var = Week,
+  initial = "18 years",
+  assess = "4 years",
+  cumulative = TRUE
+)
+
+```
+
+
+
+Este plano de validação cruzada produziu 104 conjuntos de treinamento de tamanho crescente. A figura \@ref(fig:cross-validation-ts) mostra o gráfico da validação cruzada para quatro destes grupos (slice 1, 20, 30 e 40). Usamos a função `tk_time_series_cv_plan()` para tornar o objeto `cross_validation` um data.frame, e `plot_time_series_cv_plan()` para gerar a visualização. 
+
+
+```{r cross-validation-ts, fig.cap="Validação Cruzada para Séries Temporais"}
+
+cross_validation %>%
+  tk_time_series_cv_plan() %>%
+  filter(.id %in% c("Slice001", "Slice040", "Slice070", "Slice104")) %>% 
+  plot_time_series_cv_plan(Week, Barrels, .facet_ncol = 2, .interactive = FALSE)
+
+```
+
+### Ajustando Modelos com Reamostragem
+
+
+
+O pacote `modeltime.resample` fornece a função `modeltime_fit_resamples` para ajustar modelos contidos em uma tabela de modelos (`tbl_modelos`) para todas as reamostragens contidas no objetivo criado com `time_series_cv()`. Vamos ajustar o modelo naïve e naïve sazonal para cada um dos 104 *folds*. 
+
+
+```{r message=FALSE, warning=FALSE}
+library(modeltime.resample)
+
+parallel_start(8)
+
+ajustes_reamostragens <- tbl_modelos %>%
+  modeltime_fit_resamples(
+    resamples = cross_validation
+  )
+```
+
+:::dica
+Rodar tantos modelos pode levar um longo tempo. Rodar os modelos em paralelo reduz substancialmente o tempo de execução e pode ser possível com o uso de funções como `parallel_start()`. Para ler mais, visite a [documentação da função](https://business-science.github.io/modeltime/reference/parallel_start.html).
+:::
+
+
+Após um tempo, o objeto `ajustes_reamostragens` terá informações de performance para os 208 modelos que foram ajustados. Na figura \@ref(fig:plot-medidas-reamostragem) temos uma visualizar da performance de cada reamostragem produzida pela função `plot_modeltime_resamples()`. Como temos 208 modelos ajustados, o gráfico se torna um pouco poluido.
+
+```{r plot-medidas-reamostragem, fig.cap="Gráfico de Medidas de Reamostragem", message=FALSE, warning=FALSE}
+ajustes_reamostragens %>%
+  plot_modeltime_resamples(
+    .point_size  = 1,
+    .point_alpha = 0.8,
+    .interactive = FALSE,
+    .legend_show = F
+  )
+
+
+```
+Uma visualização melhor das informações pode ser obtida ao se calcular a média (ou mediana) das medidas de performance dos 104 *folds*. Com a função `modeltime_resample_accuracy()` podemos calcular a média ou mediana das medidas de performance dos 208 modelos. Com `table_modeltime_accuracy()` podemos exibir estas informações de modo bastante conveniente.
+
+
+```{r medidas-reamostragens, message=FALSE, warning=FALSE}
+ajustes_reamostragens %>%
+  modeltime_resample_accuracy(summary_fns = mean) %>%
+  table_modeltime_accuracy()
+
+```
+
+Analisando os resultados, e considerando que a quantidade de barris de gasolina podem ser iguais a zero, podemos utilizar o MAPE como critério de escolha. Neste caso, o método Naïve com Sazonalidade parece produzir previsões mais precisas.
+
+<!--chapter:end:05-praticas.Rmd-->
+
+# Modelo de Regressão para Séries Temporais {#tslm}
+
+_working in progress_
+
+<!--chapter:end:06-tslm.Rmd-->
+
+# Modelos ARIMA
+
+Este capítulo discute conceitos básicos dos modelos ARMA. 
+O pacote `modeltime` tem suporte ao modelo ARIMA com o uso da função `arima_reg()`, seja usando a implementação do pacote `arima()` (`set_engine("arima")`), ou do pacote `auto.arima` (`set_engine("auto_arima")`). A função `arima_reg()` permite que se ajuste os seguintes parâmetros do modelo ARIMA:
+
+* `seasonal_period`: por padrão a função `arima_reg()` define a frequência sazonal dos dados, mas o usuário pode escolher fixar um valor diferente.
+
+* `non_seasonal_ar`, `non_seasonal_differences` e `non_seasonal_ma`: a ordem dos termos auto-regressivos, de integração e de médias móiveis. Estes parâmetros podem ser escolhidos automaticamente utilizando `set_engine("auto_arima")`. 
+
+* `seasonal_ar`, `seasonal_differences` e `seasonal_ma`: a ordem autoregressiva, de integração e média móveis para sazonalidade.
+
+
+<!--chapter:end:07-arima.Rmd-->
+
+# Modelos de Regressão Dinâmicos {#arimax}
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+O uso de variáveis explicativas exógenas é uma maneira óbvia de melhorar a precisão das precisões. Em vez de depender apenas de informações históricas sobre a série em si, podemos utilizar outras informações relevantes.
+
+Modelos de séries temporais como ARIMA permitem que valores da série sejam previstos a partir da inclusão de informações do passado, mas não permitem a inclusão destas variáveis exógenas relevantes como *dummies* de feriado, atividade dos concorrentes, mudanças nas leis, variáveis macroeconômicas e outras covariadas externas que podem ajudar a explicar a variação histórica de uma série temporal.
+
+Já modelos de regressão permitem a inclusão de variáveis externas, mas não são capazes de modelar as dinâmicas presentes em séries temporais, como os modelos ARIMA são capazes.
+
+### Valor de utilizar variáveis explicativas
+
+Variáveis externas podem ser especialmente úteis para previsão de demanda por eletricidade, que é altamente dependente da temperatura ambiente, uma vez que dias quentes levam a maior uso de ar condicionados [@taieb2014gradient].
+
+Contudo, nem sempre variáveis externas podem ser tão úteis. No caso de temperatura como uma variável explicativa para demanda por eletricidade, as previsões metereológicas podem fornecer medidas bem precisas do comportamento futuro, mas em casos onde as previsões das variáveis explicativas são imprecisas, adiciona-las ao modelo pode produzir resultados inconsistentes.
+
+Outro problema pode ocorrer caso a relação entre $y$ e $x$ é um fato histórico, mas pode não se repetir no futuro. Ou quando duas variáveis possuem uma relação positiva em um período, e negativa em outro. Esse tipo de problema pode produzir modelos com má especificações e previsões imprecisas.
+
+Assim, antes de recorrer a variáveis externas em modelos de séries temporais, é sempre interessante iniciar a análise com uma abordagem puramente de séries temporais (um modelo ARIMA, por exemplo). Outra estratégia e a de realizar comparações entre (1) uma previsão para dentro da amostra que inclua variáveis explicativas previstas e (2) uma previsão para dentro da amostra que inclua as mesmas variáveis explicativas com dados observados.
+
+### Modelos Dinâmicos de Regressão
+
+Se existem previsões precisas para as variáveis explicativas e a relação entre estas variáveis e a previsão é estável no futuro, podemos utilizar uma abordagem mista que envolve extender os modelos ARIMA com o objetivo de permitir que outras variáveis externas sejam incluídas nos modelos. Assim, teriamos o melhor dos dois mundos.
+
+Estes modelos de regressão simples tomam a forma
+
+$$y_t = \beta_0 + \beta_1 x_{1,t} + ... + \beta_k x_{k,t} + \epsilon_t$$
+
+onde $y_t$ é uma função linear das $k$ variáveis externas ($x_{1,t},...,x_{k,t}$), e $\epsilon_t$ é assumido como um termos de erro não correlacionado (ruído branco). Testes como de Breusch-Godfrey foram utilizados para assegurar que os resíduos resultantes da regressão eram significativamente correlacionados.
+
+Neste capítulo, os erros da regressão podem conter autocorrelação. Para enfatizar esta mudança, vamos substituir o uso do $\epsilon_t$ por $\eta_t$. A série de erros $\eta_t$ é assumido como um processo ARIMA. Por exemplo, se $\eta_t$ seguir um processo ARIMA(1,1,1), podemos escrever o modelo como
+
+$$y_t = \beta_0 + \beta_1 x_{1,t} + ... + \beta_k x_{k,t} + \eta_t$$
+
+$$(1-\Phi_1 B)(1-B)\eta_t = (1+ \theta_1 B) \epsilon_t$$
+
+onde $\epsilon_t$ é a série de ruído branco.
+
+Note que o modelo tem dois termos de erro - o erro do modelo de regressão, que denotamos como $\eta_t$. e o termo de erro do modelo ARIMA, que denotamos como $\epsilon_t$. Apenas os erros do modelo ARIMA são assumidos como ruído branco.
+
+## Estimação
+
+Quando estimamos parâmetros do modelo, minimizamos a soma de $\epsilon_t$ ao quadrado. Se minimizarmos a soma de $\eta_t$ ao quadrado (que é o que ocorre quando estimamos um modelo de regressão que ignora a autocorrelação dos erros), então uma série de problemas surgem.
+
+1.  Os coeficientes estimados $\hat{\beta}_0,...,\hat{\beta}_k$ não são mais os melhores estimadores, já que algumas informações importantes estão sendo ignoradas no cálculo dos coeficientes.
+
+2.  Qualquer teste estatístico associado com o modelo será incorreto.
+
+3.  Os valores de AIC dos modelos ajustados não são um bom guia de quão bom é o modelo para previsão.
+
+4.  Na maioria dos casos, o p-valor associado com os coeficientes será muito pequeno, e algumas covariadas parecerão importantes quando na verdade não são. Isto produzirá uma regressão espúria.
+
+Minimizar a soma dos $\epsilon_t$ ao quadrado evita estes problemas. Alternativamente, estimação por máxima verossimilhança pode ser utilizada, produzindo estimativas de coeficientes similares.
+
+Uma importante consideração quando estimando um modelo de regressão com erros ARMA é de que todas as variáveis do modelo devem ser estacionárias. Portanto, devemos primeiro checar se $y_t$ é todas as covariadas são estacionárias. Se estimarmos o modelo quando qualquer uma delas é não-estacionária, os coeficientes produzidos não serão consistentes. Uma exceção é quando variáveis não-estacionárias são cointegradas. Se existe uma combinação linear de $y_t$ não-estacionário com um $x_t$ estacionário, então o coeficiente é consistente.
+
+Para tornar as variáveis estacionárias, podemos realizar a transformação de diferenciação, o que produz o chamado "modelo em diferença", em contraste com o "modelo em nível", em os dados originais são utilizados.
+
+Se todas as variáveis são estacionárias, então podemos utilizar erros ARMA para os resíduos. É fácil notar que uma regressão com erros ARIMA é equivalente a uma regressão em diferença com erros ARMA.
+
+## Regressão com Erros ARIMA
+
+A função `Arima()` é capaz de ajustar um modelo de regressão com erros ARIMA se o argumento `xreg` for utilizado. Como a diferenciação está especificada, ela é aplicada para todas as variáveis antes de estimar o modelo. O comando R utilizado é
+
+```{r eval=F}
+library(forecast)
+Arima(y, xreg = x, order = c(1,1,0))
+```
+
+que irá ajustar um modelo do tipo $y'_t = \beta_1 x'_t + \eta'_t$.
+
+A função `auto.arima()` também é capaz de utilizar covariadas com uso do termo `xreg`. O usuário deve especificar os preditores e `auto.arima()` seleciona o melhor modelo ARIMA para os erros.
+
+O pacote `modeltime` tem suporte ao modelo ARIMA com o uso da função `arima_reg()` ao se utilizar uma fórmula com regressor externo.
+
+### Exemplo: Consumo e Renda nos EUA
+
+A figura \@ref(fig:consumo-renda) mostra a mudança trimestral nos gastos com consumo pessoal e a renda disponível entre 1970 e 2016. Estamos interessados em prever o consumo com base na renda. Uma mudança na renda não necessariamente reflete uma mudança instântanea no consumo (exempl, depois de uma demissão, pode levar alguns meses para os gastos se ajustarem). Contudo, vamos ignorar esta complexidade e tentar medir o efeito instantâneo de uma mudança média na renda sore uma mudança média nos gastos.
+
+```{r consumo-renda, fig.cap="Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2019"}
+library(tidyverse)
+library(tidymodels)
+library(timetk)
+library(modeltime)
+library(fpp3)
+
+
+us_change_df <- us_change %>% 
+  tk_tbl() %>% 
+  mutate(Quarter = as.Date(Quarter))
+
+us_change %>% 
+  pivot_longer(cols = 2:6) %>% 
+  filter(name %in% c("Consumption", "Income")) %>% 
+  plot_time_series(Quarter, value, 
+                   .facet_vars = name,
+                   .facet_scales = "free_y",
+                   .smooth = F,
+                   .interactive = F,
+                   .title = "")
+
+```
+
+Vamos dividir a base em treinamento e teste para realizar a previsão proposta com a função `initial_time_split()`. Usando o parâmetro `prop = 0.75`, para utilizar 75% dos dados para a base de treinamento e 25% para a base de teste.
+
+```{r split-consumo, fig.cap="Base de Treinamento e Teste para dados de Consumo"}
+tbl_treinamento_teste <- 
+  us_change_df %>% 
+  initial_time_split(prop = 0.75)
+
+tbl_treinamento_teste %>% 
+  tk_time_series_cv_plan() %>% 
+  plot_time_series_cv_plan(Quarter, 
+                           Consumption,
+                           .title = "",
+                           .interactive = F)
+```
+
+Seguindo o fluxo de trabalho do pacote `tidymodels`, começamos criando o modelo com a função `arima_reg()` e a conectamos à função `forecast::auto.arima()` usando a expressão `set_engine("auto_arima")`. Não vamos fixar os parâmetros do modelo ARIMA, deixando a escolha para o pacote \`auto.arima´, que escolhe os parâmetros de modo a minimizar critérios de informação.
+
+Para estimar um modelo ARIMA convencional, poderiamos utilizar a fórmula `Consumption ~ Quarter`, mas como desejamos adicionar uma variável dependente adicional, vamos definir uma fórmula que toma `Consumption` como variável dependente e `Income` como um regressor.
+
+```{r message=FALSE, warning=FALSE}
+modelo_regarima <- arima_reg() %>% 
+  set_engine("auto_arima")
+
+receita <- recipe(Consumption ~ Quarter + Income, training(tbl_treinamento_teste))
+
+```
+
+Com a função `workflow` unimos modelo e fórmula para realizar o ajuste do modelo. Abaixo temos a saída típica do ajuste do modelo que foi produzido para a base de treinamento.
+
+```{r}
+fit <- workflow() %>% 
+  add_model(modelo_regarima) %>% 
+  add_recipe(receita) %>% 
+  fit(training(tbl_treinamento_teste))
+
+fit
+```
+
+Os dados são claramente estacionários (já que estamos considerando mudanças percentuais em vez de gastos e renda bruta), de modo que não há necessidade de diferenciação. O modelo ajustado é
+
+$$y_t = 0.6180 + 0.2725x_t + \eta_t$$ $$\eta_t = 0.5987 \eta_{t-1} + \epsilon_t - 0.5570\epsilon_{t-1} + 0.1840 \epsilon_{t-2}$$
+
+$$\epsilon \sim IID(0, 0.3545)$$
+
+Podemos recuperar as estimativas de $\eta_t$ e $\epsilon_t$ usando a função `residuals()`. A figura \@ref(fig:erros-arima) mostra que os resíduos do modelo parecem bem comportados, lembrando um processo de ruído branco.
+
+```{r erros-arima, fig.cap="Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado", message=FALSE, warning=FALSE}
+tbl_calibracao <- 
+  modeltime_calibrate(fit, 
+                      new_data = testing(tbl_treinamento_teste))
+  
+  
+tbl_calibracao %>% 
+  modeltime_residuals() %>%  
+  plot_modeltime_residuals(.title = "", 
+                           .legend_show = F,
+                           .interactive = F)
+
+```
+
+Na figura \@ref(fig:erros-arima-acf) vemos o correlograma dos resíduos. As barras azuis indicam que as autocorrelações são indistinguíveis de um ruído branco.
+
+```{r erros-arima-acf, fig.cap="ACF dos Resíduos de Regressão e Resíduos ARIMA para o modelo ajustado", message=FALSE, warning=FALSE}
+
+
+tbl_calibracao %>% 
+  modeltime_residuals() %>% 
+  plot_modeltime_residuals(.type = "acf", .lag = 40,
+    .title = "", 
+    .interactive = FALSE,
+    .show_white_noise_bar = T)
+
+```
+
+O teste de Ljung-Box, ACF e histograma parecem confirmar as informações do ACF, e indicam que os resíduos não são significativamente diferentes de um ruído branco.
+
+A tabela \@ref(tab:tab-residuos-regarima) mostra o resultado para testes de normalidade e de autocorrelação dos resíduos. O teste de Shapiro-Wilk indica que os resíduos parecem normais. Os testes de Ljung-Box e Box-Pierce mostram que os resíduos não são significativamente diferentes de um ruído branco.
+
+```{r tab-residuos-regarima}
+tbl_calibracao %>% 
+  modeltime_residuals() %>% 
+  modeltime_residuals_test() %>% 
+  select(-.model_id, -.model_desc) %>% 
+  knitr::kable(caption = "Testes para Resíduos do Modelo de Regressão com Erros ARIMA")
+
+```
+
+## Previsão
+
+Para realizar previsões com modelo de regressão com Erros ARIMA, precisamos realziar a previsão da parte do modelo de regressão e a parte ARIMA do modelo. A figura \@ref(fig:forecast-regarima) mostra a previsão feita para o período de teste. A linha azul mostra os dados reais e a linha vermelha, a previsão produzida pelo modelo.
+
+```{r forecast-regarima, fig.cap = "Previsão de Consumo do Modelo de Regressão com Erros ARIMA"}
+tbl_calibracao %>% 
+  modeltime_forecast(new_data = testing(tbl_treinamento_teste),
+                     actual_data = us_change_df) %>% 
+  plot_modeltime_forecast(.legend_show = F)
+```
+
+É importante destacar que a previsão de valores futuros envolve a previsão de valores futuros para os preditores. Neste caso, teremos que modelar estas variáveis ou assumir valores para o período futuro. Assim, o intervalo de confiança produzido pela previsão não leva em consideração a incerteza adicional de ter que prever valores para os preditores, e devem ser interpretados como condicional aos valores assumidos.
+
+Para finalizar, podemos calcular algumas medidas de performance. Os resultados são exibidos na tabela \@ref(tab:tab-medidas-regarima).
+
+```{r tab-medidas-regarima}
+tbl_calibracao %>% 
+  modeltime_accuracy(new_data = testing(tbl_treinamento_teste)) %>% 
+  select(-.model_id, -.model_desc, -.type) %>% 
+  knitr::kable(caption = "Medidas de Performance do Modelo de Regressão com Erros ARIMA")
+```
+
+Considerando que os dados de mudança percentual do consumo estão ao redor de zero, não é surpreendente que o valor calculado para o MAPE esteja tão elevado.
+
+## Exemplo 2: Previsão de Demanda por Eletricidade
+
+```{r eletricidade-diaria, fig.cap = "Demanda por Eletricidade diária e temperatura máxima apara o Estado de Vitoria na Australia, 2014"}
+vic_elec_daily <- vic_elec %>% 
+  tk_tbl() %>% 
+  filter(year(Time) == 2014) %>% 
+  group_by(Date) %>% 
+  summarise(
+    Demand = sum(Demand) / 1e3,
+    Temperature = max(Temperature),
+    Holiday = any(Holiday)
+  ) %>% 
+  mutate(Day_Type = case_when(
+    Holiday ~ "Feriado",
+    wday(Date) %in% 2:6 ~ "Fim-de-semana",
+    TRUE ~ "Dia-de-semana"
+  ))
+
+vic_elec_daily %>% 
+  pivot_longer(c(Demand, Temperature)) %>% 
+  plot_time_series(Date, value,
+                   .facet_vars = name,
+                   .title = "",
+                   .smooth = F)
+  
+```
+
+A figura \@ref(fig:energia-temp) mostra que existe uma relação não linear entre temperatura e demanda por eletricidade. Essa relação se altera a depender do tipo de dia: durante os fins de semana, a demanda por eletricidade é maior, mesmo quando controlamos por temperatura.
+
+```{r energia-temp, fig.cap = "Relação entre demanda diária por eletricidade e temperatura para o Estado de Vitória na Australia, 2014"}
+vic_elec_daily %>% 
+  ggplot(aes(x = Temperature, y = Demand, colour = Day_Type)) +
+  geom_point() + 
+  labs(y = "Demanda por Eletricidade (GW)",
+       x = "Temperatura Máxima",
+       color = "Dia da Semana")
+```
+
+Abaixo criamos os conjuntos de treinamento e teste e definimos a fórmula a ser estimada. Como a relação entre temperatura e demanda por energia elétrica é não linear, utilizamos a função `step_poly` para criar variáveis utilizando polinômios ortogonais. Com `step_dummy` criamos variáveis indicativas para os feriados e fim de semana.
+
+```{r}
+elec_splits <- vic_elec_daily %>% 
+  initial_time_split(prop = 0.75)
+
+
+receita_elec <- recipe(Demand ~ ., data = training(elec_splits)) %>% 
+  step_rm(Holiday) %>% 
+  step_dummy(Day_Type) %>% 
+  step_poly(Temperature)
+
+receita_elec %>% prep() %>% bake(new_data = NULL)
+  
+```
+
+Abaixo temos o modelo ajustado para previsão de energia elétrica.
+
+```{r}
+
+fit_elec <- workflow() %>% 
+  add_model(modelo_regarima) %>% 
+  add_recipe(receita_elec) %>% 
+  fit(training(elec_splits))
+
+fit_elec 
+
+```
+
+$$y_t = 200.18 + 3.66 \text{feriado}_t + 149.46 \text{temperatura_1}_t + 186.90 \text{temperatura_2} + \eta_t$$
+
+```{r message=FALSE, warning=FALSE}
+tbl_calibracao_elec <- fit_elec %>% 
+  modeltime_calibrate(new_data = testing(elec_splits))
+
+
+tbl_calibracao_elec %>% 
+  modeltime_residuals() %>% 
+  plot_modeltime_residuals(.type = "acf", .show_white_noise_bar = T, .lag = 21)
+```
+
+```{r}
+tbl_calibracao_elec %>% 
+  modeltime_forecast(new_data = testing(elec_splits),
+                     actual_data = vic_elec_daily) %>% 
+  plot_modeltime_forecast(.legend_max_width = 10)
+```
+
+```{r}
+tbl_calibracao_elec %>% 
+  modeltime_accuracy(new_data = testing(elec_splits)) %>% 
+  table_modeltime_accuracy()
+```
+
+## Regressão com Termos Harmônicos
+
+Modelos ARIMA tendem a produzir resultados interessantes com séries mensais, trimestrais e anuais. O modelo ETS atribui pesos exponencialmente decrescentes aos valores defasados da série para estimar seus valores atuais, e funcionam bem com dados diários, mensais e anuais. Para séries diárias, se o período de análise compreende mais de um ano, é possível que além da sazonalidade semanal usual destes dados (frequência de 7), em que existe uma relação entre os dias da semana, seja preciso permitir a presença de sazonalidade anual. Nesta situação o modelo ETS produzirá resultados inconsistentes.
+
+O problema é ainda maior para dados semanais. Segundo Hyndman, criador do pacote `forecast`, modelos ARIMA e ETS tem dificuldades em produzir boas previsões para séries semanais devido a sua sazonalidade peculiar, dado que o período de sazonalidade é de em média $365,25/7 = 52,18$. Como estes modelos só aceitam valores inteiros para a frequência, mesmo um valor aproximado de 52 períodos pode gerar resultados inadequados.
+
+Seja com dados diários muito longos ou para dados semanais, uma alternativa é o uso do modelo TBATS. Este modelo é uma extensão do ETS que adiciona uma série de transformações Box-Cox, séries Fourier com coeficientes variantes no tempo além de correção de erro ARMA. Ele é especialmente útil para produzir previsão de séries temporais com múltiplos períodos de sazonalidade, sazonalidade de altíssima-frequência, sazonalidade não-inteira (como a frequência de 52,18 discutida acima) e múltiplos efeito calendários.
+
+Outra solução é utilizar termos de Fourier que são úteis em lidar com sazonalidade. Uma forma de utilizar estes termos é estimando modelos que aceitam covariadas externas como parte da especificação. É o caso do modelo de Regressão com Erros ARIMA. De modo geral, uma das principais vantagens da Regressão com Erro ARIMA é que os coeficientes das covariadas tem a interpretação usual dos modelos de regressão.
+
+Em resumo, termos harmônicos tem as vantagens de:
+
+-   Permitir sazonalidades de qualquer comprimento;
+
+-   Permite modelar dados com mais de um período de sazonalidades;
+
+-   É possível controlar a suavização do padrão sazonal a partir do número de pares de termos seno e cosseno de Fourier;
+
+-   A dinâmica de curto prazo pode ser modelada pelo erro ARMA.
+
+## Exemplo:
+
+```{r acidentes-br, fig.cap="Acidentes diários em rodovias federais, 2007 a 2021"}
+acidentes <- read_rds("resources/acidentes_estradas_brasil.rds") %>% 
+    filter_by_time(
+    .start_date = last(Date) %-time% "12 month",
+    .end_date = "end"
+  ) 
+
+acidentes_split <- acidentes %>%
+  time_series_split(date_var = Date,
+                    assess = "4 months",
+                    cumulative = TRUE
+  )
+
+acidentes_split %>%
+  tk_time_series_cv_plan() %>%
+  plot_time_series_cv_plan(Date, acidentes, .title = "")
+
+```
+
+Como discutido na seção \@ref(intro), a série de acidentes possui um forte componente de sazonalidade associado ao dia da semana, mas também ao dia do mês.
+
+```{r}
+receita_K1 <- recipe(acidentes ~ ., training(acidentes_split)) %>% 
+  step_fourier(Date, period = c(7), K = 1)
+
+receita_K2 <- recipe(acidentes ~ ., training(acidentes_split)) %>% 
+  step_fourier(Date, period = c(7), K = 2)
+
+receita_K3 <- recipe(acidentes ~ ., training(acidentes_split)) %>% 
+  step_fourier(Date, period = c(7), K = 3)
+```
+
+```{r}
+modelo_arima <- arima_reg() %>% 
+  set_engine("auto_arima")
+
+wflw_acidentes_K1 <- workflow() %>% 
+  add_model(modelo_arima) %>% 
+  add_recipe(receita_K1) %>% 
+  fit(training(acidentes_split))
+
+wflw_acidentes_K2 <- workflow() %>% 
+  add_model(modelo_arima) %>% 
+  add_recipe(receita_K2) %>% 
+  fit(training(acidentes_split))
+
+
+wflw_acidentes_K3 <- workflow() %>% 
+  add_model(modelo_arima) %>% 
+  add_recipe(receita_K3) %>% 
+  fit(training(acidentes_split))
+
+tbl_modelos <- 
+  modeltime_table(wflw_acidentes_K1,
+                wflw_acidentes_K2,
+                wflw_acidentes_K3) %>% 
+  update_model_description(1, "ARIMA com Termos Harmônicos K = 1") %>% 
+  update_model_description(2, "ARIMA com Termos Harmônicos K = 2") %>% 
+  update_model_description(3, "ARIMA com Termos Harmônicos K = 3") 
+```
+
+```{r}
+tbl_calibracao <- tbl_modelos %>% 
+  modeltime_calibrate(new_data = testing(acidentes_split)) 
+
+tbl_calibracao %>% 
+  modeltime_forecast(new_data = testing(acidentes_split),
+                     actual_data = acidentes) %>% 
+  filter_by_time(.start_date = last(.index) %-time% "4 month",
+                 .end_date = "end") %>% 
+  plot_modeltime_forecast(
+                          .facet_vars = .model_desc, 
+                          .facet_ncol = 2,
+                          .title = "",
+                          .legend_show = F)
+```
+
+```{r}
+tbl_calibracao %>% 
+  modeltime_accuracy(new_data = testing(acidentes_split)) %>% 
+  table_modeltime_accuracy()
+```
+
+<!--chapter:end:08-regression_arima.Rmd-->
+
+# Modelos Avançados
+
+## Múltiplas Sazonalidades
+
+## Modelo Prophet
+
+## Modelo de Redes Neurais
+
+## Bootstrapping e Bagging
+
+
+<!--chapter:end:09-modelos_avancados.Rmd-->
+
+# Modelos Hierárquicos
+
+## Séries Temporais Agrupadas
+
+
+
+## Hierarquia Temporal
+
+https://cran.r-project.org/web/packages/thief/thief.pdf
+
+<!--chapter:end:10-hierarchical.Rmd-->
+
+`r if (knitr::is_html_output()) '
+# References {-}
+'`
+
+<!--chapter:end:11-references.Rmd-->
+

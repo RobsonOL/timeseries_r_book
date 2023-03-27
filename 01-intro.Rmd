@@ -1,4 +1,4 @@
-# Os fundamentos de séries temporais 
+# Os fundamentos de séries temporais{#intro}
 
 Para que uma criança aprenda a identificar um gato, é preciso que os pais apontem para vários gatos e digam "gato". Essa tarefa pode ser repetida algumas poucas vezes por crianças, mas para um modelo de previsão, essa tarefa não é tão simples, e exige uma grande quantidade de dados para que o modelo seja capaz de generalizar bem para novos casos. Para séries temporais, novos casos são as observações futuras. 
 

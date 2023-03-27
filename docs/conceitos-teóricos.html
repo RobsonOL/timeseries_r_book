@@ -4,27 +4,26 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Capítulo 5 Conceitos Teóricos | Séries Temporais com R</title>
-  <meta name="description" content="Um livro sobre séries temporais para usuários de R." />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <title>Capítulo 5 Conceitos Teóricos | Forecasting Series Temporais com R</title>
+  <meta name="description" content="Uma breve introdução sobre previsão com séries temporais para usuários de R utilizando o pacote modeltime." />
+  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Capítulo 5 Conceitos Teóricos | Séries Temporais com R" />
+  <meta property="og:title" content="Capítulo 5 Conceitos Teóricos | Forecasting Series Temporais com R" />
   <meta property="og:type" content="book" />
   
-  
-  <meta property="og:description" content="Um livro sobre séries temporais para usuários de R." />
+  <meta property="og:description" content="Uma breve introdução sobre previsão com séries temporais para usuários de R utilizando o pacote modeltime." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Capítulo 5 Conceitos Teóricos | Séries Temporais com R" />
+  <meta name="twitter:title" content="Capítulo 5 Conceitos Teóricos | Forecasting Series Temporais com R" />
   
-  <meta name="twitter:description" content="Um livro sobre séries temporais para usuários de R." />
+  <meta name="twitter:description" content="Uma breve introdução sobre previsão com séries temporais para usuários de R utilizando o pacote modeltime." />
   
 
 <meta name="author" content="Robson Oliveira Lima" />
 
 
-<meta name="date" content="2022-04-04" />
+<meta name="date" content="2023-03-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,7 +32,6 @@
   
 <link rel="prev" href="modelos-estatísticos.html"/>
 <link rel="next" href="considerações-práticas.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -51,8 +49,21 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.10.0/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.5.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.5.1/plotly-latest.min.js"></script>
+<script src="libs/core-js-2.5.3/shim.min.js"></script>
+<script src="libs/react-17.0.0/react.min.js"></script>
+<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/reactwidget-1.0.0/react-tools.js"></script>
+<script src="libs/reactable-binding-0.3.0/reactable.js"></script>
 
 
 <style type="text/css">
@@ -93,7 +104,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -106,7 +117,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -120,6 +131,28 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -137,25 +170,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Séries Temporais com R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> url: your book url like <span>https://bookdown.org/yihui/bookdown</span></a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prefácio</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#roteiro"><i class="fa fa-check"></i><b>1.1</b> Roteiro</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#pré-requisitos"><i class="fa fa-check"></i><b>1.2</b> Pré-requisitos</a></li>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#pré-requisitos"><i class="fa fa-check"></i><b>1.1</b> Pré-requisitos</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#sobre-o-autor"><i class="fa fa-check"></i><b>1.2</b> Sobre o Autor</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html"><i class="fa fa-check"></i><b>2</b> Os fundamentos de séries temporais</a>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> Os fundamentos de séries temporais</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-que-pode-ser-previsto"><i class="fa fa-check"></i><b>2.1</b> O que pode ser previsto?</a></li>
-<li class="chapter" data-level="2.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#principais-modelos-de-previsão"><i class="fa fa-check"></i><b>2.2</b> Principais modelos de previsão</a></li>
-<li class="chapter" data-level="2.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
-<li class="chapter" data-level="2.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#o-que-pode-ser-previsto"><i class="fa fa-check"></i><b>2.1</b> O que pode ser previsto?</a></li>
+<li class="chapter" data-level="2.2" data-path="intro.html"><a href="intro.html#principais-modelos-de-previsão"><i class="fa fa-check"></i><b>2.2</b> Principais modelos de previsão</a></li>
+<li class="chapter" data-level="2.3" data-path="intro.html"><a href="intro.html#o-passo-a-passo-de-realizar-uma-previsão"><i class="fa fa-check"></i><b>2.3</b> O passo-a-passo de realizar uma previsão</a></li>
+<li class="chapter" data-level="2.4" data-path="intro.html"><a href="intro.html#um-projeto-de-previsão-de-ponta-a-ponta"><i class="fa fa-check"></i><b>2.4</b> Um Projeto de Previsão de Ponta a Ponta</a>
 <ul>
-<li class="chapter" data-level="2.4.1" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#carregando-os-pacotes-necessários"><i class="fa fa-check"></i><b>2.4.1</b> Carregando os pacotes necessários</a></li>
-<li class="chapter" data-level="2.4.2" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#dados"><i class="fa fa-check"></i><b>2.4.2</b> Dados</a></li>
-<li class="chapter" data-level="2.4.3" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#criando-uma-base-de-treinamento"><i class="fa fa-check"></i><b>2.4.3</b> Criando uma base de treinamento</a></li>
-<li class="chapter" data-level="2.4.4" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#fórmula"><i class="fa fa-check"></i><b>2.4.4</b> Fórmula</a></li>
-<li class="chapter" data-level="2.4.5" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#especificando-o-modelo"><i class="fa fa-check"></i><b>2.4.5</b> Especificando o modelo</a></li>
-<li class="chapter" data-level="2.4.6" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#previsão"><i class="fa fa-check"></i><b>2.4.6</b> Previsão</a></li>
-<li class="chapter" data-level="2.4.7" data-path="os-fundamentos-de-séries-temporais.html"><a href="os-fundamentos-de-séries-temporais.html#performance-do-modelo"><i class="fa fa-check"></i><b>2.4.7</b> Performance do modelo</a></li>
+<li class="chapter" data-level="2.4.1" data-path="intro.html"><a href="intro.html#carregando-os-pacotes-necessários"><i class="fa fa-check"></i><b>2.4.1</b> Carregando os pacotes necessários</a></li>
+<li class="chapter" data-level="2.4.2" data-path="intro.html"><a href="intro.html#dados"><i class="fa fa-check"></i><b>2.4.2</b> Dados</a></li>
+<li class="chapter" data-level="2.4.3" data-path="intro.html"><a href="intro.html#criando-uma-base-de-treinamento"><i class="fa fa-check"></i><b>2.4.3</b> Criando uma base de treinamento</a></li>
+<li class="chapter" data-level="2.4.4" data-path="intro.html"><a href="intro.html#fórmula"><i class="fa fa-check"></i><b>2.4.4</b> Fórmula</a></li>
+<li class="chapter" data-level="2.4.5" data-path="intro.html"><a href="intro.html#especificando-o-modelo"><i class="fa fa-check"></i><b>2.4.5</b> Especificando o modelo</a></li>
+<li class="chapter" data-level="2.4.6" data-path="intro.html"><a href="intro.html#previsão"><i class="fa fa-check"></i><b>2.4.6</b> Previsão</a></li>
+<li class="chapter" data-level="2.4.7" data-path="intro.html"><a href="intro.html#performance-do-modelo"><i class="fa fa-check"></i><b>2.4.7</b> Performance do modelo</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="características-de-séries-temporais.html"><a href="características-de-séries-temporais.html"><i class="fa fa-check"></i><b>3</b> Características de Séries Temporais</a>
@@ -206,7 +239,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="6.1.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#funções-para-dividir-uma-série-temporal"><i class="fa fa-check"></i><b>6.1.1</b> Funções para dividir uma série temporal</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#transformação-de-variáveis"><i class="fa fa-check"></i><b>6.2</b> Transformação de variáveis</a>
+<li class="chapter" data-level="6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#transformacao-dados"><i class="fa fa-check"></i><b>6.2</b> Transformação de variáveis</a>
 <ul>
 <li class="chapter" data-level="6.2.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#funções-para-transformar-dados"><i class="fa fa-check"></i><b>6.2.1</b> Funções para transformar dados</a></li>
 </ul></li>
@@ -218,38 +251,40 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.3.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-ajustar-modelos-parsnip"><i class="fa fa-check"></i><b>6.3.4</b> Função para ajustar modelos: <code>parsnip</code></a></li>
 <li class="chapter" data-level="6.3.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#ajustando-os-modelos"><i class="fa fa-check"></i><b>6.3.5</b> Ajustando os modelos</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#valores-ajustados-e-resíduos"><i class="fa fa-check"></i><b>6.4</b> Valores ajustados e resíduos</a>
+<li class="chapter" data-level="6.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#analise-residuos"><i class="fa fa-check"></i><b>6.4</b> Valores ajustados e resíduos</a>
 <ul>
 <li class="chapter" data-level="6.4.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#teste-de-ljung-box"><i class="fa fa-check"></i><b>6.4.1</b> Teste de Ljung-Box</a></li>
 <li class="chapter" data-level="6.4.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-teste-dos-resíduos"><i class="fa fa-check"></i><b>6.4.2</b> Função para Teste dos Resíduos</a></li>
 </ul></li>
-<li class="chapter" data-level="6.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#medindo-a-performance-da-previsão"><i class="fa fa-check"></i><b>6.5</b> Medindo a performance da previsão</a>
+<li class="chapter" data-level="6.5" data-path="considerações-práticas.html"><a href="considerações-práticas.html#medindo-performance"><i class="fa fa-check"></i><b>6.5</b> Medindo a performance da previsão</a>
 <ul>
 <li class="chapter" data-level="6.5.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-dependentes-da-escala"><i class="fa fa-check"></i><b>6.5.1</b> Erros dependentes da escala</a></li>
 <li class="chapter" data-level="6.5.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-de-porcentagem"><i class="fa fa-check"></i><b>6.5.2</b> Erros de porcentagem</a></li>
 <li class="chapter" data-level="6.5.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#erros-escalados"><i class="fa fa-check"></i><b>6.5.3</b> Erros Escalados</a></li>
 <li class="chapter" data-level="6.5.4" data-path="considerações-práticas.html"><a href="considerações-práticas.html#função-para-medidas-de-performance"><i class="fa fa-check"></i><b>6.5.4</b> Função para Medidas de Performance</a></li>
 </ul></li>
-<li class="chapter" data-level="6.6" data-path="considerações-práticas.html"><a href="considerações-práticas.html#métodos-de-reamostragem"><i class="fa fa-check"></i><b>6.6</b> Métodos de Reamostragem</a>
+<li class="chapter" data-level="6.6" data-path="considerações-práticas.html"><a href="considerações-práticas.html#metodos-reamostragem"><i class="fa fa-check"></i><b>6.6</b> Métodos de Reamostragem</a>
 <ul>
 <li class="chapter" data-level="6.6.1" data-path="considerações-práticas.html"><a href="considerações-práticas.html#validação-cruzada-para-séries-temporais"><i class="fa fa-check"></i><b>6.6.1</b> Validação Cruzada para Séries Temporais</a></li>
 <li class="chapter" data-level="6.6.2" data-path="considerações-práticas.html"><a href="considerações-práticas.html#implementando-validação-cruzada"><i class="fa fa-check"></i><b>6.6.2</b> Implementando Validação Cruzada</a></li>
 <li class="chapter" data-level="6.6.3" data-path="considerações-práticas.html"><a href="considerações-práticas.html#ajustando-modelos-com-reamostragem"><i class="fa fa-check"></i><b>6.6.3</b> Ajustando Modelos com Reamostragem</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="modelo-de-regressão-para-séries-temporais.html"><a href="modelo-de-regressão-para-séries-temporais.html"><i class="fa fa-check"></i><b>7</b> Modelo de Regressão para Séries Temporais</a></li>
+<li class="chapter" data-level="7" data-path="tslm.html"><a href="tslm.html"><i class="fa fa-check"></i><b>7</b> Modelo de Regressão para Séries Temporais</a></li>
 <li class="chapter" data-level="8" data-path="modelos-arima.html"><a href="modelos-arima.html"><i class="fa fa-check"></i><b>8</b> Modelos ARIMA</a></li>
-<li class="chapter" data-level="9" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html"><i class="fa fa-check"></i><b>9</b> Modelos de Regressão Dinâmicos</a>
+<li class="chapter" data-level="9" data-path="arimax.html"><a href="arimax.html"><i class="fa fa-check"></i><b>9</b> Modelos de Regressão Dinâmicos</a>
 <ul>
-<li class="chapter" data-level="9.0.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#valor-de-utilizar-variáveis-explicativas"><i class="fa fa-check"></i><b>9.0.1</b> Valor de utilizar variáveis explicativas</a></li>
-<li class="chapter" data-level="9.0.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#modelos-dinâmicos-de-regressão"><i class="fa fa-check"></i><b>9.0.2</b> Modelos Dinâmicos de Regressão</a></li>
-<li class="chapter" data-level="9.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#estimação"><i class="fa fa-check"></i><b>9.1</b> Estimação</a></li>
-<li class="chapter" data-level="9.2" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#regressão-com-erros-arima"><i class="fa fa-check"></i><b>9.2</b> Regressão com Erros ARIMA</a>
+<li class="chapter" data-level="9.0.1" data-path="arimax.html"><a href="arimax.html#valor-de-utilizar-variáveis-explicativas"><i class="fa fa-check"></i><b>9.0.1</b> Valor de utilizar variáveis explicativas</a></li>
+<li class="chapter" data-level="9.0.2" data-path="arimax.html"><a href="arimax.html#modelos-dinâmicos-de-regressão"><i class="fa fa-check"></i><b>9.0.2</b> Modelos Dinâmicos de Regressão</a></li>
+<li class="chapter" data-level="9.1" data-path="arimax.html"><a href="arimax.html#estimação"><i class="fa fa-check"></i><b>9.1</b> Estimação</a></li>
+<li class="chapter" data-level="9.2" data-path="arimax.html"><a href="arimax.html#regressão-com-erros-arima"><i class="fa fa-check"></i><b>9.2</b> Regressão com Erros ARIMA</a>
 <ul>
-<li class="chapter" data-level="9.2.1" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>9.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
+<li class="chapter" data-level="9.2.1" data-path="arimax.html"><a href="arimax.html#exemplo-consumo-e-renda-nos-eua"><i class="fa fa-check"></i><b>9.2.1</b> Exemplo: Consumo e Renda nos EUA</a></li>
 </ul></li>
-<li class="chapter" data-level="9.3" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#previsão-1"><i class="fa fa-check"></i><b>9.3</b> Previsão</a></li>
-<li class="chapter" data-level="9.4" data-path="modelos-de-regressão-dinâmicos.html"><a href="modelos-de-regressão-dinâmicos.html#exemplo-2-previsão-de-demanda-por-eletricidade"><i class="fa fa-check"></i><b>9.4</b> Exemplo 2: Previsão de Demanda por Eletricidade</a></li>
+<li class="chapter" data-level="9.3" data-path="arimax.html"><a href="arimax.html#previsão-1"><i class="fa fa-check"></i><b>9.3</b> Previsão</a></li>
+<li class="chapter" data-level="9.4" data-path="arimax.html"><a href="arimax.html#exemplo-2-previsão-de-demanda-por-eletricidade"><i class="fa fa-check"></i><b>9.4</b> Exemplo 2: Previsão de Demanda por Eletricidade</a></li>
+<li class="chapter" data-level="9.5" data-path="arimax.html"><a href="arimax.html#regressão-com-termos-harmônicos"><i class="fa fa-check"></i><b>9.5</b> Regressão com Termos Harmônicos</a></li>
+<li class="chapter" data-level="9.6" data-path="arimax.html"><a href="arimax.html#exemplo"><i class="fa fa-check"></i><b>9.6</b> Exemplo:</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="modelos-avançados.html"><a href="modelos-avançados.html"><i class="fa fa-check"></i><b>10</b> Modelos Avançados</a>
 <ul>
@@ -263,13 +298,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.1" data-path="modelos-hierárquicos.html"><a href="modelos-hierárquicos.html#séries-temporais-agrupadas"><i class="fa fa-check"></i><b>11.1</b> Séries Temporais Agrupadas</a></li>
 <li class="chapter" data-level="11.2" data-path="modelos-hierárquicos.html"><a href="modelos-hierárquicos.html#hierarquia-temporal"><i class="fa fa-check"></i><b>11.2</b> Hierarquia Temporal</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a>
-<ul>
-<li class="chapter" data-level="11.3" data-path="references.html"><a href="references.html#r-markdown"><i class="fa fa-check"></i><b>11.3</b> R Markdown</a></li>
-<li class="chapter" data-level="11.4" data-path="references.html"><a href="references.html#slide-with-bullets"><i class="fa fa-check"></i><b>11.4</b> Slide with Bullets</a></li>
-<li class="chapter" data-level="11.5" data-path="references.html"><a href="references.html#slide-with-r-output"><i class="fa fa-check"></i><b>11.5</b> Slide with R Output</a></li>
-<li class="chapter" data-level="11.6" data-path="references.html"><a href="references.html#slide-with-plot"><i class="fa fa-check"></i><b>11.6</b> Slide with Plot</a></li>
-</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -282,7 +311,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Séries Temporais com R</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Forecasting Series Temporais com R</a>
           </h1>
         </div>
 
@@ -290,30 +319,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="conceitos-teóricos" class="section level1" number="5">
-<h1><span class="header-section-number">Capítulo 5</span> Conceitos Teóricos</h1>
+<div id="conceitos-teóricos" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Capítulo 5</span> Conceitos Teóricos<a href="conceitos-teóricos.html#conceitos-teóricos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Aqui vamos descrever alguns conceitos fundamentais sobre a teoria de séries temporais. Em particular, entender o que é um processo estocástico, a média, a função de covariância, processos estocásticos e a função de autocorrelação.</p>
-<div id="média-variâncias-e-covariâncias" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> Média, Variâncias e Covariâncias</h2>
+<div id="média-variâncias-e-covariâncias" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Média, Variâncias e Covariâncias<a href="conceitos-teóricos.html#média-variâncias-e-covariâncias" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Agora vamos introduzir várias medidas teoricas utilizadas para descrever como séries temporais se comportam. Como é usual em estatística, a descrição completa da série envolve uma função de distribuição multivariada a amostra conjunta dos valores <span class="math inline">\(y_1, y_2, ..., y_n\)</span>, enquanto que uma descrição mais econômica pode ser obtida em termos das funções média e de autocorrelação. Como a correlação é uma característica essencial da análise de séries temporais, as medidas de descrição mais úteis são aquelas expressadas em termos função de autocorrelação e função de autovariância.</p>
 <p>Vamos discutir alguns conceitos importantes relacionados a todos os tipo de modelos estatísticos de série temporal. Especificamente podemos utilizar algumas medidas para descrever uma série temporal.</p>
 </div>
-<div id="função-média" class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Função Média</h2>
+<div id="função-média" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Função Média<a href="conceitos-teóricos.html#função-média" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A função média descreve o valor esperado de uma série temporal. Assim, para um processo estocástico <span class="math inline">\(\{ Y_t\}\)</span>, a função média é definida como:</p>
 <p><span class="math display">\[\mu_t = E(Y_t)\]</span>
 para <span class="math inline">\(t = 0,1,2,...\)</span>. Assim, <span class="math inline">\(\mu_t\)</span> é o valor esperado do processo no tempo <span class="math inline">\(t\)</span>.</p>
 <p><strong>Exemplo 1: Função Média de Média Móvel</strong></p>
 <p>Para uma media móvel dada por <span class="math inline">\(\frac{1}{3}(w_{t-1} + w_t + w_{t+1})\)</span>, seu valor esperado (função média) é igual a zero, <span class="math inline">\(\mu_y = 0\)</span>. Assim, a função média ao redor de zero descreve bem o comportamento geral da média móvel. O mesmo pode ser dito do ruído branco.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="conceitos-teóricos.html#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb1-2"><a href="conceitos-teóricos.html#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> ruido_branco)) <span class="sc">+</span> </span>
-<span id="cb1-3"><a href="conceitos-teóricos.html#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">color =</span> <span class="st">&quot;Ruído Branco&quot;</span>)) <span class="sc">+</span> </span>
-<span id="cb1-4"><a href="conceitos-teóricos.html#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;Função Média&quot;</span>), <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb1-5"><a href="conceitos-teóricos.html#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb1-6"><a href="conceitos-teóricos.html#cb1-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Média Móvel&quot;</span>,</span>
-<span id="cb1-7"><a href="conceitos-teóricos.html#cb1-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Função Média da Média Móvel é Zero&quot;</span>,</span>
-<span id="cb1-8"><a href="conceitos-teóricos.html#cb1-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb1-9"><a href="conceitos-teóricos.html#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="conceitos-teóricos.html#cb50-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb50-2"><a href="conceitos-teóricos.html#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> ruido_branco)) <span class="sc">+</span> </span>
+<span id="cb50-3"><a href="conceitos-teóricos.html#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">color =</span> <span class="st">&quot;Ruído Branco&quot;</span>)) <span class="sc">+</span> </span>
+<span id="cb50-4"><a href="conceitos-teóricos.html#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;Função Média&quot;</span>), <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb50-5"><a href="conceitos-teóricos.html#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb50-6"><a href="conceitos-teóricos.html#cb50-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Média Móvel&quot;</span>,</span>
+<span id="cb50-7"><a href="conceitos-teóricos.html#cb50-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Função Média da Média Móvel é Zero&quot;</span>,</span>
+<span id="cb50-8"><a href="conceitos-teóricos.html#cb50-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb50-9"><a href="conceitos-teóricos.html#cb50-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.</code></pre>
 <div class="figure">
 <img src="_main_files/figure-html/ruido_media-1.png" alt="Função Média de um ruído branco" width="672" />
 <p class="caption">
@@ -324,16 +355,16 @@ para <span class="math inline">\(t = 0,1,2,...\)</span>. Assim, <span class="mat
 <p>Para um <em>random walk com drift</em> qual a função média? Dado que este modelo é dado por <span class="math inline">\(y_t = \delta t + \sum_{j=1}^t w_t\)</span>, como <span class="math inline">\(E(w_t) = 0\)</span> e como <span class="math inline">\(\delta\)</span> é uma constante, temos</p>
 <p><span class="math display">\[\mu(yt) = \delta t\]</span></p>
 <p>Assim, a função média de uma <em>random walk com drift</em> é uma linha reta com inclinação <span class="math inline">\(\delta\)</span>. Uma comparação de uma random walk com drift e sua função média pode ser vista na figura <a href="conceitos-teóricos.html#fig:random-media">5.1</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="conceitos-teóricos.html#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb2-2"><a href="conceitos-teóricos.html#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># criar a função média da random walk</span></span>
-<span id="cb2-3"><a href="conceitos-teóricos.html#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">funcao_media_random_walk =</span> .<span class="dv">2</span><span class="sc">*</span>x) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-4"><a href="conceitos-teóricos.html#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
-<span id="cb2-5"><a href="conceitos-teóricos.html#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> random_walk_drift, <span class="at">color =</span> <span class="st">&quot;Random Walk com Drift&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb2-6"><a href="conceitos-teóricos.html#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> funcao_media_random_walk, <span class="at">color =</span> <span class="st">&quot;Função Média&quot;</span>), <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb2-7"><a href="conceitos-teóricos.html#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb2-8"><a href="conceitos-teóricos.html#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Random Walk com Drift Delta = 0.2&quot;</span>,</span>
-<span id="cb2-9"><a href="conceitos-teóricos.html#cb2-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;A função Média é uma linha Reta com Inclinação Delta = 0.2&quot;</span>,</span>
-<span id="cb2-10"><a href="conceitos-teóricos.html#cb2-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Modelo:&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="conceitos-teóricos.html#cb52-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb52-2"><a href="conceitos-teóricos.html#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># criar a função média da random walk</span></span>
+<span id="cb52-3"><a href="conceitos-teóricos.html#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">funcao_media_random_walk =</span> .<span class="dv">2</span><span class="sc">*</span>x) <span class="sc">%&gt;%</span> </span>
+<span id="cb52-4"><a href="conceitos-teóricos.html#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
+<span id="cb52-5"><a href="conceitos-teóricos.html#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> random_walk_drift, <span class="at">color =</span> <span class="st">&quot;Random Walk com Drift&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb52-6"><a href="conceitos-teóricos.html#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> funcao_media_random_walk, <span class="at">color =</span> <span class="st">&quot;Função Média&quot;</span>), <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb52-7"><a href="conceitos-teóricos.html#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb52-8"><a href="conceitos-teóricos.html#cb52-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Random Walk com Drift Delta = 0.2&quot;</span>,</span>
+<span id="cb52-9"><a href="conceitos-teóricos.html#cb52-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;A função Média é uma linha Reta com Inclinação Delta = 0.2&quot;</span>,</span>
+<span id="cb52-10"><a href="conceitos-teóricos.html#cb52-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Modelo:&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:random-media"></span>
 <img src="_main_files/figure-html/random-media-1.png" alt="Função média de uma série random walk com drift" width="672" />
 <p class="caption">
@@ -346,14 +377,14 @@ Figure 5.1: Função média de uma série random walk com drift
 <p>Novamente, <span class="math inline">\(E(w_t) = 0\)</span> e os demais termos são constantes, logo:</p>
 <p><span class="math display">\[\mu_{yt} = E(y_t) = 2 \cos(2\pi \frac{2t + 15}{50})\]</span>
 A média móvel é apenas o sinal sem o ruído.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="conceitos-teóricos.html#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a href="conceitos-teóricos.html#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
-<span id="cb3-3"><a href="conceitos-teóricos.html#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> curva_onda, <span class="at">color =</span> <span class="st">&quot;Função Média&quot;</span>), <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb3-4"><a href="conceitos-teóricos.html#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> curva_onda_ruido, <span class="at">color =</span> <span class="st">&quot;Sinal com Ruído&quot;</span>)) <span class="sc">+</span> </span>
-<span id="cb3-5"><a href="conceitos-teóricos.html#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Curva em Onda e Sua Função Média&quot;</span>,</span>
-<span id="cb3-6"><a href="conceitos-teóricos.html#cb3-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;A função Média é o Sinal sem Ruído&quot;</span>,</span>
-<span id="cb3-7"><a href="conceitos-teóricos.html#cb3-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-8"><a href="conceitos-teóricos.html#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="conceitos-teóricos.html#cb53-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb53-2"><a href="conceitos-teóricos.html#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
+<span id="cb53-3"><a href="conceitos-teóricos.html#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> curva_onda, <span class="at">color =</span> <span class="st">&quot;Função Média&quot;</span>), <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb53-4"><a href="conceitos-teóricos.html#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> curva_onda_ruido, <span class="at">color =</span> <span class="st">&quot;Sinal com Ruído&quot;</span>)) <span class="sc">+</span> </span>
+<span id="cb53-5"><a href="conceitos-teóricos.html#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Curva em Onda e Sua Função Média&quot;</span>,</span>
+<span id="cb53-6"><a href="conceitos-teóricos.html#cb53-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;A função Média é o Sinal sem Ruído&quot;</span>,</span>
+<span id="cb53-7"><a href="conceitos-teóricos.html#cb53-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb53-8"><a href="conceitos-teóricos.html#cb53-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
 <div class="figure">
 <img src="_main_files/figure-html/sinal_media-1.png" alt="Função Média de uma série com sinal" width="672" />
 <p class="caption">
@@ -361,8 +392,8 @@ A média móvel é apenas o sinal sem o ruído.</p>
 </p>
 </div>
 </div>
-<div id="função-de-autocovariância" class="section level2" number="5.3">
-<h2><span class="header-section-number">5.3</span> Função de Autocovariância</h2>
+<div id="função-de-autocovariância" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Função de Autocovariância<a href="conceitos-teóricos.html#função-de-autocovariância" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A função de autocovariância mostra a covariância de um processo consigo mesmo em dois pontos diferentes no tempo. Assim, para uma série mensal de preços, a função de autocovariância mostra a relação entre <span class="math inline">\(y_{jan}\)</span> e <span class="math inline">\(y_{fev}\)</span>, que são os valores observados de preço para janeiro e fevereiro, respectivamente.</p>
 <p>A função de autocovariância <span class="math inline">\(\gamma_{t,s}\)</span> é definida como:</p>
 <p><span class="math display">\[\gamma_{t,s} = Cov(Y_t, Y_s)\]</span></p>
@@ -388,17 +419,17 @@ A média móvel é apenas o sinal sem o ruído.</p>
 <p>Para um modelo random walk, <span class="math inline">\(y_t = \sum_{j = 1}^t w_t\)</span>, temos que</p>
 <p><span class="math display">\[\gamma_y (s,t) = cov(y_s, y_t) = cov \left( \sum_{j=1}^2 w_j, \sum_{k=1}^t w_t\right) = \min\{s,t\} \sigma^2_w\]</span></p>
 <p>porque o <span class="math inline">\(w_t\)</span> são variáveis não correlacionadas entre si. Nota que, diferentemente dos exemplos anteriores, a função autocovariância de uma <em>random walk</em> depende no valor em particular de <span class="math inline">\(s\)</span> e <span class="math inline">\(t\)</span>, e não na separação entre as observações ou no <em>lag</em>. Perceba também que a variãncia de uma random walk, <span class="math inline">\(var(y_t) = t \sigma^2_w\)</span>, aumenta sem limites quando <span class="math inline">\(t\)</span> cresce. O efeito desta variância pode ser observada na figura para o random walk. Conforme <span class="math inline">\(t\)</span> aumenta, mais e mais a variável se distancia da sua função média <span class="math inline">\(\delta t\)</span>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="conceitos-teóricos.html#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb4-2"><a href="conceitos-teóricos.html#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># criar a função média da random walk</span></span>
-<span id="cb4-3"><a href="conceitos-teóricos.html#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">funcao_media_random_walk =</span> .<span class="dv">2</span><span class="sc">*</span>x) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href="conceitos-teóricos.html#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
-<span id="cb4-5"><a href="conceitos-teóricos.html#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> random_walk_drift, <span class="at">color =</span> <span class="st">&quot;Random Walk com Drift&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb4-6"><a href="conceitos-teóricos.html#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> funcao_media_random_walk, <span class="at">color =</span> <span class="st">&quot;Função Média&quot;</span>), <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb4-7"><a href="conceitos-teóricos.html#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb4-8"><a href="conceitos-teóricos.html#cb4-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Random Walk com Drift Delta = 0.2&quot;</span>,</span>
-<span id="cb4-9"><a href="conceitos-teóricos.html#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Quanto maior o t, maior a distância entre a Série e sua Função Média&quot;</span>,</span>
-<span id="cb4-10"><a href="conceitos-teóricos.html#cb4-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Modelo:&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb4-11"><a href="conceitos-teóricos.html#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="conceitos-teóricos.html#cb54-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb54-2"><a href="conceitos-teóricos.html#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># criar a função média da random walk</span></span>
+<span id="cb54-3"><a href="conceitos-teóricos.html#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">funcao_media_random_walk =</span> .<span class="dv">2</span><span class="sc">*</span>x) <span class="sc">%&gt;%</span> </span>
+<span id="cb54-4"><a href="conceitos-teóricos.html#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
+<span id="cb54-5"><a href="conceitos-teóricos.html#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> random_walk_drift, <span class="at">color =</span> <span class="st">&quot;Random Walk com Drift&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb54-6"><a href="conceitos-teóricos.html#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> funcao_media_random_walk, <span class="at">color =</span> <span class="st">&quot;Função Média&quot;</span>), <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb54-7"><a href="conceitos-teóricos.html#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Tempo&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb54-8"><a href="conceitos-teóricos.html#cb54-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Random Walk com Drift Delta = 0.2&quot;</span>,</span>
+<span id="cb54-9"><a href="conceitos-teóricos.html#cb54-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Quanto maior o t, maior a distância entre a Série e sua Função Média&quot;</span>,</span>
+<span id="cb54-10"><a href="conceitos-teóricos.html#cb54-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Modelo:&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb54-11"><a href="conceitos-teóricos.html#cb54-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:cov-random-walk"></span>
 <img src="_main_files/figure-html/cov-random-walk-1.png" alt="Autocovariância de uma random walk com drift" width="672" />
 <p class="caption">
@@ -406,18 +437,18 @@ Figure 5.2: Autocovariância de uma random walk com drift
 </p>
 </div>
 </div>
-<div id="a-função-de-autocorrelação-fac" class="section level2" number="5.4">
-<h2><span class="header-section-number">5.4</span> A Função de Autocorrelação (FAC)</h2>
+<div id="a-função-de-autocorrelação-fac" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> A Função de Autocorrelação (FAC)<a href="conceitos-teóricos.html#a-função-de-autocorrelação-fac" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A correlação mensura a relação linear entre duas variáveis. A autocorrelação por sua vez mede a relação linear entre valores defasados ( <em>lagged</em> ) de uma série temporal.</p>
 <p>Uma forma de mensurar como um valor se relaciona a um valor passado é utilizando a Função de Autocorrelação (FAC), ou ACF em inglês. Ela mede a previsibilidade linear da série no tempo <span class="math inline">\(t\)</span>, usando apenas os valores de <span class="math inline">\(y_s\)</span>. A função de autocorrelação é definida como</p>
 <p><span class="math display">\[\rho (s,t) = \frac{\gamma(s,t)}{\sqrt{\gamma(s,s)\gamma(t,t)}}\]</span></p>
 <p>O valor de <span class="math inline">\(\rho\)</span>, a covariância, esta sempre no intervalo <span class="math inline">\([-1,1]\)</span>. Se pudermos prever <span class="math inline">\(y_t\)</span> perfeitamente a partir de <span class="math inline">\(y_s\)</span> através de uma relação linear <span class="math inline">\(y_t = \beta_0 + \beta_1 y_s\)</span>, então a correlação será <span class="math inline">\(+1\)</span> quando <span class="math inline">\(\beta_1 &gt; 0\)</span>, e a correlação será <span class="math inline">\(-1\)</span> quando <span class="math inline">\(\beta_1 &lt;0\)</span>. Portanto, temos uma medida grosseira da nossa habilidade de prever a série no tempo <span class="math inline">\(t\)</span> utilizando os valores no tempo <span class="math inline">\(s\)</span>.</p>
 <p>Vamos observar esse comportamento na prática utilizando os dados trimestrais de produção de cerveja. A figura <a href="conceitos-teóricos.html#fig:beer">5.3</a> mostra a série.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="conceitos-teóricos.html#cb5-1" aria-hidden="true" tabindex="-1"></a>beer2 <span class="ot">&lt;-</span> <span class="fu">window</span>(ausbeer, <span class="at">start=</span><span class="dv">1992</span>)</span>
-<span id="cb5-2"><a href="conceitos-teóricos.html#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="conceitos-teóricos.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(beer2) <span class="sc">+</span></span>
-<span id="cb5-4"><a href="conceitos-teóricos.html#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Produção trimestral de Cerveja, Australia&quot;</span>) <span class="sc">+</span></span>
-<span id="cb5-5"><a href="conceitos-teóricos.html#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="conceitos-teóricos.html#cb55-1" aria-hidden="true" tabindex="-1"></a>beer2 <span class="ot">&lt;-</span> <span class="fu">window</span>(ausbeer, <span class="at">start=</span><span class="dv">1992</span>)</span>
+<span id="cb55-2"><a href="conceitos-teóricos.html#cb55-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="conceitos-teóricos.html#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(beer2) <span class="sc">+</span></span>
+<span id="cb55-4"><a href="conceitos-teóricos.html#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Produção trimestral de Cerveja, Australia&quot;</span>) <span class="sc">+</span></span>
+<span id="cb55-5"><a href="conceitos-teóricos.html#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;Ano&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:beer"></span>
 <img src="_main_files/figure-html/beer-1.png" alt="Produção trimestral de cerveja" width="672" />
 <p class="caption">
@@ -425,10 +456,10 @@ Figure 5.3: Produção trimestral de cerveja
 </p>
 </div>
 <p>É possível observar que os dados possuem um comportamento sazonal bem marcante. Vamos visualizar esse comportamento utilizando o correlograma, o gráfico que nos retorna os coeficientes de autocorrelação.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="conceitos-teóricos.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
-<span id="cb6-2"><a href="conceitos-teóricos.html#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="conceitos-teóricos.html#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="conceitos-teóricos.html#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggAcf</span>(beer2)</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="conceitos-teóricos.html#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb56-2"><a href="conceitos-teóricos.html#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="conceitos-teóricos.html#cb56-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-4"><a href="conceitos-teóricos.html#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggAcf</span>(beer2)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:beer-auto"></span>
 <img src="_main_files/figure-html/beer-auto-1.png" alt="Função de autocorrelação para a produção trimestral de cerveja" width="672" />
 <p class="caption">
@@ -441,13 +472,13 @@ Figure 5.4: Função de autocorrelação para a produção trimestral de cerveja
 <li><p><span class="math inline">\(r_2\)</span> é mais negativo que outros <em>lags</em> porque os vales e picos tendem a ser separados por dois trimestres.</p></li>
 <li><p>A linha azul indica se a correlação é significamente diferente de zero.</p></li>
 </ul>
-<div id="tendência-e-sazonalidade-em-correlogramas" class="section level3" number="5.4.1">
-<h3><span class="header-section-number">5.4.1</span> Tendência e sazonalidade em Correlogramas</h3>
+<div id="tendência-e-sazonalidade-em-correlogramas" class="section level3 hasAnchor" number="5.4.1">
+<h3><span class="header-section-number">5.4.1</span> Tendência e sazonalidade em Correlogramas<a href="conceitos-teóricos.html#tendência-e-sazonalidade-em-correlogramas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Quando os dados possuem uma tendência, as autocorrelações para pequenas defasagens é grande e positiva porque as observações próximas no tempo possuem valores semelhantes.</p>
 <p>Assim, o ACF de uma série com tendência tende a ter valores positivos que lentamente decaem conforme o número de valores defasados (lags) aumenta.</p>
 <p>A demanda por energia elétrica na australia (figura <a href="conceitos-teóricos.html#fig:energia-aus">5.5</a>) possui um misto de padrão sazonal e tendência.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="conceitos-teóricos.html#cb7-1" aria-hidden="true" tabindex="-1"></a>aelec <span class="ot">&lt;-</span> <span class="fu">window</span>(elec, <span class="at">start=</span><span class="dv">1980</span>)</span>
-<span id="cb7-2"><a href="conceitos-teóricos.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(aelec) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;Year&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;GWh&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="conceitos-teóricos.html#cb57-1" aria-hidden="true" tabindex="-1"></a>aelec <span class="ot">&lt;-</span> <span class="fu">window</span>(elec, <span class="at">start=</span><span class="dv">1980</span>)</span>
+<span id="cb57-2"><a href="conceitos-teóricos.html#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(aelec) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;Year&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;GWh&quot;</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:energia-aus"></span>
 <img src="_main_files/figure-html/energia-aus-1.png" alt="Demanda por Energia Elétrica na Australia, 1980-1995" width="672" />
 <p class="caption">
@@ -455,7 +486,7 @@ Figure 5.5: Demanda por Energia Elétrica na Australia, 1980-1995
 </p>
 </div>
 <p>E a função de autocorrelação da série (figura <a href="conceitos-teóricos.html#fig:acf-energia">5.6</a>) tem um decaimento lento devido a tendência, enquanto possui pequenas ondas, que ocorrem devido ao comportamento sazonal da série.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="conceitos-teóricos.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggAcf</span>(aelec, <span class="at">lag=</span><span class="dv">48</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="conceitos-teóricos.html#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggAcf</span>(aelec, <span class="at">lag=</span><span class="dv">48</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:acf-energia"></span>
 <img src="_main_files/figure-html/acf-energia-1.png" alt="ACF da demanda australiana por energia elétrica" width="672" />
 <p class="caption">
@@ -463,414 +494,193 @@ Figure 5.6: ACF da demanda australiana por energia elétrica
 </p>
 </div>
 <p>O pacote <code>timetk</code> fornece uma função para gerar o correlograma.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="conceitos-teóricos.html#cb9-1" aria-hidden="true" tabindex="-1"></a>aelec_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">electrical_demand =</span> <span class="fu">matrix</span>(aelec),</span>
-<span id="cb9-2"><a href="conceitos-teóricos.html#cb9-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">date =</span> <span class="fu">time</span>(aelec)) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-3"><a href="conceitos-teóricos.html#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as.Date</span>(date))</span>
-<span id="cb9-4"><a href="conceitos-teóricos.html#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="conceitos-teóricos.html#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="conceitos-teóricos.html#cb9-6" aria-hidden="true" tabindex="-1"></a>aelec_df <span class="sc">%&gt;%</span> </span>
-<span id="cb9-7"><a href="conceitos-teóricos.html#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_acf_diagnostics</span>(date, electrical_demand,</span>
-<span id="cb9-8"><a href="conceitos-teóricos.html#cb9-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.show_white_noise_bars =</span> T,</span>
-<span id="cb9-9"><a href="conceitos-teóricos.html#cb9-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.interactive =</span> F)</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="conceitos-teóricos.html#cb59-1" aria-hidden="true" tabindex="-1"></a>aelec_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">electrical_demand =</span> <span class="fu">matrix</span>(aelec),</span>
+<span id="cb59-2"><a href="conceitos-teóricos.html#cb59-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">date =</span> <span class="fu">time</span>(aelec)) <span class="sc">%&gt;%</span> </span>
+<span id="cb59-3"><a href="conceitos-teóricos.html#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as.Date</span>(date))</span>
+<span id="cb59-4"><a href="conceitos-teóricos.html#cb59-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-5"><a href="conceitos-teóricos.html#cb59-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-6"><a href="conceitos-teóricos.html#cb59-6" aria-hidden="true" tabindex="-1"></a>aelec_df <span class="sc">%&gt;%</span> </span>
+<span id="cb59-7"><a href="conceitos-teóricos.html#cb59-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_acf_diagnostics</span>(date, electrical_demand,</span>
+<span id="cb59-8"><a href="conceitos-teóricos.html#cb59-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.show_white_noise_bars =</span> T,</span>
+<span id="cb59-9"><a href="conceitos-teóricos.html#cb59-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.interactive =</span> F)</span></code></pre></div>
 <pre><code>## Max lag exceeds data available. Using max lag: 187</code></pre>
-<p><img src="_main_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p>A figura ilustra além do ACF, a função de autocorrelação parcial (PACF, em inglês) que será melhor explicada na seção xxx.</p>
 </div>
-<div id="a-função-de-covariância-cruzada-e-de-correlação-cruzada" class="section level3" number="5.4.2">
-<h3><span class="header-section-number">5.4.2</span> A Função de Covariância-Cruzada e de Correlação-Cruzada</h3>
+<div id="a-função-de-covariância-cruzada-e-de-correlação-cruzada" class="section level3 hasAnchor" number="5.4.2">
+<h3><span class="header-section-number">5.4.2</span> A Função de Covariância-Cruzada e de Correlação-Cruzada<a href="conceitos-teóricos.html#a-função-de-covariância-cruzada-e-de-correlação-cruzada" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>De maneira geral, gostariamos de medir a previsibilidade de uma outra série <span class="math inline">\(y_t\)</span> a partir da série <span class="math inline">\(x_s\)</span>. Assumindo que ambas as séries tem variância finita, nós temos a seguinte definição para a função de covariância cruzada:</p>
 <p><span class="math display">\[\gamma_{x,y}(s,t) = cov(x_s, y_t) = E[(x_s - \mu_{xs})]\]</span></p>
 <p>A função de correlação cruzada (FCC) é dada por:</p>
 <p><span class="math display">\[\rho_{xy}(s,t) = \frac{\gamma_{xt}(s,t)}{\sqrt{\gamma_{x}(s,s) \gamma_{y}(t,t)}}\]</span></p>
 <p>Podemos inclusive extender a ideia acima para o caso de mais de duas séries.</p>
 <p>O pacote <code>timetk</code> oferece um banco de dados de vendas semanais na rede walmart, com informações de vendas semanais para diferentes departamentos de lojas selecionadas da rede. O banco de dados ainda possui covariadas adicionais como <code>isHoliday</code>, que indica se a semana específica possui um feriado, <code>Temperature</code>, que indica a temperatura média da semana e <code>Fuel_Price</code>, que indica o preço do combustível naquela semana. Abaixo uma pequena amostra dos dados disponíveis:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="conceitos-teóricos.html#cb11-1" aria-hidden="true" tabindex="-1"></a>walmart_sales_weekly <span class="sc">%&gt;%</span> </span>
-<span id="cb11-2"><a href="conceitos-teóricos.html#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb11-3"><a href="conceitos-teóricos.html#cb11-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Vendas semanais das lojas walmart&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="conceitos-teóricos.html#cb61-1" aria-hidden="true" tabindex="-1"></a>walmart_sales_weekly <span class="sc">%&gt;%</span> </span>
+<span id="cb61-2"><a href="conceitos-teóricos.html#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb61-3"><a href="conceitos-teóricos.html#cb61-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Vendas semanais das lojas walmart&quot;</span>)</span></code></pre></div>
 <table>
-<caption>
-<span id="tab:walmart">Table 5.1: </span>Vendas semanais das lojas walmart
-</caption>
+<caption><span id="tab:walmart">Table 5.1: </span>Vendas semanais das lojas walmart</caption>
+<colgroup>
+<col width="2%" />
+<col width="3%" />
+<col width="3%" />
+<col width="7%" />
+<col width="8%" />
+<col width="6%" />
+<col width="3%" />
+<col width="4%" />
+<col width="7%" />
+<col width="7%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="5%" />
+<col width="8%" />
+</colgroup>
 <thead>
-<tr>
-<th style="text-align:left;">
-id
-</th>
-<th style="text-align:right;">
-Store
-</th>
-<th style="text-align:right;">
-Dept
-</th>
-<th style="text-align:left;">
-Date
-</th>
-<th style="text-align:right;">
-Weekly_Sales
-</th>
-<th style="text-align:left;">
-IsHoliday
-</th>
-<th style="text-align:left;">
-Type
-</th>
-<th style="text-align:right;">
-Size
-</th>
-<th style="text-align:right;">
-Temperature
-</th>
-<th style="text-align:right;">
-Fuel_Price
-</th>
-<th style="text-align:right;">
-MarkDown1
-</th>
-<th style="text-align:right;">
-MarkDown2
-</th>
-<th style="text-align:right;">
-MarkDown3
-</th>
-<th style="text-align:right;">
-MarkDown4
-</th>
-<th style="text-align:right;">
-MarkDown5
-</th>
-<th style="text-align:right;">
-CPI
-</th>
-<th style="text-align:right;">
-Unemployment
-</th>
+<tr class="header">
+<th align="left">id</th>
+<th align="right">Store</th>
+<th align="right">Dept</th>
+<th align="left">Date</th>
+<th align="right">Weekly_Sales</th>
+<th align="left">IsHoliday</th>
+<th align="left">Type</th>
+<th align="right">Size</th>
+<th align="right">Temperature</th>
+<th align="right">Fuel_Price</th>
+<th align="right">MarkDown1</th>
+<th align="right">MarkDown2</th>
+<th align="right">MarkDown3</th>
+<th align="right">MarkDown4</th>
+<th align="right">MarkDown5</th>
+<th align="right">CPI</th>
+<th align="right">Unemployment</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-1_1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2010-02-05
-</td>
-<td style="text-align:right;">
-24924.50
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:right;">
-151315
-</td>
-<td style="text-align:right;">
-42.31
-</td>
-<td style="text-align:right;">
-2.572
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-211.0964
-</td>
-<td style="text-align:right;">
-8.106
-</td>
+<tr class="odd">
+<td align="left">1_1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2010-02-05</td>
+<td align="right">24924.50</td>
+<td align="left">FALSE</td>
+<td align="left">A</td>
+<td align="right">151315</td>
+<td align="right">42.31</td>
+<td align="right">2.572</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">211.0964</td>
+<td align="right">8.106</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-1_1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2010-02-12
-</td>
-<td style="text-align:right;">
-46039.49
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:right;">
-151315
-</td>
-<td style="text-align:right;">
-38.51
-</td>
-<td style="text-align:right;">
-2.548
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-211.2422
-</td>
-<td style="text-align:right;">
-8.106
-</td>
+<tr class="even">
+<td align="left">1_1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2010-02-12</td>
+<td align="right">46039.49</td>
+<td align="left">TRUE</td>
+<td align="left">A</td>
+<td align="right">151315</td>
+<td align="right">38.51</td>
+<td align="right">2.548</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">211.2422</td>
+<td align="right">8.106</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-1_1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2010-02-19
-</td>
-<td style="text-align:right;">
-41595.55
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:right;">
-151315
-</td>
-<td style="text-align:right;">
-39.93
-</td>
-<td style="text-align:right;">
-2.514
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-211.2891
-</td>
-<td style="text-align:right;">
-8.106
-</td>
+<tr class="odd">
+<td align="left">1_1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2010-02-19</td>
+<td align="right">41595.55</td>
+<td align="left">FALSE</td>
+<td align="left">A</td>
+<td align="right">151315</td>
+<td align="right">39.93</td>
+<td align="right">2.514</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">211.2891</td>
+<td align="right">8.106</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-1_1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2010-02-26
-</td>
-<td style="text-align:right;">
-19403.54
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:right;">
-151315
-</td>
-<td style="text-align:right;">
-46.63
-</td>
-<td style="text-align:right;">
-2.561
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-211.3196
-</td>
-<td style="text-align:right;">
-8.106
-</td>
+<tr class="even">
+<td align="left">1_1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2010-02-26</td>
+<td align="right">19403.54</td>
+<td align="left">FALSE</td>
+<td align="left">A</td>
+<td align="right">151315</td>
+<td align="right">46.63</td>
+<td align="right">2.561</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">211.3196</td>
+<td align="right">8.106</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-1_1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2010-03-05
-</td>
-<td style="text-align:right;">
-21827.90
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:right;">
-151315
-</td>
-<td style="text-align:right;">
-46.50
-</td>
-<td style="text-align:right;">
-2.625
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-211.3501
-</td>
-<td style="text-align:right;">
-8.106
-</td>
+<tr class="odd">
+<td align="left">1_1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2010-03-05</td>
+<td align="right">21827.90</td>
+<td align="left">FALSE</td>
+<td align="left">A</td>
+<td align="right">151315</td>
+<td align="right">46.50</td>
+<td align="right">2.625</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">211.3501</td>
+<td align="right">8.106</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-1_1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2010-03-12
-</td>
-<td style="text-align:right;">
-21043.39
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-A
-</td>
-<td style="text-align:right;">
-151315
-</td>
-<td style="text-align:right;">
-57.79
-</td>
-<td style="text-align:right;">
-2.667
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-211.3806
-</td>
-<td style="text-align:right;">
-8.106
-</td>
+<tr class="even">
+<td align="left">1_1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2010-03-12</td>
+<td align="right">21043.39</td>
+<td align="left">FALSE</td>
+<td align="left">A</td>
+<td align="right">151315</td>
+<td align="right">57.79</td>
+<td align="right">2.667</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">211.3806</td>
+<td align="right">8.106</td>
 </tr>
 </tbody>
 </table>
 <p>Na figura <a href="conceitos-teóricos.html#fig:walmart-11">5.7</a> exibimos a série de vendas no tempo apenas para o departamento 1 da loja 1.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="conceitos-teóricos.html#cb12-1" aria-hidden="true" tabindex="-1"></a>walmart_sales_weekly <span class="sc">%&gt;%</span> </span>
-<span id="cb12-2"><a href="conceitos-teóricos.html#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(id <span class="sc">==</span> <span class="st">&quot;1_1&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb12-3"><a href="conceitos-teóricos.html#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_time_series</span>(Date, Weekly_Sales, <span class="at">.interactive =</span> F)</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="conceitos-teóricos.html#cb62-1" aria-hidden="true" tabindex="-1"></a>walmart_sales_weekly <span class="sc">%&gt;%</span> </span>
+<span id="cb62-2"><a href="conceitos-teóricos.html#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(id <span class="sc">==</span> <span class="st">&quot;1_1&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb62-3"><a href="conceitos-teóricos.html#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_time_series</span>(Date, Weekly_Sales, <span class="at">.interactive =</span> F)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:walmart-11"></span>
 <img src="_main_files/figure-html/walmart-11-1.png" alt="Vendas semanais do Departamento 1 da Loja na Walmart" width="672" />
 <p class="caption">
@@ -878,13 +688,13 @@ Figure 5.7: Vendas semanais do Departamento 1 da Loja na Walmart
 </p>
 </div>
 <p>Observamos alguns picos de vendas semanais que devem estar correlacionados a períodos de feriado. As vendas devem estar relacionadas ainda com a temperatura média e o preço do combustível naquela semana. Como temos acesso as covariadas <code>Temperature</code> e <code>Fuel_Price</code> podemos calcular não apenas o ACF, mas também a Função de Correlação-Cruzada com essas duas variáveis. Para tanto, vamos utilizar o parâmetro <code>.ccf_vars</code> na função <code>plot_acf_diagnostics</code> para incluir estas duas variáveis na análise.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="conceitos-teóricos.html#cb13-1" aria-hidden="true" tabindex="-1"></a>walmart_sales_weekly <span class="sc">%&gt;%</span> </span>
-<span id="cb13-2"><a href="conceitos-teóricos.html#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-3"><a href="conceitos-teóricos.html#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, Date, Weekly_Sales, Temperature, Fuel_Price) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-4"><a href="conceitos-teóricos.html#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_acf_diagnostics</span>(Date, Weekly_Sales, <span class="co"># Calcular ACF &amp; PACF</span></span>
-<span id="cb13-5"><a href="conceitos-teóricos.html#cb13-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.ccf_vars =</span> <span class="fu">c</span>(Temperature, Fuel_Price), <span class="co"># CCF</span></span>
-<span id="cb13-6"><a href="conceitos-teóricos.html#cb13-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.lags =</span> <span class="st">&quot;3 months&quot;</span>,</span>
-<span id="cb13-7"><a href="conceitos-teóricos.html#cb13-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.interactive =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="conceitos-teóricos.html#cb63-1" aria-hidden="true" tabindex="-1"></a>walmart_sales_weekly <span class="sc">%&gt;%</span> </span>
+<span id="cb63-2"><a href="conceitos-teóricos.html#cb63-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id) <span class="sc">%&gt;%</span> </span>
+<span id="cb63-3"><a href="conceitos-teóricos.html#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, Date, Weekly_Sales, Temperature, Fuel_Price) <span class="sc">%&gt;%</span> </span>
+<span id="cb63-4"><a href="conceitos-teóricos.html#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_acf_diagnostics</span>(Date, Weekly_Sales, <span class="co"># Calcular ACF &amp; PACF</span></span>
+<span id="cb63-5"><a href="conceitos-teóricos.html#cb63-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.ccf_vars =</span> <span class="fu">c</span>(Temperature, Fuel_Price), <span class="co"># CCF</span></span>
+<span id="cb63-6"><a href="conceitos-teóricos.html#cb63-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.lags =</span> <span class="st">&quot;3 months&quot;</span>,</span>
+<span id="cb63-7"><a href="conceitos-teóricos.html#cb63-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.interactive =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:ccf-walmart"></span>
 <img src="_main_files/figure-html/ccf-walmart-1.png" alt="Correlação Cruzada de Vendas Semanais com Temperatura e Preço de Combustível" width="672" />
 <p class="caption">
@@ -964,7 +774,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

@@ -1,5 +1,5 @@
---- 
-title: "Séries Temporais com R"
+---
+title: "Forecasting Series Temporais com R"
 author: "Robson Oliveira Lima"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
@@ -8,7 +8,7 @@ bibliography: [book.bib, packages.bib]
 # url: your book url like https://bookdown.org/yihui/bookdown
 # cover-image: path to the social sharing image like images/cover.jpg
 description: |
-  Um livro sobre séries temporais para usuários de R.
+  Uma breve introdução sobre previsão com séries temporais para usuários de R utilizando o pacote modeltime.
 link-citations: yes
 github-repo: rstudio/bookdown-demo
 ---
@@ -19,11 +19,17 @@ Este é um livro online que fornece uma breve introdução aos principais métod
 
 R é uma linguagem de programação gratuita e bastante popular para análise estatística.
 
-Este livro é uma tentativa de traduzir o livro online [Forecasting: Principles and Practice](https://otexts.com/fpp3/index.html), que é uma das principais referências para o ensino de previsão com R. Ao mesmo tempo, muito dos exemplos serão adaptados para utilizar os pacotes [timetk](https://business-science.github.io/timetk/) [@R-timetk] e [modetime](https://business-science.github.io/modeltime/index.html) [@R-modeltime]. Estes dois pacotes tornam a tarefa de realizar previsão muito conveniente.
+Este livro é uma tentativa de traduzir o livro online [Forecasting: Principles and Practice](https://otexts.com/fpp3/index.html), que é uma das principais referências para o ensino de previsão com R. Ao mesmo tempo, seus exemplos serão adaptados para os pacotes [timetk](https://business-science.github.io/timetk/) [@R-timetk] e [modetime](https://business-science.github.io/modeltime/index.html) [@R-modeltime]. 
 
-## Roteiro
+O pacote `modeltime` é uma biblioteca do R que fornece uma estrutura flexível para modelagem, previsão e avaliação de séries temporais. Ele é construído com base em outros pacotes de séries temporais do R, como forecast, prophet e fable, e visa simplificar o processo de modelagem e previsão de séries temporais.
 
-bla bla
+O `modeltime` oferece uma variedade de modelos para a modelagem de séries temporais, incluindo modelos ARIMA, modelos de suavização exponencial, modelos de regressão, modelos de redes neurais, entre outros. Ele também permite que os usuários combinem e comparem vários modelos para selecionar o melhor modelo para uma determinada série temporal.
+
+Além disso, o modeltime possui uma série de funções úteis para visualização de séries temporais, diagnóstico de modelos e avaliação de desempenho de previsão, muitas delas implementadas na biblioteca `timetk`. 
+
+Em resumo, o `modeltime` é uma ferramenta poderosa para modelagem e previsão de séries temporais no R. Ele oferece uma ampla variedade de modelos e funcionalidades para ajudar os usuários a analisar e prever dados de séries temporais com eficácia.
+Estes dois pacotes tornam a tarefa de realizar previsão muito conveniente.
+
 
 ## Pré-requisitos
 
@@ -31,12 +37,17 @@ Para acompanhar este livro, o usuário deve ter o R e RStudio instalados na sua 
 
 Uma breve descrição da instalação do R/RStudio e das principais funções do `tidyverse` pode ser encontrada no Apêndice.
 
-
-
-
 ```{r include=FALSE}
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), 'bookdown', 'knitr', 'rmarkdown', "modeltime"
 ), 'packages.bib')
 ```
+
+
+
+## Sobre o Autor
+
+Meu nome é Robson Oliveira, sou Doutor em Economia pela Universidade Federal da Paraíba e professor efetivo do Instituto Federal da Paraíba.
+
+Você pode me encontrar no meu [site pessoal](https://robsonolima.com.br/), onde discuto temas variados como séries temporais, modelos de causalidade e R em geral.

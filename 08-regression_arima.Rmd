@@ -1,35 +1,32 @@
 # Modelos de Regressão Dinâmicos {#arimax}
 
-
 ```{r include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-O uso de variáveis explicativas exógenas é uma maneira óbvia de melhorar a precisão das precisões. Em vez de depender apenas de informações históricas sobre a série em si, podemos utilizar outras informações relevantes. 
+O uso de variáveis explicativas exógenas é uma maneira óbvia de melhorar a precisão das precisões. Em vez de depender apenas de informações históricas sobre a série em si, podemos utilizar outras informações relevantes.
 
-Modelos de séries temporais como ARIMA permitem que valores da série sejam previstos a partir da inclusão de informações do passado, mas não permitem a inclusão destas variáveis exógenas relevantes como _dummies_ de feriado, atividade dos concorrentes, mudanças nas leis, variáveis macroeconômicas e outras covariadas externas que podem ajudar a explicar a variação histórica de uma série temporal.
+Modelos de séries temporais como ARIMA permitem que valores da série sejam previstos a partir da inclusão de informações do passado, mas não permitem a inclusão destas variáveis exógenas relevantes como *dummies* de feriado, atividade dos concorrentes, mudanças nas leis, variáveis macroeconômicas e outras covariadas externas que podem ajudar a explicar a variação histórica de uma série temporal.
 
 Já modelos de regressão permitem a inclusão de variáveis externas, mas não são capazes de modelar as dinâmicas presentes em séries temporais, como os modelos ARIMA são capazes.
 
-### Valor de utilizar variáveis explicativas 
+### Valor de utilizar variáveis explicativas
 
-Variáveis externas podem ser especialmente úteis para previsão de demanda por eletricidade, que é altamente dependente da temperatura ambiente, uma vez que dias quentes levam a maior uso de ar condicionados [@taieb2014gradient]. 
+Variáveis externas podem ser especialmente úteis para previsão de demanda por eletricidade, que é altamente dependente da temperatura ambiente, uma vez que dias quentes levam a maior uso de ar condicionados [@taieb2014gradient].
 
-Contudo, nem sempre variáveis externas podem ser tão úteis. No caso de temperatura como uma variável explicativa para demanda por eletricidade, as previsões metereológicas podem fornecer medidas bem precisas do comportamento futuro, mas em casos onde as previsões das variáveis explicativas são imprecisas, adiciona-las ao modelo pode produzir resultados inconsistentes. 
+Contudo, nem sempre variáveis externas podem ser tão úteis. No caso de temperatura como uma variável explicativa para demanda por eletricidade, as previsões metereológicas podem fornecer medidas bem precisas do comportamento futuro, mas em casos onde as previsões das variáveis explicativas são imprecisas, adiciona-las ao modelo pode produzir resultados inconsistentes.
 
-Outro problema pode ocorrer caso a relação entre $y$ e $x$ é um fato histórico, mas pode não se repetir no futuro. Ou quando duas variáveis possuem uma relação positiva em um período, e negativa em outro. Esse tipo de problema pode produzir modelos com má especificações e previsões imprecisas. 
+Outro problema pode ocorrer caso a relação entre $y$ e $x$ é um fato histórico, mas pode não se repetir no futuro. Ou quando duas variáveis possuem uma relação positiva em um período, e negativa em outro. Esse tipo de problema pode produzir modelos com má especificações e previsões imprecisas.
 
 Assim, antes de recorrer a variáveis externas em modelos de séries temporais, é sempre interessante iniciar a análise com uma abordagem puramente de séries temporais (um modelo ARIMA, por exemplo). Outra estratégia e a de realizar comparações entre (1) uma previsão para dentro da amostra que inclua variáveis explicativas previstas e (2) uma previsão para dentro da amostra que inclua as mesmas variáveis explicativas com dados observados.
-
 
 ### Modelos Dinâmicos de Regressão
 
 Se existem previsões precisas para as variáveis explicativas e a relação entre estas variáveis e a previsão é estável no futuro, podemos utilizar uma abordagem mista que envolve extender os modelos ARIMA com o objetivo de permitir que outras variáveis externas sejam incluídas nos modelos. Assim, teriamos o melhor dos dois mundos.
 
-Estes modelos de regressão simples tomam a forma 
+Estes modelos de regressão simples tomam a forma
 
 $$y_t = \beta_0 + \beta_1 x_{1,t} + ... + \beta_k x_{k,t} + \epsilon_t$$
-
 
 onde $y_t$ é uma função linear das $k$ variáveis externas ($x_{1,t},...,x_{k,t}$), e $\epsilon_t$ é assumido como um termos de erro não correlacionado (ruído branco). Testes como de Breusch-Godfrey foram utilizados para assegurar que os resíduos resultantes da regressão eram significativamente correlacionados.
 
@@ -47,13 +44,13 @@ Note que o modelo tem dois termos de erro - o erro do modelo de regressão, que 
 
 Quando estimamos parâmetros do modelo, minimizamos a soma de $\epsilon_t$ ao quadrado. Se minimizarmos a soma de $\eta_t$ ao quadrado (que é o que ocorre quando estimamos um modelo de regressão que ignora a autocorrelação dos erros), então uma série de problemas surgem.
 
-1. Os coeficientes estimados $\hat{\beta}_0,...,\hat{\beta}_k$ não são mais os melhores estimadores, já que algumas informações importantes estão sendo ignoradas no cálculo dos coeficientes.
+1.  Os coeficientes estimados $\hat{\beta}_0,...,\hat{\beta}_k$ não são mais os melhores estimadores, já que algumas informações importantes estão sendo ignoradas no cálculo dos coeficientes.
 
-2. Qualquer teste estatístico associado com o modelo será incorreto.
+2.  Qualquer teste estatístico associado com o modelo será incorreto.
 
-3. Os valores de AIC dos modelos ajustados não são um bom guia de quão bom é o modelo para previsão.
+3.  Os valores de AIC dos modelos ajustados não são um bom guia de quão bom é o modelo para previsão.
 
-4. Na maioria dos casos, o p-valor associado com os coeficientes será muito pequeno, e algumas covariadas parecerão importantes quando na verdade não são. Isto produzirá uma regressão espúria.
+4.  Na maioria dos casos, o p-valor associado com os coeficientes será muito pequeno, e algumas covariadas parecerão importantes quando na verdade não são. Isto produzirá uma regressão espúria.
 
 Minimizar a soma dos $\epsilon_t$ ao quadrado evita estes problemas. Alternativamente, estimação por máxima verossimilhança pode ser utilizada, produzindo estimativas de coeficientes similares.
 
@@ -63,11 +60,9 @@ Para tornar as variáveis estacionárias, podemos realizar a transformação de 
 
 Se todas as variáveis são estacionárias, então podemos utilizar erros ARMA para os resíduos. É fácil notar que uma regressão com erros ARIMA é equivalente a uma regressão em diferença com erros ARMA.
 
-
-
 ## Regressão com Erros ARIMA
 
-A função `Arima()` é capaz de ajustar um modelo de regressão com erros ARIMA se o argumento `xreg` for utilizado. Como a diferenciação está especificada, ela é aplicada para todas as variáveis antes de estimar o modelo. O comando R utilizado é 
+A função `Arima()` é capaz de ajustar um modelo de regressão com erros ARIMA se o argumento `xreg` for utilizado. Como a diferenciação está especificada, ela é aplicada para todas as variáveis antes de estimar o modelo. O comando R utilizado é
 
 ```{r eval=F}
 library(forecast)
@@ -76,17 +71,22 @@ Arima(y, xreg = x, order = c(1,1,0))
 
 que irá ajustar um modelo do tipo $y'_t = \beta_1 x'_t + \eta'_t$.
 
-
-A função `auto.arima()` também é capaz de utilizar covariadas com uso do termo `xreg`. O usuário deve especificar os preditores e `auto.arima()` seleciona o melhor modelo ARIMA para os erros. 
+A função `auto.arima()` também é capaz de utilizar covariadas com uso do termo `xreg`. O usuário deve especificar os preditores e `auto.arima()` seleciona o melhor modelo ARIMA para os erros.
 
 O pacote `modeltime` tem suporte ao modelo ARIMA com o uso da função `arima_reg()` ao se utilizar uma fórmula com regressor externo.
-
 
 ### Exemplo: Consumo e Renda nos EUA
 
 A figura \@ref(fig:consumo-renda) mostra a mudança trimestral nos gastos com consumo pessoal e a renda disponível entre 1970 e 2016. Estamos interessados em prever o consumo com base na renda. Uma mudança na renda não necessariamente reflete uma mudança instântanea no consumo (exempl, depois de uma demissão, pode levar alguns meses para os gastos se ajustarem). Contudo, vamos ignorar esta complexidade e tentar medir o efeito instantâneo de uma mudança média na renda sore uma mudança média nos gastos.
 
-```{r}
+```{r consumo-renda, fig.cap="Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2019"}
+library(tidyverse)
+library(tidymodels)
+library(timetk)
+library(modeltime)
+library(fpp3)
+
+
 us_change_df <- us_change %>% 
   tk_tbl() %>% 
   mutate(Quarter = as.Date(Quarter))
@@ -98,10 +98,12 @@ us_change %>%
                    .facet_vars = name,
                    .facet_scales = "free_y",
                    .smooth = F,
-                   .title = "Mudança Percental no Consumo e Renda Trimestral para os EUA, 1970 a 2019")
+                   .interactive = F,
+                   .title = "")
+
 ```
 
-Vamos dividir a base em treinamento e teste para realizar a previsão proposta com a função `initial_time_split()`. Usando o parâmetro `prop = 0.75` fixamos 75% dos dados para a base de treinamento e 25% para a base de teste.
+Vamos dividir a base em treinamento e teste para realizar a previsão proposta com a função `initial_time_split()`. Usando o parâmetro `prop = 0.75`, para utilizar 75% dos dados para a base de treinamento e 25% para a base de teste.
 
 ```{r split-consumo, fig.cap="Base de Treinamento e Teste para dados de Consumo"}
 tbl_treinamento_teste <- 
@@ -112,34 +114,36 @@ tbl_treinamento_teste %>%
   tk_time_series_cv_plan() %>% 
   plot_time_series_cv_plan(Quarter, 
                            Consumption,
-                           .title = "Base de Treinamento e Teste")
+                           .title = "",
+                           .interactive = F)
 ```
 
+Seguindo o fluxo de trabalho do pacote `tidymodels`, começamos criando o modelo com a função `arima_reg()` e a conectamos à função `forecast::auto.arima()` usando a expressão `set_engine("auto_arima")`. Não vamos fixar os parâmetros do modelo ARIMA, deixando a escolha para o pacote \`auto.arima´, que escolhe os parâmetros de modo a minimizar critérios de informação.
 
-
-Seguindo o fluxo de trabalho do pacote `tidymodels`, começamos criando o modelo com a função `arima_reg()` e a conectamos à função `forecast::auto.arima()` usando a expressão `set_engine("auto_arima")`. Com o pacote `recipe` podemos definir uma fórmula que toma `Consumption` como variável dependente e `Income` como um regressor. Com a função `workflow` unimos modelo e fórmula para realizar o ajuste do modelo.
+Para estimar um modelo ARIMA convencional, poderiamos utilizar a fórmula `Consumption ~ Quarter`, mas como desejamos adicionar uma variável dependente adicional, vamos definir uma fórmula que toma `Consumption` como variável dependente e `Income` como um regressor.
 
 ```{r message=FALSE, warning=FALSE}
 modelo_regarima <- arima_reg() %>% 
   set_engine("auto_arima")
 
 receita <- recipe(Consumption ~ Quarter + Income, training(tbl_treinamento_teste))
+
+```
+
+Com a função `workflow` unimos modelo e fórmula para realizar o ajuste do modelo. Abaixo temos a saída típica do ajuste do modelo que foi produzido para a base de treinamento.
+
+```{r}
 fit <- workflow() %>% 
   add_model(modelo_regarima) %>% 
   add_recipe(receita) %>% 
   fit(training(tbl_treinamento_teste))
-```
-Abaixo temos a saída do ajuste do modelo que foi ajustado para a base de treinamento.
 
-```{r}
 fit
 ```
 
-
 Os dados são claramente estacionários (já que estamos considerando mudanças percentuais em vez de gastos e renda bruta), de modo que não há necessidade de diferenciação. O modelo ajustado é
 
-$$y_t = 0.6180 + 0.2725x_t + \eta_t$$
-$$\eta_t = 0.5987 \eta_{t-1} + \epsilon_t - 0.5570\epsilon_{t-1} + 0.1840 \epsilon_{t-2}$$
+$$y_t = 0.6180 + 0.2725x_t + \eta_t$$ $$\eta_t = 0.5987 \eta_{t-1} + \epsilon_t - 0.5570\epsilon_{t-1} + 0.1840 \epsilon_{t-2}$$
 
 $$\epsilon \sim IID(0, 0.3545)$$
 
@@ -153,8 +157,9 @@ tbl_calibracao <-
   
 tbl_calibracao %>% 
   modeltime_residuals() %>%  
-  plot_modeltime_residuals(.title = "Resíduos do Modelo de Regressão com Erros ARIMA", 
-                           .legend_show = F)
+  plot_modeltime_residuals(.title = "", 
+                           .legend_show = F,
+                           .interactive = F)
 
 ```
 
@@ -166,7 +171,8 @@ Na figura \@ref(fig:erros-arima-acf) vemos o correlograma dos resíduos. As barr
 tbl_calibracao %>% 
   modeltime_residuals() %>% 
   plot_modeltime_residuals(.type = "acf", .lag = 40,
-    .title = "ACF dos Resíduos do Modelo de Regressão com Erros ARIMA", 
+    .title = "", 
+    .interactive = FALSE,
     .show_white_noise_bar = T)
 
 ```
@@ -184,10 +190,9 @@ tbl_calibracao %>%
 
 ```
 
-
 ## Previsão
 
-A figura \@ref(fig:forecast-regarima) mostra a previsão feita para o período de teste. A linha azul mostra os dados reais e a linha vermelha, a previsão produzida pelo modelo.
+Para realizar previsões com modelo de regressão com Erros ARIMA, precisamos realziar a previsão da parte do modelo de regressão e a parte ARIMA do modelo. A figura \@ref(fig:forecast-regarima) mostra a previsão feita para o período de teste. A linha azul mostra os dados reais e a linha vermelha, a previsão produzida pelo modelo.
 
 ```{r forecast-regarima, fig.cap = "Previsão de Consumo do Modelo de Regressão com Erros ARIMA"}
 tbl_calibracao %>% 
@@ -195,8 +200,9 @@ tbl_calibracao %>%
                      actual_data = us_change_df) %>% 
   plot_modeltime_forecast(.legend_show = F)
 ```
-É importante destacar que a previsão de valores futuros envolve a previsão de valores futuros para os preditores. O intervalo de confiança produzido pela previsão não leva em consideração a incerteza adicional de ter que prever valores para os preditores, e assim devem ser interpretado como condicional aos valores assumidos. 
- 
+
+É importante destacar que a previsão de valores futuros envolve a previsão de valores futuros para os preditores. Neste caso, teremos que modelar estas variáveis ou assumir valores para o período futuro. Assim, o intervalo de confiança produzido pela previsão não leva em consideração a incerteza adicional de ter que prever valores para os preditores, e devem ser interpretados como condicional aos valores assumidos.
+
 Para finalizar, podemos calcular algumas medidas de performance. Os resultados são exibidos na tabela \@ref(tab:tab-medidas-regarima).
 
 ```{r tab-medidas-regarima}
@@ -207,7 +213,6 @@ tbl_calibracao %>%
 ```
 
 Considerando que os dados de mudança percentual do consumo estão ao redor de zero, não é surpreendente que o valor calculado para o MAPE esteja tão elevado.
-
 
 ## Exemplo 2: Previsão de Demanda por Eletricidade
 
@@ -247,22 +252,11 @@ vic_elec_daily %>%
        color = "Dia da Semana")
 ```
 
+Abaixo criamos os conjuntos de treinamento e teste e definimos a fórmula a ser estimada. Como a relação entre temperatura e demanda por energia elétrica é não linear, utilizamos a função `step_poly` para criar variáveis utilizando polinômios ortogonais. Com `step_dummy` criamos variáveis indicativas para os feriados e fim de semana.
 
 ```{r}
 elec_splits <- vic_elec_daily %>% 
   initial_time_split(prop = 0.75)
-
-elec_splits %>% 
-    tk_time_series_cv_plan() %>% 
-  plot_time_series_cv_plan(Date, 
-                           Demand,
-                           .title = "Base de Treinamento e Teste")
-
-
-```
-
-
-```{r}
 
 
 receita_elec <- recipe(Demand ~ ., data = training(elec_splits)) %>% 
@@ -273,6 +267,9 @@ receita_elec <- recipe(Demand ~ ., data = training(elec_splits)) %>%
 receita_elec %>% prep() %>% bake(new_data = NULL)
   
 ```
+
+Abaixo temos o modelo ajustado para previsão de energia elétrica.
+
 ```{r}
 
 fit_elec <- workflow() %>% 
@@ -280,8 +277,11 @@ fit_elec <- workflow() %>%
   add_recipe(receita_elec) %>% 
   fit(training(elec_splits))
 
-fit_elec
+fit_elec 
+
 ```
+
+$$y_t = 200.18 + 3.66 \text{feriado}_t + 149.46 \text{temperatura_1}_t + 186.90 \text{temperatura_2} + \eta_t$$
 
 ```{r message=FALSE, warning=FALSE}
 tbl_calibracao_elec <- fit_elec %>% 
@@ -301,6 +301,112 @@ tbl_calibracao_elec %>%
 ```
 
 ```{r}
-tbl_calibracao_elec 
+tbl_calibracao_elec %>% 
+  modeltime_accuracy(new_data = testing(elec_splits)) %>% 
+  table_modeltime_accuracy()
 ```
 
+## Regressão com Termos Harmônicos
+
+Modelos ARIMA tendem a produzir resultados interessantes com séries mensais, trimestrais e anuais. O modelo ETS atribui pesos exponencialmente decrescentes aos valores defasados da série para estimar seus valores atuais, e funcionam bem com dados diários, mensais e anuais. Para séries diárias, se o período de análise compreende mais de um ano, é possível que além da sazonalidade semanal usual destes dados (frequência de 7), em que existe uma relação entre os dias da semana, seja preciso permitir a presença de sazonalidade anual. Nesta situação o modelo ETS produzirá resultados inconsistentes.
+
+O problema é ainda maior para dados semanais. Segundo Hyndman, criador do pacote `forecast`, modelos ARIMA e ETS tem dificuldades em produzir boas previsões para séries semanais devido a sua sazonalidade peculiar, dado que o período de sazonalidade é de em média $365,25/7 = 52,18$. Como estes modelos só aceitam valores inteiros para a frequência, mesmo um valor aproximado de 52 períodos pode gerar resultados inadequados.
+
+Seja com dados diários muito longos ou para dados semanais, uma alternativa é o uso do modelo TBATS. Este modelo é uma extensão do ETS que adiciona uma série de transformações Box-Cox, séries Fourier com coeficientes variantes no tempo além de correção de erro ARMA. Ele é especialmente útil para produzir previsão de séries temporais com múltiplos períodos de sazonalidade, sazonalidade de altíssima-frequência, sazonalidade não-inteira (como a frequência de 52,18 discutida acima) e múltiplos efeito calendários.
+
+Outra solução é utilizar termos de Fourier que são úteis em lidar com sazonalidade. Uma forma de utilizar estes termos é estimando modelos que aceitam covariadas externas como parte da especificação. É o caso do modelo de Regressão com Erros ARIMA. De modo geral, uma das principais vantagens da Regressão com Erro ARIMA é que os coeficientes das covariadas tem a interpretação usual dos modelos de regressão.
+
+Em resumo, termos harmônicos tem as vantagens de:
+
+-   Permitir sazonalidades de qualquer comprimento;
+
+-   Permite modelar dados com mais de um período de sazonalidades;
+
+-   É possível controlar a suavização do padrão sazonal a partir do número de pares de termos seno e cosseno de Fourier;
+
+-   A dinâmica de curto prazo pode ser modelada pelo erro ARMA.
+
+## Exemplo:
+
+```{r acidentes-br, fig.cap="Acidentes diários em rodovias federais, 2007 a 2021"}
+acidentes <- read_rds("resources/acidentes_estradas_brasil.rds") %>% 
+    filter_by_time(
+    .start_date = last(Date) %-time% "12 month",
+    .end_date = "end"
+  ) 
+
+acidentes_split <- acidentes %>%
+  time_series_split(date_var = Date,
+                    assess = "4 months",
+                    cumulative = TRUE
+  )
+
+acidentes_split %>%
+  tk_time_series_cv_plan() %>%
+  plot_time_series_cv_plan(Date, acidentes, .title = "")
+
+```
+
+Como discutido na seção \@ref(intro), a série de acidentes possui um forte componente de sazonalidade associado ao dia da semana, mas também ao dia do mês.
+
+```{r}
+receita_K1 <- recipe(acidentes ~ ., training(acidentes_split)) %>% 
+  step_fourier(Date, period = c(7), K = 1)
+
+receita_K2 <- recipe(acidentes ~ ., training(acidentes_split)) %>% 
+  step_fourier(Date, period = c(7), K = 2)
+
+receita_K3 <- recipe(acidentes ~ ., training(acidentes_split)) %>% 
+  step_fourier(Date, period = c(7), K = 3)
+```
+
+```{r}
+modelo_arima <- arima_reg() %>% 
+  set_engine("auto_arima")
+
+wflw_acidentes_K1 <- workflow() %>% 
+  add_model(modelo_arima) %>% 
+  add_recipe(receita_K1) %>% 
+  fit(training(acidentes_split))
+
+wflw_acidentes_K2 <- workflow() %>% 
+  add_model(modelo_arima) %>% 
+  add_recipe(receita_K2) %>% 
+  fit(training(acidentes_split))
+
+
+wflw_acidentes_K3 <- workflow() %>% 
+  add_model(modelo_arima) %>% 
+  add_recipe(receita_K3) %>% 
+  fit(training(acidentes_split))
+
+tbl_modelos <- 
+  modeltime_table(wflw_acidentes_K1,
+                wflw_acidentes_K2,
+                wflw_acidentes_K3) %>% 
+  update_model_description(1, "ARIMA com Termos Harmônicos K = 1") %>% 
+  update_model_description(2, "ARIMA com Termos Harmônicos K = 2") %>% 
+  update_model_description(3, "ARIMA com Termos Harmônicos K = 3") 
+```
+
+```{r}
+tbl_calibracao <- tbl_modelos %>% 
+  modeltime_calibrate(new_data = testing(acidentes_split)) 
+
+tbl_calibracao %>% 
+  modeltime_forecast(new_data = testing(acidentes_split),
+                     actual_data = acidentes) %>% 
+  filter_by_time(.start_date = last(.index) %-time% "4 month",
+                 .end_date = "end") %>% 
+  plot_modeltime_forecast(
+                          .facet_vars = .model_desc, 
+                          .facet_ncol = 2,
+                          .title = "",
+                          .legend_show = F)
+```
+
+```{r}
+tbl_calibracao %>% 
+  modeltime_accuracy(new_data = testing(acidentes_split)) %>% 
+  table_modeltime_accuracy()
+```
